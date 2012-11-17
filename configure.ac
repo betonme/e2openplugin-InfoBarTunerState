@@ -40,7 +40,7 @@ AC_CONFIG_FILES([
 Makefile
 src/Makefile
 po/Makefile
-met/Makefile
+meta/Makefile
 
 ])
 AC_OUTPUT
