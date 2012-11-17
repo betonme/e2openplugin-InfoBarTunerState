@@ -596,7 +596,7 @@ class InfoBarTunerState(object):
 				if win.type == RECORD:
 					#TODO Avolid blocking - avoid using getTimer to update the timer times use timer.time_changed if possible
 					timer = getTimer( id )
-					print id, timer
+					#print id, timer
 					if timer:
 						begin = timer.begin
 						end = timer.end
@@ -1258,7 +1258,7 @@ def getTimerID(timer):
 def getTimer(id):
 	#for timer in self.session.nav.RecordTimer.timer_list + self.session.nav.RecordTimer.processed_timers:
 	for timer in NavigationInstance.instance.RecordTimer.timer_list + NavigationInstance.instance.RecordTimer.processed_timers:
-		print "timerlist:", getTimerID( timer )
+		#print "timerlist:", getTimerID( timer )
 		if getTimerID( timer ) == id:
 			return timer
 	return None
