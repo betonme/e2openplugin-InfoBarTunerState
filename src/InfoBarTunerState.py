@@ -803,7 +803,10 @@ class TunerStateBase(Screen):
 		self["Progress"] = ProgressBar()
 		
 		for i in xrange( len( config.infobartunerstate.fields.dict() ) ):
-			self[ "Field"+str(i) ] = Label()
+		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
+			label = Label()
+			#fieldid = "Field"+str(i)
+			self[ "Field"+str(i) ] = label
 		
 		self.padding = 0
 		self.spacing = 0
@@ -923,7 +926,8 @@ class TunerStateInfo(TunerStateBase):
 		
 		self["Progress"].hide()
 		
-		for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
+		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
+		for i in xrange( len( config.infobartunerstate.fields.dict() ) ):
 			fieldid = "Field"+str(i)
 			
 			if fieldid == "Field0":
@@ -942,7 +946,8 @@ class TunerStateInfo(TunerStateBase):
 		
 		height = self.instance.size().height()
 		
-		for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
+		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
+		for i in xrange( len( config.infobartunerstate.fields.dict() ) ):
 			fieldid = "Field"+str(i)
 			
 			#Workaround#1 Set default size
@@ -1091,7 +1096,7 @@ class TunerState(TunerStateBase):
 		self.timeleft = timeleft and timeleft is not None and math.ceil( ( timeleft ) / 60.0 )
 		self.timeelapsed = timeelapsed and timeelapsed is not None and math.ceil( ( timeelapsed ) / 60.0 )
 		self.progress = progress and progress is not None and int( progress )
-		print "IBTS duration, timeleft, timeelapsed, progress", self.duration, self.timeleft, self.timeelapsed, self.progress
+		#print "IBTS duration, timeleft, timeelapsed, progress", self.duration, self.timeleft, self.timeelapsed, self.progress
 		
 		# File site and free disk space
 		filename = self.filename
@@ -1254,6 +1259,10 @@ class TunerState(TunerStateBase):
 			
 			# Set text, append field, resize field and append width
 			self[fieldid].setText( text )
+			
+			# Set horizontal alignment
+			if field == 'Number' or field == 'TimeLeftDuration' or field == 'TimeLeft' or field == 'TimeElapsed' or field == 'Duration' or field == 'TimerProgressText' or field == 'FileSize' or field == 'FreeSpace':
+				self[fieldid].instance.setHAlign(2) # import _enigma # alignRight = _enigma.eLabel_alignRight
 			
 			#Workaround#1
 			self[fieldid].instance.resize( eSize(1000, height) )
