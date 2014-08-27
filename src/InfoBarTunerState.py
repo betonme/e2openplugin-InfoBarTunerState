@@ -498,7 +498,9 @@ class InfoBarTunerState(object):
 						# Is this really necessary?
 						try: timer.Filename
 						except: timer.calculateFilename()
-						filename = timer.Filename
+						
+						try: filename = timer.Filename
+						except: filename = timer.name
 						
 						# Delete references to avoid blocking tuners
 						del timer
