@@ -1395,6 +1395,7 @@ def getTuner(service):
 		if number is None or number < 0:
 			number = data.get("tuner_number", -1)
 		type = data.get("tuner_type", "")
+		type = str(type)
 		if number is not None and number > -1:
 			#return ( ('A', 'B', 'C', 'D', 'E', 'F')[number], type)
 			return ( chr( int(number) + ord('A') ), type)
