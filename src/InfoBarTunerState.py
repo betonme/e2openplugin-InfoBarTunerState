@@ -1273,6 +1273,14 @@ class TunerState(TunerStateBase):
 				lend = self.end and localtime( self.end )
 				text = lend and strftime( config.infobartunerstate.time_format_end.value, lend )
 			
+			elif field == "BeginEnd":
+				if self.progress == 0:
+					lbegin = self.begin and localtime( self.begin )
+					text = lbegin and strftime( config.infobartunerstate.time_format_begin.value, lbegin )
+				elif self.progress > 0:
+					lend = self.end and localtime( self.end )
+					text = lend and strftime( config.infobartunerstate.time_format_end.value, lend )
+			
 			elif field == "Duration":
 				if self.duration is not None:
 					text = _("%d Min") % ( self.duration )
