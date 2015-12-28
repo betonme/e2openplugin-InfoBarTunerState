@@ -73,10 +73,19 @@ from netstat import netstat
 
 
 # Extenal plugins: WebInterface
+HAS_WEBIF = False
 try:
 	from Plugins.Extensions.WebInterface.WebScreens import StreamingWebScreen 
+	HAS_WEBIF = True
 except:
 	StreamingWebScreen = None
+
+HAS_OPENWEBIF = False
+try:
+	from Plugins.Extensions.OpenWebif.controllers.stream import StreamAdapter
+	HAS_OPENWEBIF = True
+except:
+	StreamAdapter = None
 
 
 # Globals
@@ -86,7 +95,7 @@ InfoBarToggle = None
 
 
 # Type Enum
-INFO, RECORD, STREAM, FINISHED = range( 4 )
+INFO, RECORD, STREAM_WEBIF, STREAM_OPENWEBIF, FINISHED = range( 5 )
 
 
 # Constants
@@ -271,7 +280,8 @@ class InfoBarTunerState(object):
 		# We do it right here to ensure the InfoBar is intantiated
 		self.updateRecordTimer()
 		if config.infobartunerstate.show_streams.value:
-			self.updateStreams()
+			self.updateStreamsWebIf()
+			self.updateStreamsOpenWebIf()
 
 	def appendEvents(self):
 		# Recording Events
@@ -280,12 +290,20 @@ class InfoBarTunerState(object):
 			self.session.nav.RecordTimer.on_state_change.insert(0, self.__onRecordingEvent)
 		# Streaming Events
 		if config.infobartunerstate.show_streams.value:
-			if StreamingWebScreen:
+			if HAS_WEBIF:
 				try:
 					from Plugins.Extensions.WebInterface.WebScreens import streamingEvents
-					if self.__onStreamingEvent not in streamingEvents:
-						streamingEvents.append(self.__onStreamingEvent)
+					if self.__onStreamingEventWebIf not in streamingEvents:
+						streamingEvents.append(self.__onStreamingEventWebIf)
 				except:
+					pass
+			if HAS_OPENWEBIF:
+				try:
+					from Plugins.Extensions.OpenWebif.controllers.stream import streamStates
+					if self.__onStreamingEventOpenWebIf not in streamStates:
+						streamStates.append(self.__onStreamingEventOpenWebIf)
+				except:
+					print "IBTS Open Web If append failed !!!!!!!!!!!!!!!!"
 					pass
 
 	def removeEvents(self):
@@ -294,11 +312,18 @@ class InfoBarTunerState(object):
 		if self.__onRecordingEvent in self.session.nav.RecordTimer.on_state_change:
 			self.session.nav.RecordTimer.on_state_change.remove(self.__onRecordingEvent)
 		# Streaming Events
-		if StreamingWebScreen:
+		if HAS_WEBIF:
 			try:
 				from Plugins.Extensions.WebInterface.WebScreens import streamingEvents
-				if self.__onStreamingEvent in streamingEvents:
-					streamingEvents.remove(self.__onStreamingEvent)
+				if self.__onStreamingEventWebIf in streamingEvents:
+					streamingEvents.remove(self.__onStreamingEventWebIf)
+			except:
+				pass
+		if HAS_OPENWEBIF:
+			try:
+				from Plugins.Extensions.OpenWebif.controllers.stream import streamStates
+				if self.__onStreamingEventOpenWebIf in streamStates:
+					streamStates.remove(self.__onStreamingEventOpenWebIf)
 			except:
 				pass
 
@@ -340,9 +365,9 @@ class InfoBarTunerState(object):
 	def __onRecordingEvent(self, timer):
 		if not timer.justplay:
 			print "IBTS Timer Event "+ str(timer.state) + ' ' + str(timer.repeated)
-#TODO
-# w.processRepeated()
-# w.state = TimerEntry.StateWaiting
+			#TODO
+			# w.processRepeated()
+			# w.state = TimerEntry.StateWaiting
 			if timer.state == timer.StatePrepared:
 				print "IBTS StatePrepared"
 				pass
@@ -398,43 +423,21 @@ class InfoBarTunerState(object):
 				if config.infobartunerstate.show_events.value:
 					self.show(True)
 
-	def __onStreamingEvent(self, event, stream):
+	def __onStreamingEventWebIf(self, event, stream):
+		print "IBTS Stream Event WebIf"
 		if StreamingWebScreen and stream:
-			print "IBTS Stream Event"
-			if event == StreamingWebScreen.EVENT_START:
-				
-				try:
-					from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
-				except:
-					streamingScreens = []
-				
-				# Extract parameters
+			if (event == StreamingWebScreen.EVENT_START):
 				tuner, tunertype = getTuner( stream.getRecordService() ) 
 				ref = stream.getRecordServiceRef()
+				
+				# Extract parameters
 				ip = stream.clientIP
-				id = getStreamID(stream)
+				id = getStreamIDWebIf(stream)
 				
 				# Delete references to avoid blocking tuners
 				del stream
 				
 				port, host, client = "", "", ""
-				
-#				# Workaround to retrieve the client ip
-#				# Change later and use the WebScreens getActiveStreamingClients if implemented
-#				ipports = [ (win.ip, win.port) for win in self.entries.itervalues() ]
-#				for conn in netstat(getstate='ESTABLISHED', getuid=False, getpid=False, readable=False):
-#					# Check if it is a streaming connection
-#					if conn[3] == '8001':
-#						ip = conn[4]
-#						port = conn[5]
-#						# Check if ip and port is already known
-#						if (ip, port) not in ipports:
-#							break
-#				else:
-#					# No new connection found, leave it empty
-#					ip, port, = "", ""
-				
-				#TODO Port is actually not given
 				
 				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
 				if event: 
@@ -459,7 +462,7 @@ class InfoBarTunerState(object):
 				channel = service_ref and service_ref.getServiceName()
 				channel = channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
 				
-				win = self.session.instantiateDialog(TunerState, STREAM, tuner, tunertype, name, number, channel, filename, client, ip, port)
+				win = self.session.instantiateDialog(TunerState, STREAM_WEBIF, tuner, tunertype, name, number, channel, filename, client, ip, port)
 				self.entries[id] = win
 				if config.infobartunerstate.show_events.value:
 					self.show(True)
@@ -467,7 +470,72 @@ class InfoBarTunerState(object):
 			elif event == StreamingWebScreen.EVENT_END:
 				
 				# Remove Finished Stream
-				id = getStreamID(stream)
+				id = getStreamIDWebIf(stream)
+				
+				# Delete references to avoid blocking tuners
+				del stream
+				
+				if id in self.entries:
+					win = self.entries[id]
+					
+					begin = win.begin
+					end = time()
+					endless = False
+					
+					win.updateType( FINISHED )
+					win.updateTimes( begin, end, endless )
+					
+					if config.infobartunerstate.show_events.value:
+						self.show(True)
+
+	def __onStreamingEventOpenWebIf(self, event, stream):
+		print "IBTS Stream Event OpenWebIf"
+		if StreamAdapter and stream:
+			if (event == StreamAdapter.EV_BEGIN):
+				tuner, tunertype = getTuner( stream.getService() ) 
+				ref = stream.ref
+				
+				# Extract parameters
+				ip = stream.clientIP
+				id = getStreamIDOpenWebIf(stream)
+				
+				# Delete references to avoid blocking tuners
+				del stream
+				
+				port, host, client = "", "", ""
+				
+				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
+				if event: 
+					name = event.getEventName()
+				else:
+					name = ""
+					#TODO check file streaming
+				
+				service_ref = ServiceReference(ref)
+				filename = "" #TODO file streaming - read meta eit
+				
+				try:
+					print "IBTS ip"
+					print ip
+					host = ip and socket.gethostbyaddr( ip )
+					client = host and host[0].split('.')[0]
+				except:
+					ip = ''
+					client = ''
+				
+				number = service_ref and getNumber(service_ref.ref)
+				channel = service_ref and service_ref.getServiceName()
+				channel = channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
+				
+				win = self.session.instantiateDialog(TunerState, STREAM_OPENWEBIF, tuner, tunertype, name, number, channel, filename, client, ip, port)
+				self.entries[id] = win
+				if config.infobartunerstate.show_events.value:
+					self.show(True)
+			
+			elif event == StreamAdapter.EV_STOP:
+				
+				# Remove Finished Stream
+				id = getStreamIDOpenWebIf(stream)
 				
 				# Delete references to avoid blocking tuners
 				del stream
@@ -494,18 +562,31 @@ class InfoBarTunerState(object):
 			if timer.isRunning() and not timer.justplay:
 				self.__onRecordingEvent(timer)
 
-	def updateStreams(self):
+	def updateStreamsWebIf(self):
 		#TODO updateStreams but retrieving IP is not possible
-		try:
-			from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
-		except:
-			streamingScreens = []
-		
-		#TODO file streaming actually not supported
-		for stream in streamingScreens:
-			# Check if screen exists
-			if stream and stream.request and 'file' not in stream.request.args:
-				self.__onStreamingEvent(StreamingWebScreen.EVENT_START, stream)
+		if HAS_WEBIF:
+			try:
+				from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
+			except:
+				streamingScreens = []
+			#TODO file streaming actually not supported
+			for stream in streamingScreens:
+				# Check if screen exists
+				if stream and stream.request and 'file' not in stream.request.args:
+					self.__onStreamingEventWebIf(StreamingWebScreen.EVENT_START, stream)
+
+	def updateStreamsOpenWebIf(self):
+		#TODO updateStreams but retrieving IP is not possible
+		if HAS_OPENWEBIF:
+			try:
+				from Plugins.Extensions.WebInterface.WebScreens import streamList
+			except:
+				streamList = []
+			#TODO file streaming actually not supported
+			for stream in streamList:
+				# Check if screen exists
+				if stream and stream.request and 'file' not in stream.request.args:
+					self.__onStreamingEventOpenWebIf(StreamAdapter.EV_BEGIN, stream)
 
 	def updateNextTimer(self):
 		number_pending_records = int( config.infobartunerstate.number_pending_records.value )
@@ -701,13 +782,13 @@ class InfoBarTunerState(object):
 						win.remove()
 						##
 						self.updateRecordTimer()
-				elif win.type == STREAM:
+				elif win.type == STREAM_WEBIF:
 					if config.infobartunerstate.show_streams.value:
 						#TODO Avolid blocking - avoid using getStream to update the current name
-						stream = getStream( id )
+						stream = getStreamWebIf( id )
 						if stream:
+						
 							ref = stream.getRecordServiceRef()
-							
 							if not win.tuner or not win.tunertype:
 								win.tuner, win.tunertype = getTuner(stream.getRecordService())
 							
@@ -736,14 +817,50 @@ class InfoBarTunerState(object):
 							win.update()
 						else:
 							win.remove()
+				elif win.type == STREAM_OPENWEBIF:
+					if config.infobartunerstate.show_streams.value:
+						#TODO Avolid blocking - avoid using getStream to update the current name
+						stream = getStreamOpenWebIf( id )
+						if stream:
+							ref = stream.ref
+							if not win.tuner or not win.tunertype:
+								win.tuner, win.tunertype = getTuner(stream.getService())
+							
+							del stream
+							
+							event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
+							if event: 
+								name = event.getEventName()
+							else:
+								name = ""
+							
+							begin = win.begin
+							end = None
+							endless = True
+							
+							service_ref = None
+							if not win.number:
+								service_ref = ServiceReference(ref)
+								win.number = service_ref and getNumber(service_ref.ref)
+							if not win.channel:
+								service_ref = service_ref or ServiceReference(ref)
+								win.channel = win.channel or service_ref and service_ref.getServiceName()
+							
+							win.updateName( name )
+							win.updateTimes( begin, end, endless )
+							win.update()
+						else:
+							win.remove()
 					else:
 						# Should never happen delete
+						print "IBTS: We should never reach this state"
 						begin = win.begin
 						end = time()
 						endless = False
 						win.updateType( FINISHED )
 						win.updateTimes( begin, end, endless )
 						win.update()
+					
 				else:
 					# Type INFO / FINISHED
 					win.update()
@@ -1202,7 +1319,9 @@ class TunerState(TunerStateBase):
 				self["Type"].show()
 				if self.type == RECORD:
 					self["Type"].setPixmapNum(0)
-				elif self.type == STREAM:
+				elif self.type == STREAM_WEBIF:
+					self["Type"].setPixmapNum(1)
+				elif self.type == STREAM_OPENWEBIF:
 					self["Type"].setPixmapNum(1)
 				elif self.type == FINISHED:
 					self["Type"].setPixmapNum(2)
@@ -1218,7 +1337,9 @@ class TunerState(TunerStateBase):
 			elif field == "TypeText":
 				if self.type == RECORD:
 					text = _("Record")
-				elif self.type == STREAM:
+				elif self.type == STREAM_WEBIF:
+					text = _("Stream")
+				elif self.type == STREAM_OPENWEBIF:
 					text = _("Stream")
 				elif self.type == FINISHED:
 					text = _("Finished")
@@ -1374,22 +1495,44 @@ def getTimer(id):
 			return timer
 	return None
 
-def getStreamID(stream):
-	#TEST_MULTIPLESTREAMS
-	#if id == str(stream.getRecordServiceRef()) + str(stream.clientIP):
-	##if(id == str(stream.getRecordServiceRef().toString()) + str(stream.clientIP)):
-	return str(stream.screenIndex) + str(stream.clientIP)
+def getStreamIDWebIf(stream):
+	if HAS_WEBIF:
+		try:
+			return str(stream.screenIndex) + str(stream.clientIP)
+		except:
+			pass
+	return ""
 
-def getStream(id):
-	try:
-		from Plugins.Extensions.WebInterface.WebScreens import streamingScreens 
-	except:
-		streamingScreens = []
-	
-	for stream in streamingScreens:
-		if stream:
-			if getStreamID(stream) == id:
-				return stream
+def getStreamWebIf(id):
+	if HAS_WEBIF:
+		try:
+			from Plugins.Extensions.WebInterface.WebScreens import streamingScreens 
+		except:
+			streamingScreens = []
+		for stream in streamingScreens:
+			if stream:
+				if getStreamIDWebIf(stream) == id:
+					return stream
+	return None
+
+def getStreamIDOpenWebIf(stream):
+	if HAS_OPENWEBIF:		
+		try:
+			return str(stream.streamIndex) + str(stream.clientIP)
+		except:
+			pass
+	return ""
+
+def getStreamOpenWebIf(id):
+	if HAS_OPENWEBIF:
+		try:
+			from Plugins.Extensions.OpenWebif.controllers.stream import streamList
+		except:
+			streamList = []
+		for stream in streamList:
+			if stream:
+				if getStreamIDOpenWebIf(stream) == id:
+					return stream
 	return None
 
 def getTuner(service):
