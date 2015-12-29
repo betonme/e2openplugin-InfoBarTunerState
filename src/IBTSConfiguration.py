@@ -247,7 +247,8 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 				# Check for actual events
 				plugin.gInfoBarTunerState.updateRecordTimer()
 				if config.infobartunerstate.show_streams.value:
-					plugin.gInfoBarTunerState.updateStreams()
+					plugin.gInfoBarTunerState.updateStreamsWebIf()
+					plugin.gInfoBarTunerState.updateStreamsOpenWebIf()
 		else:
 			
 			# Plugin should be disabled
