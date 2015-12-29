@@ -24,6 +24,7 @@ import os
 import NavigationInstance
 import socket
 import sys
+import string
 
 from collections import defaultdict
 from operator import attrgetter, itemgetter
@@ -224,16 +225,28 @@ class InfoBarTunerState(object):
 		#TODO find another solution, e.g.
 		# if IBTS is already shown, skip
 		self.showTimer = eTimer()
-		self.showTimer.callback.append(self.tunerShow)
+		try:
+			self.showTimer_conn = self.showTimer.timeout.connect(self.tunerShow)
+		except:
+			self.showTimer.callback.append(self.tunerShow)
 		
 		self.hideTimer = eTimer()
-		self.hideTimer.callback.append(self.tunerHide)
+		try:
+			self.hideTimer_conn = self.hideTimer.timeout.connect(self.tunerHide)
+		except:
+			self.hideTimer.callback.append(self.tunerHide)
 		
 		self.updateTimer = eTimer()
-		self.updateTimer.callback.append(self.update)
+		try:
+			self.updateTimer_conn = self.updateTimer.timeout.connect(self.update)
+		except:
+			self.updateTimer.callback.append(self.update)
 		
 		self.forceBindInfoBarTimer = eTimer()
-		self.forceBindInfoBarTimer.callback.append(self.bindInfoBar)
+		try:
+			self.forceBindInfoBarTimer_conn = self.forceBindInfoBarTimer.timeout.connect(self.bindInfoBar)
+		except:
+			self.forceBindInfoBarTimer.callback.append(self.bindInfoBar)
 		
 		self.entries = defaultdict(list)
 		
@@ -431,12 +444,13 @@ class InfoBarTunerState(object):
 				ref = stream.getRecordServiceRef()
 				
 				# Extract parameters
-				ip = stream.clientIP
+				ip = str(stream.clientIP)
 				id = getStreamIDWebIf(stream)
 				
 				# Delete references to avoid blocking tuners
 				del stream
 				
+				print "IBTS ip ####################################" + str(ip)
 				port, host, client = "", "", ""
 				
 				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
@@ -450,8 +464,6 @@ class InfoBarTunerState(object):
 				filename = "" #TODO file streaming - read meta eit
 				
 				try:
-					print "IBTS ip"
-					print ip
 					host = ip and socket.gethostbyaddr( ip )
 					client = host and host[0].split('.')[0]
 				except:
@@ -502,6 +514,7 @@ class InfoBarTunerState(object):
 				# Delete references to avoid blocking tuners
 				del stream
 				
+				print "IBTS ip " + str(ip)
 				port, host, client = "", "", ""
 				
 				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
@@ -515,8 +528,6 @@ class InfoBarTunerState(object):
 				filename = "" #TODO file streaming - read meta eit
 				
 				try:
-					print "IBTS ip"
-					print ip
 					host = ip and socket.gethostbyaddr( ip )
 					client = host and host[0].split('.')[0]
 				except:
@@ -1168,7 +1179,10 @@ class TunerState(TunerStateBase):
 		TunerStateBase.__init__(self, session)
 		
 		self.removeTimer = eTimer()
-		self.removeTimer.callback.append(self.remove)
+		try:
+			self.removeTimer_conn = self.removeTimer.timeout.connect(self.remove)
+		except:
+			self.removeTimer.callback.append(self.remove)
 		
 		self.type = type
 		self.tuner = tuner
