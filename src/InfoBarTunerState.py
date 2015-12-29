@@ -445,6 +445,10 @@ class InfoBarTunerState(object):
 				
 				# Extract parameters
 				ip = str(stream.clientIP)
+				if ip:
+					if ':' in ip and '.' in ip:
+						# Mixed style ::ffff:192.168.64.27
+						ip = string.split(str(stream.clientIP), ':')[-1]
 				id = getStreamIDWebIf(stream)
 				
 				# Delete references to avoid blocking tuners
