@@ -63,160 +63,38 @@ from enigma import eDVBResourceManager, eActionMap, eListboxPythonMultiContent, 
 
 from skin import parseColor, parseFont
 
+# Plugin internal
+from InfoBarHandler import InfoBarHandler, overwriteInfoBar, recoverInfoBar
+from ExtensionHandler import addExtension, removeExtension
+from netstat import netstat
+from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
+from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber
+
+# Extenal plugins
 #try:
 #	from Plugins.Extensions.2IB import SecondInfoBar
 #	SecondInfobarAvailable = True
 #except:
 SecondInfobarAvailable = False
 
-# Plugin internal
-from netstat import netstat
-
-
-# Extenal plugins: WebInterface
-HAS_WEBIF = False
-try:
-	from Plugins.Extensions.WebInterface.WebScreens import StreamingWebScreen 
-	HAS_WEBIF = True
-except:
-	StreamingWebScreen = None
-
-HAS_OPENWEBIF = False
-try:
-	from Plugins.Extensions.OpenWebif.controllers.stream import StreamAdapter
-	HAS_OPENWEBIF = True
-except:
-	StreamAdapter = None
-
-
-# Globals
-InfoBarShow = None
-InfoBarHide = None
-InfoBarToggle = None
-
 
 # Type Enum
-INFO, RECORD, STREAM_WEBIF, STREAM_OPENWEBIF, FINISHED = range( 5 )
-
+INFO, RECORD, STREAM, FINISHED = range( 4 )
 
 # Constants
 INFINITY =  u"\u221E".encode("utf-8")
 
 
 #######################################################
-# InfoBarShowHide for MoviePlayer integration
-def overwriteInfoBar():
-	global InfoBarShow, InfoBarHide, InfoBarToggle
-	if config.infobartunerstate.show_infobar.value:
-		if InfoBarShow is None:
-			# Backup original function
-			InfoBarShow = InfoBarShowHide._InfoBarShowHide__onShow
-			# Overwrite function
-			InfoBarShowHide._InfoBarShowHide__onShow = InfoBarShowTunerState
-	if InfoBarHide is None:
-		# Backup original function
-		InfoBarHide = InfoBarShowHide._InfoBarShowHide__onHide
-		# Overwrite function
-		InfoBarShowHide._InfoBarShowHide__onHide = InfoBarHideTunerState
-	if config.infobartunerstate.show_ontoggle.value:
-		if InfoBarToggle is None:
-			# Backup original function
-			InfoBarToggle = InfoBarShowHide.toggleShow
-			# Overwrite function
-			InfoBarShowHide.toggleShow = InfoBarToggleTunerState
-
-# InfoBar Events
-def recoverInfoBar():
-	global InfoBarShow, InfoBarHide, InfoBarToggle
-	if InfoBarShow:
-		InfoBarShowHide._InfoBarShowHide__onShow = InfoBarShow
-		InfoBarShow = None
-	if InfoBarHide:
-		InfoBarShowHide._InfoBarShowHide__onHide = InfoBarHide
-		InfoBarHide = None
-	if InfoBarToggle:
-		InfoBarShowHide.toggleShow = InfoBarToggle
-		InfoBarToggle = None
-
-
-def InfoBarShowTunerState(self):
-	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-	global gInfoBarTunerState
-	global InfoBarShow
-	if InfoBarShow:
-		InfoBarShow(self)
-	if gInfoBarTunerState:
-		gInfoBarTunerState.show()
-
-def InfoBarHideTunerState(self):
-	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-	global gInfoBarTunerState
-	global InfoBarHide
-	if InfoBarHide:
-		InfoBarHide(self)
-	if gInfoBarTunerState:
-		gInfoBarTunerState.hide()
-
-def InfoBarToggleTunerState(self):
-	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-	global gInfoBarTunerState
-	global InfoBarToggle
-	if InfoBarToggle:
-		InfoBarToggle(self)
-	if gInfoBarTunerState:
-		gInfoBarTunerState.toggle()
-
-
-#######################################################
-# Extension menu
-def addExtension():
-	# Add to extension menu
-	from Components.PluginComponent import plugins
-	from Plugins.Extensions.InfoBarTunerState.plugin import IBTSSHOW, IBTSSETUP, show, setup
-	if plugins:
-		if config.infobartunerstate.extensions_menu_show.value:
-			for p in plugins.getPlugins( where = PluginDescriptor.WHERE_EXTENSIONSMENU ):
-				if p.name == IBTSSHOW:
-					# Plugin is already in menu
-					break
-			else:
-				# Plugin not in menu - add it
-				plugin = PluginDescriptor(name = IBTSSHOW, description = IBTSSHOW, where = PluginDescriptor.WHERE_EXTENSIONSMENU, needsRestart = False, fnc = show)
-				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].append(plugin)
-		if config.infobartunerstate.extensions_menu_setup.value:
-			for p in plugins.getPlugins( where = PluginDescriptor.WHERE_EXTENSIONSMENU ):
-				if p.name == IBTSSETUP:
-					# Plugin is already in menu
-					break
-			else:
-				# Plugin not in menu - add it
-				plugin = PluginDescriptor(name = IBTSSETUP, description = IBTSSETUP, where = PluginDescriptor.WHERE_EXTENSIONSMENU, needsRestart = False, fnc = setup)
-				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].append(plugin)
-
-def removeExtension():
-	# Remove from extension menu
-	from Components.PluginComponent import plugins
-	from Plugins.Extensions.InfoBarTunerState.plugin import IBTSSHOW, IBTSSETUP
-	if config.infobartunerstate.extensions_menu_show.value:
-		for p in plugins.getPlugins( where = PluginDescriptor.WHERE_EXTENSIONSMENU ):
-			if p.name == IBTSSHOW:
-				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].remove(p)
-				break
-	if config.infobartunerstate.extensions_menu_setup.value:
-		for p in plugins.getPlugins( where = PluginDescriptor.WHERE_EXTENSIONSMENU ):
-			if p.name == IBTSSETUP:
-				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].remove(p)
-				break
-
-#######################################################
 # Logical background task
-class InfoBarTunerState(object):
+class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 	def __init__(self, session):
+		InfoBarTunerStatePlugins.__init__(self)
+		InfoBarHandler.__init__(self)
 		self.session = session
 		
 		self._shown = False
 		
-		self.infobar = None
 		self.info = None
 		
 		self.epg = eEPGCache.getInstance()
@@ -226,9 +104,9 @@ class InfoBarTunerState(object):
 		# if IBTS is already shown, skip
 		self.showTimer = eTimer()
 		try:
-			self.showTimer_conn = self.showTimer.timeout.connect(self.tunerShow)
+			self.showTimer_conn = self.showTimer.timeout.connect(self.testShow)
 		except:
-			self.showTimer.callback.append(self.tunerShow)
+			self.showTimer.callback.append(self.testShow)
 		
 		self.hideTimer = eTimer()
 		try:
@@ -241,12 +119,6 @@ class InfoBarTunerState(object):
 			self.updateTimer_conn = self.updateTimer.timeout.connect(self.update)
 		except:
 			self.updateTimer.callback.append(self.update)
-		
-		self.forceBindInfoBarTimer = eTimer()
-		try:
-			self.forceBindInfoBarTimer_conn = self.forceBindInfoBarTimer.timeout.connect(self.bindInfoBar)
-		except:
-			self.forceBindInfoBarTimer.callback.append(self.bindInfoBar)
 		
 		self.entries = defaultdict(list)
 		
@@ -267,19 +139,6 @@ class InfoBarTunerState(object):
 		# Bind recording and streaming events
 		self.appendEvents()
 		
-		# Bind InfoBarEvents
-		#self.bindInfoBar()
-		#self.onLayoutFinish.append(self.bindInfoBar)
-		# Workaround
-		# The Plugin starts before the InfoBar is instantiated
-		# Check every second if the InfoBar instance exists and try to bind our functions
-		# Is there an alternative solution?
-		if config.infobartunerstate.show_infobar.value:
-			self.forceBindInfoBarTimer.start(1000, False)
-		
-		#if config.infobartunerstate.show_overwrite.value:
-		overwriteInfoBar()
-		
 		#TODO PiP
 		#self.session.
 		#InfoBar.instance.session
@@ -288,398 +147,89 @@ class InfoBarTunerState(object):
 		#Events:
 		#eventNewProgramInfo
 		#decoder state
-				
+		
 		# Add current running records / streams
 		# We do it right here to ensure the InfoBar is intantiated
-		self.updateRecordTimer()
-		if config.infobartunerstate.show_streams.value:
-			self.updateStreamsWebIf()
-			self.updateStreamsOpenWebIf()
+		self.updateEvents()
 
 	def appendEvents(self):
-		# Recording Events
-		# If we append our function, we will never see the timer state StateEnded for repeating timer
-		if self.__onRecordingEvent not in self.session.nav.RecordTimer.on_state_change:
-			self.session.nav.RecordTimer.on_state_change.insert(0, self.__onRecordingEvent)
-		# Streaming Events
-		if config.infobartunerstate.show_streams.value:
-			if HAS_WEBIF:
-				try:
-					from Plugins.Extensions.WebInterface.WebScreens import streamingEvents
-					if self.__onStreamingEventWebIf not in streamingEvents:
-						streamingEvents.append(self.__onStreamingEventWebIf)
-				except:
-					pass
-			if HAS_OPENWEBIF:
-				try:
-					from Plugins.Extensions.OpenWebif.controllers.stream import streamStates
-					if self.__onStreamingEventOpenWebIf not in streamStates:
-						streamStates.append(self.__onStreamingEventOpenWebIf)
-				except:
-					print "IBTS Open Web If append failed !!!!!!!!!!!!!!!!"
-					pass
+		for plugin in self.getPlugins():
+			plugin.appendEvent()
 
 	def removeEvents(self):
-		# Recording Events
-		# If we append our function, we will never see the timer state StateEnded for repeating timer
-		if self.__onRecordingEvent in self.session.nav.RecordTimer.on_state_change:
-			self.session.nav.RecordTimer.on_state_change.remove(self.__onRecordingEvent)
-		# Streaming Events
-		if HAS_WEBIF:
-			try:
-				from Plugins.Extensions.WebInterface.WebScreens import streamingEvents
-				if self.__onStreamingEventWebIf in streamingEvents:
-					streamingEvents.remove(self.__onStreamingEventWebIf)
-			except:
-				pass
-		if HAS_OPENWEBIF:
-			try:
-				from Plugins.Extensions.OpenWebif.controllers.stream import streamStates
-				if self.__onStreamingEventOpenWebIf in streamStates:
-					streamStates.remove(self.__onStreamingEventOpenWebIf)
-			except:
-				pass
-
-	def bindInfoBar(self):
-		# Reimport InfoBar to force update of the class instance variable
-		# Rebind only if it isn't done already 
-		from Screens.InfoBar import InfoBar
-		if InfoBar.instance:
-			self.infobar = InfoBar.instance
-			bindShow = False
-			bindHide = False
-			if hasattr(InfoBar.instance, "onShow"):
-				if self.__onInfoBarEventShow not in InfoBar.instance.onShow:
-					InfoBar.instance.onShow.append(self.__onInfoBarEventShow)
-				bindShow = True
-			if hasattr(InfoBar.instance, "onHide"):
-				if self.__onInfoBarEventHide not in InfoBar.instance.onHide:
-					InfoBar.instance.onHide.append(self.__onInfoBarEventHide)
-				bindHide = True
-			if bindShow and bindHide:
-				# Bind was successful
-				self.forceBindInfoBarTimer.stop()
-
-	def unbindInfoBar(self):
-		if self.infobar:
-			if hasattr(self.infobar, "onShow"):
-				if self.__onInfoBarEventShow in self.infobar.onShow:
-					self.infobar.onShow.remove(self.__onInfoBarEventShow)
-			if hasattr(self.infobar, "onHide"):
-				if self.__onInfoBarEventHide in self.infobar.onHide:
-					self.infobar.onHide.remove(self.__onInfoBarEventHide)
-
-	def __onInfoBarEventShow(self):
-		self.show()
-
-	def __onInfoBarEventHide(self):
-		self.hide()
-
-	def __onRecordingEvent(self, timer):
-		if not timer.justplay:
-			print "IBTS Timer Event "+ str(timer.state) + ' ' + str(timer.repeated)
-			#TODO
-			# w.processRepeated()
-			# w.state = TimerEntry.StateWaiting
-			if timer.state == timer.StatePrepared:
-				print "IBTS StatePrepared"
-				pass
-			
-			elif timer.state == timer.StateRunning:
-				id = getTimerID( timer )
-				print "IBTS Timer running ID", id, id in self.entries
-				if id not in self.entries:
-					#channel = timer.service_ref.getServiceName()
-					tuner, tunertype = getTuner(timer.record_service)
-					
-					#TEST Bug Repeating timer blocking tuner and are not marked as finished
-					#timer.timeChanged = self.__OnTimeChanged
-					
-					name = timer.name
-					service_ref = timer.service_ref
-					
-					# Is this really necessary?
-					try: timer.Filename
-					except: timer.calculateFilename()
-					filename = timer.Filename
-					
-					# Delete references to avoid blocking tuners
-					del timer
-					
-					number = service_ref and getNumber(service_ref.ref)
-					channel = service_ref and service_ref.getServiceName()
-					
-					win = self.session.instantiateDialog(TunerState, RECORD, tuner, tunertype, name, number, channel, filename)
-					self.entries[id] = win
-					if config.infobartunerstate.show_events.value:
-						self.show(True)
-			
-			# Finished repeating timer will report the state StateEnded+1 or StateWaiting
-			else:
-				id = getTimerID( timer )
-				# The id of a finished repeated timer can be changed
-				#RecordTimerEntry(name=How I Met Your Mother, begin=Wed Jul 18 11:37:00 2012, serviceref=1:0:19:EF75:3F9:1:C00000:0:0:0:, justplay=False)
-				#RecordTimerEntry(name=How I Met Your Mother, begin=Thu Jul 19 11:37:00 2012, serviceref=1:0:19:EF75:3F9:1:C00000:0:0:0:, justplay=False)
-				#print "IBTS Timer finished ID", id, id in self.entries
-				if id in self.entries:
-					win = self.entries[id]
-					
-					begin = timer.begin
-					end = timer.end
-					endless = timer.autoincrease
-					del timer
-					
-					win.updateType( FINISHED )
-					win.updateTimes( begin, end, endless )
-				
-				# Show also if no matching id is found
-				if config.infobartunerstate.show_events.value:
-					self.show(True)
-
-	def __onStreamingEventWebIf(self, event, stream):
-		print "IBTS Stream Event WebIf"
-		if StreamingWebScreen and stream:
-			if (event == StreamingWebScreen.EVENT_START):
-				tuner, tunertype = getTuner( stream.getRecordService() ) 
-				ref = stream.getRecordServiceRef()
-				
-				# Extract parameters
-				ip = str(stream.clientIP)
-				if ip:
-					if ':' in ip and '.' in ip:
-						# Mixed style ::ffff:192.168.64.27
-						ip = string.split(str(stream.clientIP), ':')[-1]
-				id = getStreamIDWebIf(stream)
-				
-				# Delete references to avoid blocking tuners
-				del stream
-				
-				print "IBTS ip ####################################" + str(ip)
-				port, host, client = "", "", ""
-				
-				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				if event: 
-					name = event.getEventName()
-				else:
-					name = ""
-					#TODO check file streaming
-				
-				service_ref = ServiceReference(ref)
-				filename = "" #TODO file streaming - read meta eit
-				
-				try:
-					host = ip and socket.gethostbyaddr( ip )
-					client = host and host[0].split('.')[0]
-				except:
-					ip = ''
-					client = ''
-				
-				number = service_ref and getNumber(service_ref.ref)
-				channel = service_ref and service_ref.getServiceName()
-				channel = channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
-				
-				win = self.session.instantiateDialog(TunerState, STREAM_WEBIF, tuner, tunertype, name, number, channel, filename, client, ip, port)
-				self.entries[id] = win
-				if config.infobartunerstate.show_events.value:
-					self.show(True)
-			
-			elif event == StreamingWebScreen.EVENT_END:
-				
-				# Remove Finished Stream
-				id = getStreamIDWebIf(stream)
-				
-				# Delete references to avoid blocking tuners
-				del stream
-				
-				if id in self.entries:
-					win = self.entries[id]
-					
-					begin = win.begin
-					end = time()
-					endless = False
-					
-					win.updateType( FINISHED )
-					win.updateTimes( begin, end, endless )
-					
-					if config.infobartunerstate.show_events.value:
-						self.show(True)
-
-	def __onStreamingEventOpenWebIf(self, event, stream):
-		print "IBTS Stream Event OpenWebIf"
-		if StreamAdapter and stream:
-			if (event == StreamAdapter.EV_BEGIN):
-				tuner, tunertype = getTuner( stream.getService() ) 
-				ref = stream.ref
-				
-				# Extract parameters
-				ip = stream.clientIP
-				id = getStreamIDOpenWebIf(stream)
-				
-				# Delete references to avoid blocking tuners
-				del stream
-				
-				print "IBTS ip " + str(ip)
-				port, host, client = "", "", ""
-				
-				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				if event: 
-					name = event.getEventName()
-				else:
-					name = ""
-					#TODO check file streaming
-				
-				service_ref = ServiceReference(ref)
-				filename = "" #TODO file streaming - read meta eit
-				
-				try:
-					host = ip and socket.gethostbyaddr( ip )
-					client = host and host[0].split('.')[0]
-				except:
-					ip = ''
-					client = ''
-				
-				number = service_ref and getNumber(service_ref.ref)
-				channel = service_ref and service_ref.getServiceName()
-				channel = channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
-				
-				win = self.session.instantiateDialog(TunerState, STREAM_OPENWEBIF, tuner, tunertype, name, number, channel, filename, client, ip, port)
-				self.entries[id] = win
-				if config.infobartunerstate.show_events.value:
-					self.show(True)
-			
-			elif event == StreamAdapter.EV_STOP:
-				
-				# Remove Finished Stream
-				id = getStreamIDOpenWebIf(stream)
-				
-				# Delete references to avoid blocking tuners
-				del stream
-				
-				if id in self.entries:
-					win = self.entries[id]
-					
-					begin = win.begin
-					end = time()
-					endless = False
-					
-					win.updateType( FINISHED )
-					win.updateTimes( begin, end, endless )
-					
-					if config.infobartunerstate.show_events.value:
-						self.show(True)
-
-	def __OnTimeChanged(self):
-		#TODO Config show on timer time changed
-		self.show(True)
-
-	def updateRecordTimer(self):
-		for timer in NavigationInstance.instance.RecordTimer.timer_list:
-			if timer.isRunning() and not timer.justplay:
-				self.__onRecordingEvent(timer)
-
-	def updateStreamsWebIf(self):
-		#TODO updateStreams but retrieving IP is not possible
-		if HAS_WEBIF:
-			try:
-				from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
-			except:
-				streamingScreens = []
-			#TODO file streaming actually not supported
-			for stream in streamingScreens:
-				# Check if screen exists
-				if stream and stream.request and 'file' not in stream.request.args:
-					self.__onStreamingEventWebIf(StreamingWebScreen.EVENT_START, stream)
-
-	def updateStreamsOpenWebIf(self):
-		#TODO updateStreams but retrieving IP is not possible
-		if HAS_OPENWEBIF:
-			try:
-				from Plugins.Extensions.WebInterface.WebScreens import streamList
-			except:
-				streamList = []
-			#TODO file streaming actually not supported
-			for stream in streamList:
-				# Check if screen exists
-				if stream and stream.request and 'file' not in stream.request.args:
-					self.__onStreamingEventOpenWebIf(StreamAdapter.EV_BEGIN, stream)
-
-	def updateNextTimer(self):
-		number_pending_records = int( config.infobartunerstate.number_pending_records.value )
-		print "IBTS updateNextTimer", number_pending_records
+		for plugin in self.getPlugins():
+			plugin.removeEvent()
+	
+	def updateEvents(self):
+		for plugin in self.getPlugins():
+			plugin.updateEvent()
+	
+	#TODO Config show on timer time changed
+	#def __OnTimeChanged(self):
+	#	self.show(True)
+	
+	def hasEntry(self, id):
+		return id in self.entries
+	
+	def addEntry(self, id, plugin, type, text, tuner, tunertype, name="", number="", channel="", filename="", client="", ip="", port=""):
+		win = self.session.instantiateDialog(TunerState, plugin, type, text, tuner, tunertype, name, number, channel, filename, client, ip, port)
+		self.entries[id] = win
+		if config.infobartunerstate.show_events.value:
+			self.show(True)
+	
+	def updateEntry(self, id, type, begin, end, endless):
+		if id in self.entries:
+			win = self.entries[id]
+			win.updateType( type )
+			win.updateTimes( begin, end, endless )
+			win.update()
 		
-		nextwins = [ id for id in self.entries.keys() if id.startswith('next')]
-		
-		if number_pending_records:
-			pending_seconds = int( config.infobartunerstate.pending_hours.value ) * 3600
-			pending_limit = (time() + pending_seconds) if pending_seconds else 0
-			
-			timer_list = getNextPendingRecordTimers()[:number_pending_records]
-			
-			if timer_list:
-				timer_list.reverse()
-				
-				for i, (timer, begin, end) in enumerate(timer_list):
-					id = 'next'+str(i)
-					if timer:
-						name = timer.name
-						service_ref = timer.service_ref
-						
-						# Is this really necessary?
-						try: timer.Filename
-						except: timer.calculateFilename()
-						
-						try: filename = timer.Filename
-						except: filename = timer.name
-						
-						# Delete references to avoid blocking tuners
-						del timer
-						
-						if pending_limit and pending_limit < begin:
-							# Skip timer
-							continue
-						
-						number = service_ref and getNumber(service_ref.ref)
-						channel = service_ref and service_ref.getServiceName()
-						
-						# Only add timer if not recording
-						#if not self.entries.has_key(str( timer ):
-						if self.entries.has_key(id):
-							nextwins.remove(id)
-							win = self.entries[id]
-							win.updateName(name)
-							win.updateNumberChannel(number, channel)
-							win.updateFilename(filename)
-						else:
-							win = self.session.instantiateDialog(TunerState, INFO, '', '', name, number, channel, filename)
-						win.updateTimes( begin, end, win.endless )
-						self.entries[id] = win
-					else:
-						if self.entries.has_key(id):
-							win = self.entries[id]
-							#self.session.deleteDialog(win)
-							#del self.entries[id]
-							win.remove()
-			
-			# Close all not touched next windows
-			if nextwins:
-				for id in nextwins:
-					if self.entries.has_key(id):
-						win = self.entries[id]
-						#self.session.deleteDialog(win)
-						#del self.entries[id]
-						win.remove()
-
+		# Show also if no matching id is found
+		#if config.infobartunerstate.show_events.value:
+		#	self.show(True)
+	
+	def finishEntry(self, id):
+		if id in self.entries:
+			win = self.entries[id]
+			win.updateTimes( None, time(), False )
+			win.updateType( FINISHED )
+			win.update()
+	
+	def updateName(self, id, name):
+		if id in self.entries:
+			win = self.entries[id]
+			win.updateName( name )
+	
+	def updateNumberChannel(self, id, number, channel):
+		if id in self.entries:
+			win = self.entries[id]
+			win.updateNumberChannel( number, channel)
+	
+	def updateFilename(self, id, filename):
+		if id in self.entries:
+			win = self.entries[id]
+			win.updateFilename( filename )
+	
+	def removeEntry(self, id):
+		if id in self.entries:
+			win = self.entries[id]
+			win.remove()
+	
+	def testShow(self):
+		print "IBTS testshow"
+		self.tunerShow()
+	
 	def show(self, autohide=False, forceshow=False):
-		print "IBTS show"
+		print "IBTS show ", autohide, forceshow
 		
 		#TEST
-		if SecondInfobarAvailable:
-			try:
-				if self.infobar.SIBdialog.shown:
-					print "IBTS SecondInfobar is shown"
-					return
-			except Exception, e:
-				print "InfoBarTunerState show SIB exception " + str(e)
+		#if SecondInfobarAvailable:
+		#	try:
+		#		if self.infobar.SIBdialog.shown:
+		#			print "IBTS SecondInfobar is shown"
+		#			return
+		#	except Exception, e:
+		#		print "InfoBarTunerState show SIB exception " + str(e)
 		
 		allowclosing = True
 		if self.updateTimer.isActive() and autohide:
@@ -687,11 +237,12 @@ class InfoBarTunerState(object):
 			allowclosing = False
 		if self.showTimer.isActive():
 			self.showTimer.stop()
+		
 		if forceshow:
 			self.tunerShow(forceshow=forceshow)
 		else:
 			self.showTimer.start( 10, True )
-			self.updateTimer.start( 60 * 1000 )
+#TESTself.updateTimer.start( 60 * 1000 )
 		if allowclosing:
 			if autohide or self.session.current_dialog is None or not issubclass(self.session.current_dialog.__class__, InfoBarShowHide):
 				# Start timer to avoid permanent displaying
@@ -719,7 +270,8 @@ class InfoBarTunerState(object):
 		print "IBTS tunerShow"
 		self._shown = True
 		
-		self.updateNextTimer()
+		for plugin in self.getPlugins():
+			plugin.upcomingEvents()
 		
 		if self.entries:
 			# There are active entries
@@ -757,124 +309,8 @@ class InfoBarTunerState(object):
 			# Dynamic column resizing and repositioning
 			widths = []
 			for id, win in self.entries.items():
-				if win.type == RECORD:
-					#TODO Avolid blocking - avoid using getTimer to update the timer times use timer.time_changed if possible
-					timer = getTimer( id )
-					#print id, timer
-					if timer:
-						begin = timer.begin
-						end = timer.end
-						endless = timer.autoincrease
-						
-						if not win.tuner or not win.tunertype:
-							win.tuner, win.tunertype = getTuner(timer.record_service)
-						service_ref = None
-						if not win.channel or not win.number:
-							service_ref = timer.service_ref
-						
-						del timer
-						
-						if service_ref:
-							win.number = win.number or service_ref and getNumber(service_ref.ref)
-							win.channel = win.channel or service_ref and service_ref.getServiceName()
-							win.channel = win.channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
-						
-						win.updateTimes( begin, end, endless )
-						win.update()
-					else:
-						# This can happen, if the time has been changed or if the timer does not exist anymore
-						begin = win.begin
-						end = win.end
-						if end < begin or end > time():
-							end = time()
-						endless = False
-						win.updateType( FINISHED )
-						win.updateTimes( begin, end, endless )
-						win.update()
-						#TEST
-						#self.session.deleteDialog(win)
-						#del self.entries[id]
-						win.remove()
-						##
-						self.updateRecordTimer()
-				elif win.type == STREAM_WEBIF:
-					if config.infobartunerstate.show_streams.value:
-						#TODO Avolid blocking - avoid using getStream to update the current name
-						stream = getStreamWebIf( id )
-						if stream:
-						
-							ref = stream.getRecordServiceRef()
-							if not win.tuner or not win.tunertype:
-								win.tuner, win.tunertype = getTuner(stream.getRecordService())
-							
-							del stream
-							
-							event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-							if event: 
-								name = event.getEventName()
-							else:
-								name = ""
-							
-							begin = win.begin
-							end = None
-							endless = True
-							
-							service_ref = None
-							if not win.number:
-								service_ref = ServiceReference(ref)
-								win.number = service_ref and getNumber(service_ref.ref)
-							if not win.channel:
-								service_ref = service_ref or ServiceReference(ref)
-								win.channel = win.channel or service_ref and service_ref.getServiceName()
-							
-							win.updateName( name )
-							win.updateTimes( begin, end, endless )
-							win.update()
-						else:
-							win.remove()
-				elif win.type == STREAM_OPENWEBIF:
-					if config.infobartunerstate.show_streams.value:
-						#TODO Avolid blocking - avoid using getStream to update the current name
-						stream = getStreamOpenWebIf( id )
-						if stream:
-							ref = stream.ref
-							if not win.tuner or not win.tunertype:
-								win.tuner, win.tunertype = getTuner(stream.getService())
-							
-							del stream
-							
-							event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-							if event: 
-								name = event.getEventName()
-							else:
-								name = ""
-							
-							begin = win.begin
-							end = None
-							endless = True
-							
-							service_ref = None
-							if not win.number:
-								service_ref = ServiceReference(ref)
-								win.number = service_ref and getNumber(service_ref.ref)
-							if not win.channel:
-								service_ref = service_ref or ServiceReference(ref)
-								win.channel = win.channel or service_ref and service_ref.getServiceName()
-							
-							win.updateName( name )
-							win.updateTimes( begin, end, endless )
-							win.update()
-						else:
-							win.remove()
-					else:
-						# Should never happen delete
-						print "IBTS: We should never reach this state"
-						begin = win.begin
-						end = time()
-						endless = False
-						win.updateType( FINISHED )
-						win.updateTimes( begin, end, endless )
-						win.update()
+				if self.isPlugin(win.plugin):
+					self.getPlugin(win.plugin).update(id, win.begin, win.end, win.endless)
 					
 				else:
 					# Type INFO / FINISHED
@@ -882,8 +318,7 @@ class InfoBarTunerState(object):
 				
 				# Calculate field width
 				widths = map( lambda (w1, w2): max( w1, w2 ), zip_longest( widths, win.widths ) )
-		
-		#if self.entries:
+			
 			# Get initial padding / offset position and apply user offset
 			padding = self.padding + int(config.infobartunerstate.offset_padding.value)
 			#print "IBTS px, self.padding, config.padding", px, self.padding, int(config.infobartunerstate.offset_padding.value)
@@ -905,21 +340,6 @@ class InfoBarTunerState(object):
 			#print "IBTS overwidth", overwidth
 			
 			# Order windows
-			#wins = sorted( self.entries.itervalues(), key=lambda x: (x.type, x.endless, x.timeleft, x.begin), reverse=False )
-			
-			#TEST 1
-			#wins = sorted( self.entries.itervalues(), key=lambda x: (x.type, x.endless, x.timeleft, x.begin), reverse=config.infobartunerstate.list_goesup.value )
-			
-			#TEST 2
-			#wins = []
-			#wins =       sorted( [ w for w in self.entries.values() if w.type == INFO ],     key=lambda x: (x.type, x.endless, x.begin), reverse=False )
-			#wins.extend( sorted( [ w for w in self.entries.values() if w.type == RECORD ],   key=lambda x: (x.type, x.endless, x.timeleft, x.begin), reverse=False ) )
-			#wins.extend( sorted( [ w for w in self.entries.values() if w.type == FINISHED ], key=lambda x: (x.type, x.endless, x.timeleft, x.begin), reverse=False ) )
-			#wins.extend( sorted( [ w for w in self.entries.values() if w.type == STREAM ],   key=lambda x: (x.type, x.endless, x.timeleft, x.begin), reverse=False ) )
-			#if config.infobartunerstate.list_goesup.value:
-			#	wins.reverse()
-			
-			#TEST 3
 			wins = sorted( self.entries.itervalues(), key=lambda x: (x.type, x.endless, x.begin), reverse=config.infobartunerstate.list_goesup.value )
 			
 			# Resize, move and show windows
@@ -944,10 +364,7 @@ class InfoBarTunerState(object):
 				print "InfoBarTunerState show exception " + str(e)
 
 	def update(self):
-		print "IBTS updating"
-		#for win in self.entries.itervalues():
-		#	#TODO Update also names, width, order, type ...
-		#	win.update()
+		print "IBTS update"
 		self.tunerShow()
 
 	def hide(self):
@@ -972,7 +389,7 @@ class InfoBarTunerState(object):
 		removeExtension()
 		self.unbindInfoBar()
 		self.removeEvents()
-		self.hide()
+		self.tunerHide()
 		for id, win in self.entries.items():
 			win.hide()
 			self.session.deleteDialog(win)
@@ -1116,6 +533,7 @@ class TunerStateInfo(TunerStateBase):
 	def __init__(self, session, name):
 		TunerStateBase.__init__(self, session)
 		
+		self.plugin = "Info"
 		self.type = INFO
 		self.name = name
 		
@@ -1178,7 +596,7 @@ class TunerStateInfo(TunerStateBase):
 #######################################################
 # Displaying screen class, every entry is an instance of this class
 class TunerState(TunerStateBase):
-	def __init__(self, session, type, tuner, tunertype, name="", number="", channel="", filename="", client="", ip="", port=""):
+	def __init__(self, session, plugin, type, text, tuner, tunertype, name="", number="", channel="", filename="", client="", ip="", port=""):
 		#TODO use parameter ref instead of number and channel
 		TunerStateBase.__init__(self, session)
 		
@@ -1188,7 +606,11 @@ class TunerState(TunerStateBase):
 		except:
 			self.removeTimer.callback.append(self.remove)
 		
+		self.plugin = plugin
+		
 		self.type = type
+		self.text = text
+		
 		self.tuner = tuner
 		self.tunertype = tunertype
 		
@@ -1240,9 +662,12 @@ class TunerState(TunerStateBase):
 					self.removeTimer.startLongTimer( timeout )
 
 	def updateTimes(self, begin, end, endless):
-		self.begin = begin
-		self.end = end
-		self.endless = endless
+		if begin:
+			self.begin = begin
+		if end:
+			self.end = end
+		if endless:
+			self.endless = endless
 
 	def updateDynamicContent(self):
 		#TODO cleanup this function
@@ -1336,10 +761,8 @@ class TunerState(TunerStateBase):
 			if field == "TypeIcon":
 				self["Type"].show()
 				if self.type == RECORD:
-					self["Type"].setPixmapNum(0)
-				elif self.type == STREAM_WEBIF:
-					self["Type"].setPixmapNum(1)
-				elif self.type == STREAM_OPENWEBIF:
+					self["Type"].setPixmapNum(0)	
+				elif self.type == STREAM:
 					self["Type"].setPixmapNum(1)
 				elif self.type == FINISHED:
 					self["Type"].setPixmapNum(2)
@@ -1353,14 +776,7 @@ class TunerState(TunerStateBase):
 				continue
 			
 			elif field == "TypeText":
-				if self.type == RECORD:
-					text = _("Record")
-				elif self.type == STREAM_WEBIF:
-					text = _("Stream")
-				elif self.type == STREAM_OPENWEBIF:
-					text = _("Stream")
-				elif self.type == FINISHED:
-					text = _("Finished")
+				text = _( self.text )
 			
 			elif field == "Tuner":
 				if self.tuner:
@@ -1379,7 +795,6 @@ class TunerState(TunerStateBase):
 			
 			elif field == "Name":
 				text = self.name
-				#TODO update name for streams
 			
 			elif field == "TimeLeft":
 				if not self.endless:
@@ -1499,197 +914,3 @@ class TunerState(TunerStateBase):
 		self.widths = widths
 
 
-#######################################################
-# Global helper functions
-def getTimerID(timer):
-	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
-	return str( timer )
-
-def getTimer(id):
-	#for timer in self.session.nav.RecordTimer.timer_list + self.session.nav.RecordTimer.processed_timers:
-	for timer in NavigationInstance.instance.RecordTimer.timer_list + NavigationInstance.instance.RecordTimer.processed_timers:
-		#print "timerlist:", getTimerID( timer )
-		if getTimerID( timer ) == id:
-			return timer
-	return None
-
-def getStreamIDWebIf(stream):
-	if HAS_WEBIF:
-		try:
-			return str(stream.screenIndex) + str(stream.clientIP)
-		except:
-			pass
-	return ""
-
-def getStreamWebIf(id):
-	if HAS_WEBIF:
-		try:
-			from Plugins.Extensions.WebInterface.WebScreens import streamingScreens 
-		except:
-			streamingScreens = []
-		for stream in streamingScreens:
-			if stream:
-				if getStreamIDWebIf(stream) == id:
-					return stream
-	return None
-
-def getStreamIDOpenWebIf(stream):
-	if HAS_OPENWEBIF:		
-		try:
-			return str(stream.streamIndex) + str(stream.clientIP)
-		except:
-			pass
-	return ""
-
-def getStreamOpenWebIf(id):
-	if HAS_OPENWEBIF:
-		try:
-			from Plugins.Extensions.OpenWebif.controllers.stream import streamList
-		except:
-			streamList = []
-		for stream in streamList:
-			if stream:
-				if getStreamIDOpenWebIf(stream) == id:
-					return stream
-	return None
-
-def getTuner(service):
-	# service must be an instance of iPlayableService or iRecordableService
-	#TODO detect stream of HDD
-	feinfo = service and service.frontendInfo()
-	data = feinfo and feinfo.getFrontendData()
-	if data:
-		type = str(data.get("tuner_type", ""))
-		number = data.get("slot_number", -1)
-		if number is None or number < 0:
-			number = data.get("tuner_number", -1)
-		if number is not None and number > -1:
-			try:
-				name = str(nimmanager.getNimSlotInputName(number))
-			except:
-				name = None
-			if not name:
-				name = str(chr( int(number) + ord('A') ))
-			return ( name, type )
-		else:
-			return ( "", type )
-	return ( "", "" )
-
-def readBouquetList(self):
-	serviceHandler = eServiceCenter.getInstance()
-	refstr = '1:134:1:0:0:0:0:0:0:0:FROM BOUQUET \"bouquets.tv\" ORDER BY bouquet'
-	bouquetroot = eServiceReference(refstr)
-	self.bouquetlist = {}
-	list = serviceHandler.list(bouquetroot)
-	if list is not None:
-		self.bouquetlist = list.getContent("CN", True)
-
-def getNumber(actservice):
-	# actservice must be an instance of eServiceReference
-	from Screens.InfoBar import InfoBar
-	Servicelist = None
-	if InfoBar and InfoBar.instance:
-		Servicelist = InfoBar.instance.servicelist
-	mask = (eServiceReference.isMarker | eServiceReference.isDirectory)
-	number = 0
-	bouquets = Servicelist and Servicelist.getBouquetList()
-	if bouquets:
-		#TODO get alternative for actbouquet
-		actbouquet = Servicelist.getRoot()
-		serviceHandler = eServiceCenter.getInstance()
-		for name, bouquet in bouquets:
-			if not bouquet.valid(): #check end of list
-				break
-			if bouquet.flags & eServiceReference.isDirectory:
-				servicelist = serviceHandler.list(bouquet)
-				if not servicelist is None:
-					while True:
-						service = servicelist.getNext()
-						if not service.valid(): #check end of list
-							break
-						playable = not (service.flags & mask)
-						if playable:
-							number += 1
-						if actbouquet:
-							if actbouquet == bouquet and actservice == service:
-								return number
-						else:
-							if actservice == service:
-								return number
-	return None
-
-def getNextPendingRecordTimers():
-	timer_list = []
-	now = time()
-	for timer in NavigationInstance.instance.RecordTimer.timer_list:
-		next_act = timer.getNextActivation()
-		if timer.justplay or (timer.isRunning() and not timer.repeated) or next_act < now:
-			continue
-		if timer.begin:
-			if not timer.isRunning():
-				begin = timer.begin
-				end = timer.end
-			else:
-				begin, end = processRepeated(timer)
-			timer_list.append( (timer, begin, end) )
-	return sorted( timer_list, key=lambda x: (x[1]) )
-
-
-# Adapted from TimerEntry
-def processRepeated(timer, findRunningEvent = False):
-	print "ProcessRepeated"
-	
-	def addOneDay(timedatestruct):
-		oldHour = timedatestruct.tm_hour
-		newdate =  (datetime(timedatestruct.tm_year, timedatestruct.tm_mon, timedatestruct.tm_mday, timedatestruct.tm_hour, timedatestruct.tm_min, timedatestruct.tm_sec) + timedelta(days=1)).timetuple()
-		if localtime(mktime(newdate)).tm_hour != oldHour:
-			return (datetime(timedatestruct.tm_year, timedatestruct.tm_mon, timedatestruct.tm_mday, timedatestruct.tm_hour, timedatestruct.tm_min, timedatestruct.tm_sec) + timedelta(days=2)).timetuple()
-		return newdate
-	
-	begin = timer.begin
-	end = timer.end
-		
-	if (timer.repeated != 0):
-		now = int(time()) + 1
-
-		#to avoid problems with daylight saving, we need to calculate with localtime, in struct_time representation
-		localrepeatedbegindate = localtime(timer.repeatedbegindate)
-		localbegin = localtime(begin)
-		localend = localtime(end)
-		localnow = localtime(now)
-
-		print "localrepeatedbegindate:", strftime("%c", localrepeatedbegindate)
-		print "localbegin:", strftime("%c", localbegin)
-		print "localend:", strftime("%c", localend)
-		print "localnow:", strftime("%c", localnow)
-
-		day = []
-		flags = timer.repeated
-		for x in (0, 1, 2, 3, 4, 5, 6):
-			if (flags & 1 == 1):
-				day.append(0)
-				print "Day: " + str(x)
-			else:
-				day.append(1)
-			flags = flags >> 1
-
-		# if day is NOT in the list of repeated days
-		# OR if the day IS in the list of the repeated days, check, if event is currently running... then if findRunningEvent is false, go to the next event
-		while ((day[localbegin.tm_wday] != 0) or (mktime(localrepeatedbegindate) > mktime(localbegin))  or
-			((day[localbegin.tm_wday] == 0) and ((findRunningEvent and localend < localnow) or ((not findRunningEvent) and localbegin < localnow)))):
-			localbegin = addOneDay(localbegin)
-			localend = addOneDay(localend)
-			print "localbegin after addOneDay:", strftime("%c", localbegin)
-			print "localend after addOneDay:", strftime("%c", localend)
-			
-		#we now have a struct_time representation of begin and end in localtime, but we have to calculate back to (gmt) seconds since epoch
-		begin = int(mktime(localbegin))
-		end = int(mktime(localend))
-		if begin == end:
-			end += 1
-		
-		print "ProcessRepeated result"
-		print strftime("%c", localtime(begin))
-		print strftime("%c", localtime(end))
-	
-	return begin, end

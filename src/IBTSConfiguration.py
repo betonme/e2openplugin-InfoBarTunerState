@@ -30,8 +30,9 @@ from Screens.Screen import Screen
 from Screens.Setup import SetupSummary
 
 # Plugin internal
-from InfoBarTunerState import InfoBarTunerState, addExtension, removeExtension, overwriteInfoBar, recoverInfoBar
-
+from InfoBarTunerState import InfoBarTunerState
+from InfoBarHandler import overwriteInfoBar, recoverInfoBar
+from ExtensionHandler import addExtension, removeExtension
 
 #######################################################
 # Configuration screen
@@ -215,10 +216,10 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 			if plugin.gInfoBarTunerState:
 				
 				# Handle InfoBar overwrite
-				#if config.infobartunerstate.show_overwrite.value:
-				overwriteInfoBar()
-				#else:
-				#	recoverInfoBar()
+				if config.infobartunerstate.show_overwrite.value:
+					overwriteInfoBar()
+				else:
+					recoverInfoBar()
 				
 				# Handle extension menu integration
 				if config.infobartunerstate.extensions_menu_show.value or config.infobartunerstate.extensions_menu_setup.value:
@@ -234,21 +235,12 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 				else:
 					plugin.gInfoBarTunerState.unbindInfoBar()
 				
-				#TODO actually not possible to do this, because these events provides the relevant information
-				#if config.infobartunerstate.show_events.value:
-				#	plugin.gInfoBarTunerState.appendEvents()
-				#else:
-				#	plugin.gInfoBarTunerState.removeEvents()
-				
 				# Remove and append because of show streams handling
 				plugin.gInfoBarTunerState.removeEvents()
 				plugin.gInfoBarTunerState.appendEvents()
 				
 				# Check for actual events
-				plugin.gInfoBarTunerState.updateRecordTimer()
-				if config.infobartunerstate.show_streams.value:
-					plugin.gInfoBarTunerState.updateStreamsWebIf()
-					plugin.gInfoBarTunerState.updateStreamsOpenWebIf()
+				plugin.gInfoBarTunerState.updateEvents()
 		else:
 			
 			# Plugin should be disabled
