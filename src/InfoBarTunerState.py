@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #######################################################################
 #
 #    InfoBar Tuner State for Enigma-2
@@ -21,10 +22,6 @@ from . import _
 
 import math
 import os
-import NavigationInstance
-import socket
-import sys
-import string
 
 from collections import defaultdict
 from operator import attrgetter, itemgetter
@@ -52,21 +49,19 @@ from Screens.InfoBarGenerics import InfoBarShowHide
 from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 
-from ServiceReference import ServiceReference
 from time import strftime, time, localtime, mktime
 from datetime import datetime, timedelta
 
 from enigma import iServiceInformation, ePoint, eSize, getDesktop, iFrontendInformation
 from enigma import eTimer
 from enigma import iPlayableService, iRecordableService
-from enigma import eDVBResourceManager, eActionMap, eListboxPythonMultiContent, eListboxPythonStringContent, eListbox, gFont, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_HALIGN_CENTER, eEPGCache, eServiceCenter, eServiceReference
+from enigma import eActionMap, eListboxPythonMultiContent, eListboxPythonStringContent, eListbox, gFont, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_HALIGN_CENTER
 
 from skin import parseColor, parseFont
 
 # Plugin internal
 from InfoBarHandler import InfoBarHandler, overwriteInfoBar, recoverInfoBar
 from ExtensionHandler import addExtension, removeExtension
-from netstat import netstat
 from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
 from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber
 
@@ -97,28 +92,26 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		
 		self.info = None
 		
-		self.epg = eEPGCache.getInstance()
-		
 		#TODO showTimer is used to avoid several recalls
 		#TODO find another solution, e.g.
 		# if IBTS is already shown, skip
 		self.showTimer = eTimer()
 		try:
-			self.showTimer_conn = self.showTimer.timeout.connect(self.testShow)
+			self.showTimer_conn = self.showTimer.timeout.connect(self.timerShow)
 		except:
-			self.showTimer.callback.append(self.testShow)
+			self.showTimer.callback.append(self.timerShow)
 		
 		self.hideTimer = eTimer()
 		try:
-			self.hideTimer_conn = self.hideTimer.timeout.connect(self.tunerHide)
+			self.hideTimer_conn = self.hideTimer.timeout.connect(self.timerHide)
 		except:
-			self.hideTimer.callback.append(self.tunerHide)
+			self.hideTimer.callback.append(self.timerHide)
 		
 		self.updateTimer = eTimer()
 		try:
-			self.updateTimer_conn = self.updateTimer.timeout.connect(self.update)
+			self.updateTimer_conn = self.updateTimer.timeout.connect(self.timerUpdate)
 		except:
-			self.updateTimer.callback.append(self.update)
+			self.updateTimer.callback.append(self.timerUpdate)
 		
 		self.entries = defaultdict(list)
 		
@@ -171,8 +164,9 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 	def hasEntry(self, id):
 		return id in self.entries
 	
-	def addEntry(self, id, plugin, type, text, tuner, tunertype, name="", number="", channel="", filename="", client="", ip="", port=""):
-		win = self.session.instantiateDialog(TunerState, plugin, type, text, tuner, tunertype, name, number, channel, filename, client, ip, port)
+	def addEntry(self, id, plugin, type, text, tuner, tunertype, name="", number="", channel="", begin=0, end=0, endless=False, filename="", client="", ip="", port=""):
+		print "IBTS addEntry", id
+		win = self.session.instantiateDialog(TunerState, plugin, type, text, tuner, tunertype, name, number, channel, begin, end, endless, filename, client, ip, port)
 		self.entries[id] = win
 		if config.infobartunerstate.show_events.value:
 			self.show(True)
@@ -189,6 +183,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		#	self.show(True)
 	
 	def finishEntry(self, id):
+		print "IBTS finishEntry", id
 		if id in self.entries:
 			win = self.entries[id]
 			win.updateTimes( None, time(), False )
@@ -215,9 +210,17 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win = self.entries[id]
 			win.remove()
 	
-	def testShow(self):
-		print "IBTS testshow"
+	def timerShow(self):
+		print "IBTS timerShow"
 		self.tunerShow()
+	
+	def timerHide(self):
+		print "IBTS timerHide"
+		self.tunerHide()
+	
+	def timerUpdate(self):
+		print "IBTS timerUpdate"
+		self.update()
 	
 	def show(self, autohide=False, forceshow=False):
 		print "IBTS show ", autohide, forceshow
@@ -241,8 +244,12 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		if forceshow:
 			self.tunerShow(forceshow=forceshow)
 		else:
+			# Start show timer as on time shot
 			self.showTimer.start( 10, True )
-#TESTself.updateTimer.start( 60 * 1000 )
+			
+			# Start update timer as cyclic timer
+			self.updateTimer.start( 60 * 1000 )
+			
 		if allowclosing:
 			if autohide or self.session.current_dialog is None or not issubclass(self.session.current_dialog.__class__, InfoBarShowHide):
 				# Start timer to avoid permanent displaying
@@ -310,7 +317,11 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			widths = []
 			for id, win in self.entries.items():
 				if self.isPlugin(win.plugin):
-					self.getPlugin(win.plugin).update(id, win.begin, win.end, win.endless)
+					result = self.getPlugin(win.plugin).update(id, win)
+					if result is None:
+						win.updateTimes( None, time(), False )
+						win.updateType( FINISHED )
+					win.update()
 					
 				else:
 					# Type INFO / FINISHED
@@ -596,7 +607,7 @@ class TunerStateInfo(TunerStateBase):
 #######################################################
 # Displaying screen class, every entry is an instance of this class
 class TunerState(TunerStateBase):
-	def __init__(self, session, plugin, type, text, tuner, tunertype, name="", number="", channel="", filename="", client="", ip="", port=""):
+	def __init__(self, session, plugin, type, text, tuner, tunertype, name="", number="", channel="", begin=0, end=0, endless=False, filename="", client="", ip="", port=""):
 		#TODO use parameter ref instead of number and channel
 		TunerStateBase.__init__(self, session)
 		
@@ -629,13 +640,14 @@ class TunerState(TunerStateBase):
 		self.ip = ip
 		self.port = port
 		
-		self.begin = time()
-		self.end = 0
+		self.begin = begin
+		self.end = end
+		self.endless = endless
+		
 		self.timeleft = None
 		self.timeelapsed = None
 		self.duration = None
 		self.progress = None
-		self.endless = False
 	
 	def updateName(self, name):
 		self.name = name
@@ -662,11 +674,11 @@ class TunerState(TunerStateBase):
 					self.removeTimer.startLongTimer( timeout )
 
 	def updateTimes(self, begin, end, endless):
-		if begin:
+		if begin is not None:
 			self.begin = begin
-		if end:
+		if end is not None:
 			self.end = end
-		if endless:
+		if endless is not None:
 			self.endless = endless
 
 	def updateDynamicContent(self):

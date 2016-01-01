@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
+import socket
+import string
+import sys
+
 from time import time
+
+from enigma import eEPGCache
+from ServiceReference import ServiceReference
 
 # Config
 from Components.config import *
@@ -43,6 +50,7 @@ def getStream(id):
 class StreamWebIf(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
+		self.epg = eEPGCache.getInstance()
 
 	################################################
 	# To be implemented by subclass
@@ -105,7 +113,6 @@ class StreamWebIf(PluginBase):
 				# Delete references to avoid blocking tuners
 				del stream
 				
-				print "IBTS ip ####################################" + str(ip)
 				port, host, client = "", "", ""
 				
 				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
@@ -115,7 +122,6 @@ class StreamWebIf(PluginBase):
 					name = ""
 					#TODO check file streaming
 				
-				service_ref = ServiceReference(ref)
 				filename = "" #TODO file streaming - read meta eit
 				
 				try:
@@ -125,12 +131,14 @@ class StreamWebIf(PluginBase):
 					ip = ''
 					client = ''
 				
-				number = service_ref and getNumber(service_ref.ref)
-				channel = service_ref and service_ref.getServiceName()
-				channel = channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
+				if ref:
+					number = getNumber(ref)
+					service_ref = ServiceReference(ref)
+					if service_ref:
+						channel = service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, filename, client, ip, port)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip, port)
 				
 			elif event == StreamingWebScreen.EVENT_END:
 				
@@ -144,41 +152,34 @@ class StreamWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.finishEntry(id)
 
-	def update(self, id, begin, end, endless):
+	def update(self, id, tunerstate):
 		if config.infobartunerstate.show_streams.value:
 			#TODO Avolid blocking - avoid using getStream to update the current name
 			stream = getStream( id )
 			if stream:
 			
-				#ref = stream.getRecordServiceRef()
-				#if not win.tuner or not win.tunertype:
-				#	win.tuner, win.tunertype = getTuner(stream.getRecordService())
+				ref = stream.getRecordServiceRef()
+							
+				if not tunerstate.tuner or not tunerstate.tunertype:
+					tunerstate.tuner, tunerstate.tunertype = getTuner(stream.getRecordService())
 				
 				del stream
 				
-				#event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				#if event: 
-				#	name = event.getEventName()
-				#else:
-				#	name = ""
+				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
+				if event: 
+					tunerstate.name = event.getEventName()
 				
-				#service_ref = None
-				#if not win.number:
-				#	service_ref = ServiceReference(ref)
-				#	win.number = service_ref and getNumber(service_ref.ref)
-				#if not win.channel:
-				#	service_ref = service_ref or ServiceReference(ref)
-				#	win.channel = win.channel or service_ref and service_ref.getServiceName()
+				if ref:
+					if not tunerstate.number:
+						tunerstate.number = getNumber(ref)
+					if not tunerstate.channel:
+						service_ref = ServiceReference(ref)
+						if service_ref:
+							tunerstate.channel = service_ref.getServiceName()
 				
-				#win.updateName( name )
-				#win.updateTimes( begin, end, endless )
-				#win.update()
-				
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.updateEntry(id, self.getType(), begin, None, True)
+				return True
 				
 			else:
 				
-				# Stream is not active anymore
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.finishEntry(id)
+				# Stream is not active anymore				
+				return None

@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
+import socket
+import sys
+
 from time import time
+
+from enigma import eEPGCache
+from ServiceReference import ServiceReference
 
 # Config
 from Components.config import *
@@ -43,6 +49,7 @@ def getStream(id):
 class StreamOpenWebIf(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
+		self.epg = eEPGCache.getInstance()
 
 	################################################
 	# To be implemented by subclass
@@ -126,7 +133,7 @@ class StreamOpenWebIf(PluginBase):
 				channel = channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, filename, client, ip, port)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip, port)
 			
 			elif event == StreamAdapter.EV_STOP:
 				
@@ -140,41 +147,35 @@ class StreamOpenWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.finishEntry(id)
 
-	def update(self, id, begin, end, endless):
+	def update(self, id, tunerstate):
 		if config.infobartunerstate.show_streams.value:
 			#TODO Avolid blocking - avoid using getStream to update the current name
 			stream = getStream( id )
 			if stream:
 			
-				#ref = stream.ref
-				#if not win.tuner or not win.tunertype:
-				#	win.tuner, win.tunertype = getTuner(stream.getService())
+				ref = stream.ref
+				if not tunerstate.tuner or not tunerstate.tunertype:
+					tunerstate.tuner, tunerstate.tunertype = getTuner(stream.getService())
 				
 				del stream
 				
-				#event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				#if event: 
-				#	name = event.getEventName()
-				#else:
-				#	name = ""
+				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
+				if event: 
+					name = event.getEventName()
+				else:
+					name = ""
 				
-				#service_ref = None
-				#if not win.number:
-				#	service_ref = ServiceReference(ref)
-				#	win.number = service_ref and getNumber(service_ref.ref)
-				#if not win.channel:
-				#	service_ref = service_ref or ServiceReference(ref)
-				#	win.channel = win.channel or service_ref and service_ref.getServiceName()
+				service_ref = None
+				if not tunerstate.number:
+					service_ref = ServiceReference(ref)
+					tunerstate.number = service_ref and getNumber(service_ref.ref)
+				if not tunerstate.channel:
+					service_ref = service_ref or ServiceReference(ref)
+					tunerstate.channel = tunerstate.channel or service_ref and service_ref.getServiceName()
 				
-				#win.updateName( name )
-				#win.updateTimes( begin, end, endless )
-				#win.update()
-				
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.updateEntry(id, self.getType(), begin, None, True)
+				return True
 				
 			else:
 				
 				# Stream is not active anymore
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.finishEntry(id)
+				return None

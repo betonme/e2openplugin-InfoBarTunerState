@@ -43,7 +43,7 @@ class PluginBase(object):
 	def onEvent(self):
 		pass
 
-	def update(self, id, begin, end, endless):
+	def update(self, id, tunerstate):
 		pass
 
 	def upcomingEvents(self):
