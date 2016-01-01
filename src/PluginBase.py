@@ -37,14 +37,15 @@ class PluginBase(object):
 	def removeEvent(self):
 		pass
 
-	def updateEvent(self):
+	def onInit(self):
 		pass
 
 	def onEvent(self):
 		pass
 
-	def update(self, id, tunerstate):
+	def onShow(self, tunerstates):
 		pass
 
-	def upcomingEvents(self):
-		pass
+	def update(self, id, tunerstate):
+		# Return true if entry is still valid
+		return True

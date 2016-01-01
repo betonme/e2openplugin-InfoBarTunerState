@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-from
+ -*- coding: utf-8 -*-from
 # by betonme @2015
 
 from time import time
@@ -9,7 +9,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
+from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
 
 
 def getTimerID(timer):
@@ -54,7 +54,7 @@ class Records(PluginBase):
 			if self.onEvent in instance.RecordTimer.on_state_change:
 				instance.RecordTimer.on_state_change.remove(self.onEvent)
 
-	def updateEvent(self):
+	def onInit(self):
 		from NavigationInstance import instance
 		if instance is not None:
 			for timer in instance.RecordTimer.timer_list:
@@ -98,7 +98,7 @@ class Records(PluginBase):
 					# Delete references to avoid blocking tuners
 					del timer
 					
-					tuner, tunertype = getTuner(service)
+					tuner, tunertype = getTunerByPlayableService(service)
 					
 					number = getNumber(service_ref)
 					channel = getChannel(service_ref)
@@ -117,8 +117,6 @@ class Records(PluginBase):
 				gInfoBarTunerState.finishEntry(id)
 
 	def update(self, id, tunerstate):
-		
-		print "IBTS Records update ID ", id
 		
 		#TODO Avolid blocking - avoid using getTimer to update the timer times use timer.time_changed if possible
 		
@@ -148,7 +146,7 @@ class Records(PluginBase):
 			del timer
 			
 			if service:
-				tunerstate.tuner, tunerstate.tunertype = getTuner(timer.record_service)
+				tunerstate.tuner, tunerstate.tunertype = getTunerByPlayableService(timer.record_service)
 			
 			if service_ref:
 				if not tunerstate.number:
@@ -161,6 +159,6 @@ class Records(PluginBase):
 		else:
 			# This can happen, if the time has been changed or if the timer does not exist anymore
 			
-			self.updateEvent()
+			self.onInit()
 			
 			return None

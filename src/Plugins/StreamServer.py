@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
-import socket
 import string
 import sys
 
 from time import time
 from random import randint
 
-from enigma import eEPGCache, eServiceReference
+from enigma import eServiceReference
 from ServiceReference import ServiceReference
 
 # Config
@@ -17,7 +16,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
+from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getTunerByServiceReference, getClient, getEventName
 
 HAS_STREAMSERVER = False
 try:
@@ -39,9 +38,18 @@ def getStreamID(count, ip):
 class StreamServer(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
-		self.epg = eEPGCache.getInstance()
 		self.ids = []
 
+	def getStream(self, id):
+		for sid, ip, ref in self.ids:
+			if sid == id:
+				return sid, ip, ref
+	
+	def getRef(self, id):
+		for sid, ip, ref in self.ids:
+			if sid == id:
+				return ref
+	
 	################################################
 	# To be implemented by subclass
 	def getText(self):
@@ -77,7 +85,7 @@ class StreamServer(PluginBase):
 				if self.onEventParametersChanged in streamServerControl.onUriParametersChanged:
 					streamServerControl.onUriParametersChanged.remove(self.onEventParametersChanged)
 
-	def updateEvent(self):
+	def onInit(self):
 		if HAS_STREAMSERVER:
 			try:
 				from Components.StreamServerControl import streamServerControl
@@ -100,11 +108,7 @@ class StreamServer(PluginBase):
 			# We will add the entry later
 			
 			if force:
-				try:
-					host = ip and socket.gethostbyaddr( ip )
-					client = host and host[0].split('.')[0]
-				except:
-					client = ''
+				client = getClient(ip)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", "", "", "", time(), 0, True, "", client, ip, "")
@@ -126,10 +130,10 @@ class StreamServer(PluginBase):
 		try:
 			if self.ids:
 				id, ip, ref = self.ids[-1]
+				print "IBTS Stream Event StreamServer Changed " + id
 				
 				if ref is None:
 				
-					from Components.StreamServerControl import streamServerControl
 					ref = str(params.get(streamServerControl.URI_PARAM_REF, [""])[0])
 					
 					self.ids[-1] = (id, ip, ref)
@@ -137,31 +141,18 @@ class StreamServer(PluginBase):
 					eref = eServiceReference(ref)
 					if eref.valid():
 						
-						tuner, tunertype = getTuner( streamServerControl._encoderService ) 
-						
 						service_ref = ServiceReference(ref)
-						if service_ref:
-							number = getNumber(service_ref)
-							channel = getChannel(service_ref)
-							
-							event = self.epg and self.epg.lookupEventTime(service_ref.ref, -1, 0)
-							if event: 
-								name = event.getEventName()
-							else:
-								name = ""
-						else:
-							number = None
-							channel = ""
-							name = ""
 						
-						try:
-							host = ip and socket.gethostbyaddr( ip )
-							client = host and host[0].split('.')[0]
-						except:
-							client = ''
+						tuner, tunertype = getTunerByServiceReference( service_ref ) 
+						
+						number = getNumber(service_ref)
+						channel = getChannel(service_ref)
+						name = getEventName(eref)
+						
+						client = getClient(ip)
 						
 						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, "", client, ip, "")
+						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, "", client, ip)
 		except Exception, e:
 			print "IBTS exception " + str(e)
 			import os, sys, traceback
@@ -171,26 +162,16 @@ class StreamServer(PluginBase):
 
 	def update(self, id, tunerstate):
 		
-		if self.ids:
-			
-			for sid, ip, ref in self.ids:
-				
-				if sid != id:
-					continue
-				
-				if ref:
-					eref = eServiceReference(ref)
-					if eref.valid():
-						
-						service_ref = ServiceReference(ref)
-						if service_ref:
-							
-							if not tunerstate.number:
-								tunerstate.number = getNumber(service_ref)
-							if not tunerstate.channel:
-								tunerstate.channel = getChannel(service_ref)
-							if not tunerstate.name:
-								event = ref and self.epg and self.epg.lookupEventTime(service_ref.ref, -1, 0)
-								if event: 
-									tunerstate.name = event.getEventName()
+		ref = self.getRef(id)
+		
+		eref = ref and eServiceReference(ref)
+		if eref and eref.valid():
+					
+			#service_ref = ServiceReference(ref)
+			#if not tunerstate.number:
+			#	tunerstate.number = getNumber(service_ref)
+			#if not tunerstate.channel:
+			#	tunerstate.channel = getChannel(service_ref)
+			tunerstate.name = getEventName(eref)
+		
 		return True

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
-import socket
 import sys
 
 from time import time
 
-from enigma import eEPGCache
 from ServiceReference import ServiceReference
 
 # Config
@@ -15,7 +13,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
+from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getClient, getEventName
 
 HAS_OPENWEBIF = False
 try:
@@ -49,7 +47,6 @@ def getStream(id):
 class StreamOpenWebIf(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
-		self.epg = eEPGCache.getInstance()
 
 	################################################
 	# To be implemented by subclass
@@ -80,7 +77,7 @@ class StreamOpenWebIf(PluginBase):
 			except:
 				pass
 
-	def updateEvent(self):
+	def onInit(self):
 		if HAS_OPENWEBIF:
 			try:
 				from Plugins.Extensions.WebInterface.WebScreens import streamList
@@ -99,7 +96,7 @@ class StreamOpenWebIf(PluginBase):
 				id = getStreamID(stream)
 				print "IBTS Stream Event OpenWebIf Start " + id
 				
-				tuner, tunertype = getTuner( stream.getService() ) 
+				tuner, tunertype = getTunerByPlayableService( stream.getService() ) 
 				ref = stream.ref
 				
 				# Extract parameters
@@ -108,31 +105,18 @@ class StreamOpenWebIf(PluginBase):
 				# Delete references to avoid blocking tuners
 				del stream
 				
-				print "IBTS ip " + str(ip)
-				port, host, client = "", "", ""
-				
-				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				if event: 
-					name = event.getEventName()
-				else:
-					name = ""
-					#TODO check file streaming
-				
 				service_ref = ServiceReference(ref)
 				filename = "" #TODO file streaming - read meta eit
 				
-				try:
-					host = ip and socket.gethostbyaddr( ip )
-					client = host and host[0].split('.')[0]
-				except:
-					ip = ''
-					client = ''
+				client = getClient(ip)
 				
 				number =  getNumber(service_ref)
 				channel = getChannel(service_ref)
 				
+				name = getEventName(ref)
+				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip, port)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip)
 			
 			elif event == StreamAdapter.EV_STOP:
 				
@@ -147,30 +131,17 @@ class StreamOpenWebIf(PluginBase):
 				gInfoBarTunerState.finishEntry(id)
 
 	def update(self, id, tunerstate):
+		
 		if config.infobartunerstate.show_streams.value:
 			#TODO Avolid blocking - avoid using getStream to update the current name
 			stream = getStream( id )
 			if stream:
 			
 				ref = stream.ref
-				if not tunerstate.tuner or not tunerstate.tunertype:
-					tunerstate.tuner, tunerstate.tunertype = getTuner(stream.getService())
 				
 				del stream
 				
-				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				if event: 
-					name = event.getEventName()
-				else:
-					name = ""
-				
-				service_ref = None
-				if not tunerstate.number:
-					service_ref = ServiceReference(ref)
-					tunerstate.number = getNumber(service_ref)
-				if not tunerstate.channel:
-					service_ref = service_ref or ServiceReference(ref)
-					tunerstate.channel = getChannel(service_ref)
+				tunerstate.name = getEventName(ref)
 				
 				return True
 				

@@ -16,6 +16,8 @@
 #
 #######################################################################
 
+import socket
+
 # for localized messages
 from . import _
 
@@ -24,16 +26,13 @@ from Components.config import *
 
 # Screen
 from Components.NimManager import nimmanager
-from enigma import eServiceCenter, eServiceReference
+from enigma import eServiceCenter, eServiceReference, iServiceInformation, eEPGCache
+from ServiceReference import ServiceReference
 
 
 #######################################################
 # Global helper functions
-def getTuner(service):
-	# service must be an instance of iPlayableService or iRecordableService
-	#TODO detect stream of HDD
-	feinfo = service and service.frontendInfo()
-	data = feinfo and feinfo.getFrontendData()
+def normTuner(data):
 	if data:
 		type = str(data.get("tuner_type", ""))
 		number = data.get("slot_number", -1)
@@ -51,7 +50,34 @@ def getTuner(service):
 			return ( "", type )
 	return ( "", "" )
 
+def getTunerByServiceReferenceOLD(eservice):
+	# service must be an instance of eServiceReference
+	#if isinstance(service, eServiceReference):
+	if eservice:
+		serviceHandler = eServiceCenter.getInstance()
+		serviceInfo = serviceHandler.info(eservice)
+		data = serviceInfo and serviceInfo.getInfoObject(eservice, iServiceInformation.sTransponderData)
+		return normTuner(data)
+	return ( "", "" )
+def getTunerByServiceReference(service_ref):
+	# service must be an instance of ServiceReference
+	#if isinstance(service, ServiceReference):
+	if service_ref:
+		info = service_ref.info()
+		data = info and info.getInfoObject(service_ref.ref, iServiceInformation.sTransponderData)
+		return normTuner(data)
+	return ( "", "" )
+
+def getTunerByPlayableService(iservice):
+	# service must be an instance of iPlayableService or iRecordableService
+	#if isinstance(service, iRecordableService):
+	feinfo = iservice and iservice.frontendInfo()
+	data = feinfo and feinfo.getFrontendData()
+	return normTuner(data)
+
 def getNumber(service_ref):
+	# service must be an instance of ServiceReference
+	#if isinstance(service, ServiceReference):
 	if service_ref:
 		actservice = service_ref.ref
 		
@@ -96,10 +122,30 @@ def getNumber(service_ref):
 	return None
 
 def getChannel(service_ref):
+	# service must be an instance of ServiceReference
+	#if isinstance(service, ServiceReference):
 	if service_ref:
 		return service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
-	else:
-		return ""
+	return ""
+
+def getEventName(service):
+	# service must be an instance of eServiceReference
+	#if isinstance(service, eServiceReference):
+	if service:
+		epg = eEPGCache.getInstance()
+		event = epg and epg.lookupEventTime(service, -1, 0)
+		if event: 
+			return event.getEventName()
+	return ""
+
+def getClient(ip):
+	try:
+		host = ip and socket.gethostbyaddr( ip )
+		if host:
+			return host[0].split('.')[0]
+	except:
+		pass
+	return ""
 
 
 #######################################################

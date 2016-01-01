@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
-import socket
 import string
 import sys
 
 from time import time
 
-from enigma import eEPGCache
 from ServiceReference import ServiceReference
 
 # Config
@@ -16,7 +14,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
+from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getClient, getEventName
 
 HAS_WEBIF = False
 try:
@@ -50,7 +48,6 @@ def getStream(id):
 class StreamWebIf(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
-		self.epg = eEPGCache.getInstance()
 
 	################################################
 	# To be implemented by subclass
@@ -81,7 +78,7 @@ class StreamWebIf(PluginBase):
 			except:
 				pass
 
-	def updateEvent(self):
+	def onInit(self):
 		if HAS_WEBIF:
 			try:
 				from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
@@ -99,48 +96,29 @@ class StreamWebIf(PluginBase):
 				id = getStreamID(stream)
 				print "IBTS Stream Event WebIf Start " + id
 				
-				tuner, tunertype = getTuner( stream.getRecordService() ) 
+				tuner, tunertype = getTunerByPlayableService( stream.getRecordService() ) 
 				ref = stream.getRecordServiceRef()
 				
 				# Extract parameters
 				ip = str(stream.clientIP)
-				if ip:
-					if ':' in ip and '.' in ip:
-						# Mixed style ::ffff:192.168.64.27
-						ip = string.split(str(stream.clientIP), ':')[-1]
-				
+				if ip and ':' in ip and '.' in ip:
+					# Mixed style ::ffff:192.168.64.27
+					ip = string.split(str(stream.clientIP), ':')[-1]
 				
 				# Delete references to avoid blocking tuners
 				del stream
 				
-				port, host, client = "", "", ""
-				
-				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				if event: 
-					name = event.getEventName()
-				else:
-					name = ""
-					#TODO check file streaming
-				
 				filename = "" #TODO file streaming - read meta eit
 				
-				try:
-					host = ip and socket.gethostbyaddr( ip )
-					client = host and host[0].split('.')[0]
-				except:
-					ip = ''
-					client = ''
+				client = getClient(ip)
 				
-				if ref:
-					service_ref = ServiceReference(ref)
-					number = getNumber(service_ref)
-					channel = getChannel(service_ref)
-				else:
-					number = None
-					channel = ""
+				service_ref = ServiceReference(ref)
+				number = getNumber(service_ref)
+				channel = getChannel(service_ref)
+				name = getEventName(ref)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip, port)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip)
 				
 			elif event == StreamingWebScreen.EVENT_END:
 				
@@ -155,6 +133,7 @@ class StreamWebIf(PluginBase):
 				gInfoBarTunerState.finishEntry(id)
 
 	def update(self, id, tunerstate):
+		
 		if config.infobartunerstate.show_streams.value:
 			#TODO Avolid blocking - avoid using getStream to update the current name
 			stream = getStream( id )
@@ -162,21 +141,12 @@ class StreamWebIf(PluginBase):
 			
 				ref = stream.getRecordServiceRef()
 				
-				if not tunerstate.tuner or not tunerstate.tunertype:
-					tunerstate.tuner, tunerstate.tunertype = getTuner(stream.getRecordService())
-				
 				del stream
 				
-				event = ref and self.epg and self.epg.lookupEventTime(ref, -1, 0)
-				if event: 
-					tunerstate.name = event.getEventName()
+				#if not tunerstate.tuner or not tunerstate.tunertype:
+				#	tunerstate.tuner, tunerstate.tunertype = getTunerByPlayableService(ref)
 				
-				if ref:
-					service_ref = ServiceReference(ref)
-					if not tunerstate.number:
-						tunerstate.number = getNumber(service_ref)
-					if not tunerstate.channel:
-						tunerstate.channel = getChannel(service_ref)
+				tunerstate.name = getEventName(ref)
 				
 				return True
 				

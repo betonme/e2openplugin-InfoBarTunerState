@@ -63,7 +63,6 @@ from skin import parseColor, parseFont
 from InfoBarHandler import InfoBarHandler, overwriteInfoBar, recoverInfoBar
 from ExtensionHandler import addExtension, removeExtension
 from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber
 
 # Extenal plugins
 #try:
@@ -149,9 +148,9 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		for plugin in self.getPlugins():
 			plugin.removeEvent()
 	
-	def updateEvents(self):
+	def onInit(self):
 		for plugin in self.getPlugins():
-			plugin.updateEvent()
+			plugin.onInit()
 	
 	#TODO Config show on timer time changed
 	#def __OnTimeChanged(self):
@@ -278,7 +277,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		self._shown = True
 		
 		for plugin in self.getPlugins():
-			plugin.upcomingEvents()
+			plugin.onShow(self.entries)
 		
 		if self.entries:
 			# There are active entries

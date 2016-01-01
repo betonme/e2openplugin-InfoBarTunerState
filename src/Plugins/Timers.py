@@ -11,7 +11,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
+from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
 
 def getTimer(id):
 	from NavigationInstance import instance
@@ -111,7 +111,7 @@ class Timers(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
 		return INFO
 
-	def upcomingEvents(self):
+	def onShow(self, tunerstates):
 		number_pending_records = int( config.infobartunerstate.number_pending_records.value )
 		#print "IBTS number_pending_records", number_pending_records
 		
@@ -179,9 +179,9 @@ class Timers(PluginBase):
 
 	def update(self, id, tunerstate):
 		
-		print "IBTS Timers update ID ", id
+		print "IBTS Timers update ID", id
 		
-		if id in self.ids:
+		if id in self.nextids:
 			
 			timer = getTimer( id )
 			if timer:

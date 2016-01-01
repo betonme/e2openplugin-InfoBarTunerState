@@ -212,7 +212,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 			
 			# Force new instance
 			plugin.gInfoBarTunerState = InfoBarTunerState(self.session)
-			plugin.gInfoBarTunerState.updateEvents()
+			plugin.gInfoBarTunerState.onInit()
 			
 			if plugin.gInfoBarTunerState:
 				
@@ -241,7 +241,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 				plugin.gInfoBarTunerState.appendEvents()
 				
 				# Check for actual events
-				plugin.gInfoBarTunerState.updateEvents()
+				plugin.gInfoBarTunerState.onInit()
 		else:
 			
 			# Plugin should be disabled
