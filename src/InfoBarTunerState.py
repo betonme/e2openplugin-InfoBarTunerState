@@ -168,8 +168,9 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		print "IBTS addEntry", id
 		win = self.session.instantiateDialog(TunerState, plugin, type, text, tuner, tunertype, name, number, channel, begin, end, endless, filename, client, ip, port)
 		self.entries[id] = win
+		
 		if config.infobartunerstate.show_events.value:
-			self.show(True)
+			self.show(True, True)
 	
 	def updateEntry(self, id, type, begin, end, endless):
 		if id in self.entries:
@@ -189,6 +190,9 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win.updateTimes( None, time(), False )
 			win.updateType( FINISHED )
 			win.update()
+			
+			if config.infobartunerstate.show_events.value:
+				self.show(True, True)
 	
 	def updateName(self, id, name):
 		if id in self.entries:
