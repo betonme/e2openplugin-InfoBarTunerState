@@ -73,7 +73,7 @@ SecondInfobarAvailable = False
 
 
 # Type Enum
-INFO, RECORD, STREAM, FINISHED = range( 4 )
+INFO, LIVE, RECORD, STREAM, FINISHED = range( 5 )
 
 # Constants
 INFINITY =  u"\u221E".encode("utf-8")
@@ -779,6 +779,8 @@ class TunerState(TunerStateBase):
 					self["Type"].setPixmapNum(2)
 				elif self.type == INFO:
 					self["Type"].setPixmapNum(3)
+				elif self.type == LIVE:
+					self["Type"].setPixmapNum(4)
 				else:
 					widths.append( 0 )
 					continue
