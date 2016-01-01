@@ -77,14 +77,14 @@ class Records(PluginBase):
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
-					service = timer.record_service
+					irecordservice = timer.record_service
 					
 					#TEST Bug Repeating timer blocking tuner and are not marked as finished
 					#timer.timeChanged = self.__OnTimeChanged
 					
 					name = timer.name
 					
-					service_ref = timer.service_ref
+					servicereference = timer.service_ref
 					
 					begin = timer.begin
 					end = timer.end
@@ -98,10 +98,10 @@ class Records(PluginBase):
 					# Delete references to avoid blocking tuners
 					del timer
 					
-					tuner, tunertype = getTunerByPlayableService(service)
+					tuner, tunertype = getTunerByPlayableService(irecordservice)
 					
-					number = getNumber(service_ref)
-					channel = getChannel(service_ref)
+					number = getNumber(servicereference.ref)
+					channel = getChannel(servicereference.ref)
 					
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, begin, end, endless, filename)
 			
@@ -122,37 +122,14 @@ class Records(PluginBase):
 		
 		timer = getTimer( id )
 		if timer:
-			service = None
-			if not tunerstate.tuner or not tunerstate.tunertype:
-				service = timer.record_service
-			
 			tunerstate.name = timer.name
-			
-			service_ref = None
-			if not tunerstate.channel or not tunerstate.number:
-				service_ref = timer.service_ref
 			
 			tunerstate.begin = timer.begin
 			tunerstate.end = timer.end
 			tunerstate.endless = timer.autoincrease
 			
-			if not tunerstate.filename:
-				# Is this really necessary?
-				try: timer.Filename
-				except: timer.calculateFilename()
-				tunerstate.filename = timer.Filename
-			
 			# Delete references to avoid blocking tuners
 			del timer
-			
-			if service:
-				tunerstate.tuner, tunerstate.tunertype = getTunerByPlayableService(timer.record_service)
-			
-			if service_ref:
-				if not tunerstate.number:
-					tunerstate.number = getNumber(service_ref)
-				if not tunerstate.channel:
-					tunerstate.channel = getChannel(service_ref)
 			
 			return True
 		

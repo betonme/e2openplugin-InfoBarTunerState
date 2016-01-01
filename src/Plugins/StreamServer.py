@@ -41,14 +41,14 @@ class StreamServer(PluginBase):
 		self.ids = []
 
 	def getStream(self, id):
-		for sid, ip, ref in self.ids:
+		for sid, ip, servicereference_string in self.ids:
 			if sid == id:
-				return sid, ip, ref
+				return sid, ip, servicereference_string
 	
 	def getRef(self, id):
-		for sid, ip, ref in self.ids:
+		for sid, ip, servicereference_string in self.ids:
 			if sid == id:
-				return ref
+				return servicereference_string
 	
 	################################################
 	# To be implemented by subclass
@@ -120,7 +120,7 @@ class StreamServer(PluginBase):
 			
 			# There is no way to find the correct stream, just remove the oldest
 			if  self.ids:
-				id, ip, ref = self.ids[0]
+				id, ip, servicereference_string = self.ids[0]
 				del self.ids[0]
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
@@ -129,25 +129,27 @@ class StreamServer(PluginBase):
 	def onEventParametersChanged(self, params):
 		try:
 			if self.ids:
-				id, ip, ref = self.ids[-1]
+				id, ip, servicereference_string = self.ids[-1]
 				print "IBTS Stream Event StreamServer Changed " + id
 				
-				if ref is None:
+				if servicereference_string is None:
 				
-					ref = str(params.get(streamServerControl.URI_PARAM_REF, [""])[0])
+					servicereference_string = str(params.get(streamServerControl.URI_PARAM_REF, [""])[0])
 					
-					self.ids[-1] = (id, ip, ref)
+					self.ids[-1] = (id, ip, servicereference_string)
 					
-					eref = eServiceReference(ref)
-					if eref.valid():
+					eservicereference = eServiceReference(servicereference_string)
+					if eservicereference.valid():
 						
-						service_ref = ServiceReference(ref)
+						service_ref = ServiceReference(servicereference_string)
 						
 						tuner, tunertype = getTunerByServiceReference( service_ref ) 
 						
-						number = getNumber(service_ref)
-						channel = getChannel(service_ref)
-						name = getEventName(eref)
+						name = getEventName(eservicereference)
+						
+						number = getNumber(eservicereference)
+						channel = getChannel(eservicereference)
+						name = getEventName(eservicereference)
 						
 						client = getClient(ip)
 						
@@ -162,16 +164,11 @@ class StreamServer(PluginBase):
 
 	def update(self, id, tunerstate):
 		
-		ref = self.getRef(id)
+		servicereference_string = self.getRef(id)
 		
-		eref = ref and eServiceReference(ref)
-		if eref and eref.valid():
-					
-			#service_ref = ServiceReference(ref)
-			#if not tunerstate.number:
-			#	tunerstate.number = getNumber(service_ref)
-			#if not tunerstate.channel:
-			#	tunerstate.channel = getChannel(service_ref)
-			tunerstate.name = getEventName(eref)
+		eservicereference = ref and eServiceReference(servicereference_string)
+		if eservicereference and eservicereference.valid():
+			
+			tunerstate.name = getEventName(eservicereference)
 		
 		return True

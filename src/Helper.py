@@ -50,21 +50,21 @@ def normTuner(data):
 			return ( "", type )
 	return ( "", "" )
 
-def getTunerByServiceReferenceOLD(eservice):
+def getTunerByServiceReferenceOLD(eservicereference):
 	# service must be an instance of eServiceReference
 	#if isinstance(service, eServiceReference):
-	if eservice:
+	if eservicereference:
 		serviceHandler = eServiceCenter.getInstance()
-		serviceInfo = serviceHandler.info(eservice)
-		data = serviceInfo and serviceInfo.getInfoObject(eservice, iServiceInformation.sTransponderData)
+		serviceInfo = serviceHandler.info(eservicereference)
+		data = serviceInfo and serviceInfo.getInfoObject(eservicereference, iServiceInformation.sTransponderData)
 		return normTuner(data)
 	return ( "", "" )
-def getTunerByServiceReference(service_ref):
+def getTunerByServiceReference(servicereference):
 	# service must be an instance of ServiceReference
 	#if isinstance(service, ServiceReference):
-	if service_ref:
-		info = service_ref.info()
-		data = info and info.getInfoObject(service_ref.ref, iServiceInformation.sTransponderData)
+	if servicereference:
+		info = servicereference.info()
+		data = info and info.getInfoObject(servicereference.ref, iServiceInformation.sTransponderData)
 		return normTuner(data)
 	return ( "", "" )
 
@@ -75,13 +75,11 @@ def getTunerByPlayableService(iservice):
 	data = feinfo and feinfo.getFrontendData()
 	return normTuner(data)
 
-def getNumber(service_ref):
-	# service must be an instance of ServiceReference
-	#if isinstance(service, ServiceReference):
-	if service_ref:
-		actservice = service_ref.ref
+def getNumber(eservicereference):
+	# service must be an instance of eServiceReference
+	#if isinstance(service, eServiceReference):
+	if eservicereference:
 		
-		# actservice must be an instance of eServiceReference
 		from Screens.InfoBar import InfoBar
 		Servicelist = None
 		if InfoBar and InfoBar.instance:
@@ -114,26 +112,41 @@ def getNumber(service_ref):
 							if playable:
 								number += 1
 							if actbouquet:
-								if actbouquet == bouquet and actservice == service:
+								if actbouquet == bouquet and eservicereference == service:
 									return number
 							else:
-								if actservice == service:
+								if eservicereference == service:
 									return number
 	return None
 
-def getChannel(service_ref):
-	# service must be an instance of ServiceReference
-	#if isinstance(service, ServiceReference):
-	if service_ref:
-		return service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
-	return ""
-
-def getEventName(service):
+def getChannel(eservicereference):
 	# service must be an instance of eServiceReference
 	#if isinstance(service, eServiceReference):
-	if service:
+	if eservicereference:
+		servicereference = ServiceReference(eservicereference)
+		if servicereference:
+			return servicereference.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
+	return ""
+
+def getEventData(iplayableservice):
+	# service must be an instance of iPlayableService or iRecordableService
+	#if isinstance(service, iRecordableService):
+	info = iplayableservice and iplayableservice.info()
+	event = info and info.getEvent(0)
+	if event:
+		name = event.getEventName() or ""
+		begin = event.getBeginTime() or 0
+		duration = event.getDuration() or 0
+		end = begin + duration or 0
+		return (name,begin,end)
+	return ("",0,0)
+
+def getEventName(eservicereference):
+	# service must be an instance of eServiceReference
+	#if isinstance(service, eServiceReference):
+	if eservicereference:
 		epg = eEPGCache.getInstance()
-		event = epg and epg.lookupEventTime(service, -1, 0)
+		event = epg and epg.lookupEventTime(eservicereference, -1, 0)
 		if event: 
 			return event.getEventName()
 	return ""

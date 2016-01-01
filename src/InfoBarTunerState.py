@@ -159,7 +159,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 	def hasEntry(self, id):
 		return id in self.entries
 	
-	def addEntry(self, id, plugin, type, text, tuner, tunertype, name="", number="", channel="", begin=0, end=0, endless=False, filename="", client="", ip="", port=""):
+	def addEntry(self, id, plugin, type, text, tuner="", tunertype="", name="", number=None, channel="", begin=0, end=0, endless=False, filename="", client="", ip="", port=""):
 		print "IBTS addEntry", id
 		win = self.session.instantiateDialog(TunerState, plugin, type, text, tuner, tunertype, name, number, channel, begin, end, endless, filename, client, ip, port)
 		self.entries[id] = win
@@ -606,7 +606,7 @@ class TunerStateInfo(TunerStateBase):
 #######################################################
 # Displaying screen class, every entry is an instance of this class
 class TunerState(TunerStateBase):
-	def __init__(self, session, plugin, type, text, tuner, tunertype, name="", number="", channel="", begin=0, end=0, endless=False, filename="", client="", ip="", port=""):
+	def __init__(self, session, plugin, type, text, tuner, tunertype, name="", number=None, channel="", begin=0, end=0, endless=False, filename="", client="", ip="", port=""):
 		#TODO use parameter ref instead of number and channel
 		TunerStateBase.__init__(self, session)
 		

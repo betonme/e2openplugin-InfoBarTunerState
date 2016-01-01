@@ -96,8 +96,9 @@ class StreamOpenWebIf(PluginBase):
 				id = getStreamID(stream)
 				print "IBTS Stream Event OpenWebIf Start " + id
 				
-				tuner, tunertype = getTunerByPlayableService( stream.getService() ) 
-				ref = stream.ref
+				irecordservice = stream.getService()
+				
+				eservicereference = stream.ref
 				
 				# Extract parameters
 				ip = stream.clientIP
@@ -105,18 +106,17 @@ class StreamOpenWebIf(PluginBase):
 				# Delete references to avoid blocking tuners
 				del stream
 				
-				service_ref = ServiceReference(ref)
-				filename = "" #TODO file streaming - read meta eit
+				tuner, tunertype = getTunerByPlayableService(irecordservice) 
+				
+				name = getEventName(eservicereference)
+				
+				number =  getNumber(eservicereference)
+				channel = getChannel(eservicereference)
 				
 				client = getClient(ip)
 				
-				number =  getNumber(service_ref)
-				channel = getChannel(service_ref)
-				
-				name = getEventName(ref)
-				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, "", client, ip)
 			
 			elif event == StreamAdapter.EV_STOP:
 				

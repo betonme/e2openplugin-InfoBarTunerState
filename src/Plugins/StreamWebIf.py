@@ -96,8 +96,9 @@ class StreamWebIf(PluginBase):
 				id = getStreamID(stream)
 				print "IBTS Stream Event WebIf Start " + id
 				
-				tuner, tunertype = getTunerByPlayableService( stream.getRecordService() ) 
-				ref = stream.getRecordServiceRef()
+				irecordservice = stream.getRecordService()
+				
+				eservicereference = stream.getRecordServiceRef()
 				
 				# Extract parameters
 				ip = str(stream.clientIP)
@@ -108,17 +109,17 @@ class StreamWebIf(PluginBase):
 				# Delete references to avoid blocking tuners
 				del stream
 				
-				filename = "" #TODO file streaming - read meta eit
+				tuner, tunertype = getTunerByPlayableService( irecordservice ) 
+				
+				name = getEventName(eservicereference)
+				
+				number = getNumber(eservicereference)
+				channel = getChannel(eservicereference)
 				
 				client = getClient(ip)
 				
-				service_ref = ServiceReference(ref)
-				number = getNumber(service_ref)
-				channel = getChannel(service_ref)
-				name = getEventName(ref)
-				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, "", client, ip)
 				
 			elif event == StreamingWebScreen.EVENT_END:
 				
@@ -139,14 +140,14 @@ class StreamWebIf(PluginBase):
 			stream = getStream( id )
 			if stream:
 			
-				ref = stream.getRecordServiceRef()
+				eservicereference = stream.getRecordServiceRef()
 				
 				del stream
 				
 				#if not tunerstate.tuner or not tunerstate.tunertype:
 				#	tunerstate.tuner, tunerstate.tunertype = getTunerByPlayableService(ref)
 				
-				tunerstate.name = getEventName(ref)
+				tunerstate.name = getEventName(eservicereference)
 				
 				return True
 				

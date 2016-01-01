@@ -137,7 +137,7 @@ class Timers(PluginBase):
 						print "IBTS toadd", id
 						
 						name = timer.name
-						service_ref = timer.service_ref
+						servicereference = timer.service_ref
 						
 						# Is this really necessary?
 						try: timer.Filename
@@ -153,8 +153,8 @@ class Timers(PluginBase):
 						# Delete references to avoid blocking tuners
 						del timer
 						
-						number = getNumber(service_ref)
-						channel = getChannel(service_ref)
+						number = getNumber(servicereference.ref)
+						channel = getChannel(servicereference.ref)
 						
 						if id in toremove:
 							toremove.remove(id)
@@ -188,20 +188,11 @@ class Timers(PluginBase):
 				
 				tunerstate.name = timer.name
 				
-				service_ref = None
-				if not tunerstate.channel or not tunerstate.number:
-					service_ref = timer.service_ref
-				
 				tunerstate.begin = timer.begin
 				tunerstate.end = timer.end
 				tunerstate.endless = timer.autoincrease
 				
 				del timer
-				
-				if not tunerstate.number:
-					tunerstate.number = getNumber(service_ref)
-				if not tunerstate.channel:
-					tunerstate.channel = getChannel(service_ref)
 				
 				return True
 			else:
