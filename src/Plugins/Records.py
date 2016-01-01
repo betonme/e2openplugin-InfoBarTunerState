@@ -9,7 +9,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber
+from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
 
 
 def getTimerID(timer):
@@ -100,9 +100,8 @@ class Records(PluginBase):
 					
 					tuner, tunertype = getTuner(service)
 					
-					if service_ref:
-						number = getNumber(service_ref.ref)
-						channel = service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
+					number = getNumber(service_ref)
+					channel = getChannel(service_ref)
 					
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, begin, end, endless, filename)
 			
@@ -153,9 +152,9 @@ class Records(PluginBase):
 			
 			if service_ref:
 				if not tunerstate.number:
-					tunerstate.number = getNumber(service_ref.ref)
+					tunerstate.number = getNumber(service_ref)
 				if not tunerstate.channel:
-					tunerstate.channel = service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
+					tunerstate.channel = getChannel(service_ref)
 			
 			return True
 		

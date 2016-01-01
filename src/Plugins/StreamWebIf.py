@@ -16,7 +16,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber
+from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
 
 HAS_WEBIF = False
 try:
@@ -132,10 +132,12 @@ class StreamWebIf(PluginBase):
 					client = ''
 				
 				if ref:
-					number = getNumber(ref)
 					service_ref = ServiceReference(ref)
-					if service_ref:
-						channel = service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
+					number = getNumber(service_ref)
+					channel = getChannel(service_ref)
+				else:
+					number = None
+					channel = ""
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip, port)
@@ -159,7 +161,7 @@ class StreamWebIf(PluginBase):
 			if stream:
 			
 				ref = stream.getRecordServiceRef()
-							
+				
 				if not tunerstate.tuner or not tunerstate.tunertype:
 					tunerstate.tuner, tunerstate.tunertype = getTuner(stream.getRecordService())
 				
@@ -170,12 +172,11 @@ class StreamWebIf(PluginBase):
 					tunerstate.name = event.getEventName()
 				
 				if ref:
+					service_ref = ServiceReference(ref)
 					if not tunerstate.number:
-						tunerstate.number = getNumber(ref)
+						tunerstate.number = getNumber(service_ref)
 					if not tunerstate.channel:
-						service_ref = ServiceReference(ref)
-						if service_ref:
-							tunerstate.channel = service_ref.getServiceName()
+						tunerstate.channel = getChannel(service_ref)
 				
 				return True
 				

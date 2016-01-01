@@ -51,39 +51,55 @@ def getTuner(service):
 			return ( "", type )
 	return ( "", "" )
 
-def getNumber(actservice):
-	# actservice must be an instance of eServiceReference
-	from Screens.InfoBar import InfoBar
-	Servicelist = None
-	if InfoBar and InfoBar.instance:
-		Servicelist = InfoBar.instance.servicelist
-	mask = (eServiceReference.isMarker | eServiceReference.isDirectory)
-	number = 0
-	bouquets = Servicelist and Servicelist.getBouquetList()
-	if bouquets:
-		#TODO get alternative for actbouquet
-		actbouquet = Servicelist.getRoot()
-		serviceHandler = eServiceCenter.getInstance()
-		for name, bouquet in bouquets:
-			if not bouquet.valid(): #check end of list
-				break
-			if bouquet.flags & eServiceReference.isDirectory:
-				servicelist = serviceHandler.list(bouquet)
-				if not servicelist is None:
-					while True:
-						service = servicelist.getNext()
-						if not service.valid(): #check end of list
-							break
-						playable = not (service.flags & mask)
-						if playable:
-							number += 1
-						if actbouquet:
-							if actbouquet == bouquet and actservice == service:
-								return number
-						else:
-							if actservice == service:
-								return number
+def getNumber(service_ref):
+	if service_ref:
+		actservice = service_ref.ref
+		
+		# actservice must be an instance of eServiceReference
+		from Screens.InfoBar import InfoBar
+		Servicelist = None
+		if InfoBar and InfoBar.instance:
+			Servicelist = InfoBar.instance.servicelist
+		
+		mask = (eServiceReference.isMarker | eServiceReference.isDirectory)
+		number = 0
+		
+		bouquets = Servicelist and Servicelist.getBouquetList()
+		if bouquets:
+			
+			#TODO get alternative for actbouquet
+			actbouquet = Servicelist.getRoot()
+			serviceHandler = eServiceCenter.getInstance()
+			for name, bouquet in bouquets:
+				
+				if not bouquet.valid(): #check end of list
+					break
+				
+				if bouquet.flags & eServiceReference.isDirectory:
+					
+					servicelist = serviceHandler.list(bouquet)
+					if not servicelist is None:
+						
+						while True:
+							service = servicelist.getNext()
+							if not service.valid(): #check end of list
+								break
+							playable = not (service.flags & mask)
+							if playable:
+								number += 1
+							if actbouquet:
+								if actbouquet == bouquet and actservice == service:
+									return number
+							else:
+								if actservice == service:
+									return number
 	return None
+
+def getChannel(service_ref):
+	if service_ref:
+		return service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
+	else:
+		return ""
 
 
 #######################################################

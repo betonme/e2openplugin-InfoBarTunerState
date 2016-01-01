@@ -11,7 +11,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber
+from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
 
 def getTimer(id):
 	from NavigationInstance import instance
@@ -111,39 +111,6 @@ class Timers(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
 		return INFO
 
-	def update(self, id, tunerstate):
-		
-		print "IBTS Timers update ID ", id
-		
-		if id in self.ids:
-			
-			timer = getTimer( id )
-			if timer:
-				
-				tunerstate.name = timer.name
-				
-				service_ref = None
-				if not tunerstate.channel or not tunerstate.number:
-					service_ref = timer.service_ref
-				
-				tunerstate.begin = timer.begin
-				tunerstate.end = timer.end
-				tunerstate.endless = timer.autoincrease
-				
-				del timer
-				
-				if service_ref:
-				if not tunerstate.number:
-					tunerstate.number = getNumber(service_ref.ref)
-				if not tunerstate.channel:
-					tunerstate.channel = service_ref.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
-				
-				return True
-			else:
-				return None
-		else:
-			return None
-
 	def upcomingEvents(self):
 		number_pending_records = int( config.infobartunerstate.number_pending_records.value )
 		#print "IBTS number_pending_records", number_pending_records
@@ -186,8 +153,8 @@ class Timers(PluginBase):
 						# Delete references to avoid blocking tuners
 						del timer
 						
-						number = service_ref and getNumber(service_ref.ref)
-						channel = service_ref and service_ref.getServiceName()
+						number = getNumber(service_ref)
+						channel = getChannel(service_ref)
 						
 						if id in toremove:
 							toremove.remove(id)
@@ -209,3 +176,35 @@ class Timers(PluginBase):
 					if id in self.nextids:
 						self.nextids.remove(id)
 					gInfoBarTunerState.removeEntry(id)
+
+	def update(self, id, tunerstate):
+		
+		print "IBTS Timers update ID ", id
+		
+		if id in self.ids:
+			
+			timer = getTimer( id )
+			if timer:
+				
+				tunerstate.name = timer.name
+				
+				service_ref = None
+				if not tunerstate.channel or not tunerstate.number:
+					service_ref = timer.service_ref
+				
+				tunerstate.begin = timer.begin
+				tunerstate.end = timer.end
+				tunerstate.endless = timer.autoincrease
+				
+				del timer
+				
+				if not tunerstate.number:
+					tunerstate.number = getNumber(service_ref)
+				if not tunerstate.channel:
+					tunerstate.channel = getChannel(service_ref)
+				
+				return True
+			else:
+				return None
+		else:
+			return None

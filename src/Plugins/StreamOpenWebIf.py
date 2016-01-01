@@ -15,7 +15,7 @@ from Components.config import *
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber
+from Plugins.Extensions.InfoBarTunerState.Helper import getTuner, getNumber, getChannel
 
 HAS_OPENWEBIF = False
 try:
@@ -128,9 +128,8 @@ class StreamOpenWebIf(PluginBase):
 					ip = ''
 					client = ''
 				
-				number = service_ref and getNumber(service_ref.ref)
-				channel = service_ref and service_ref.getServiceName()
-				channel = channel.replace('\xc2\x86', '').replace('\xc2\x87', '')
+				number =  getNumber(service_ref)
+				channel = getChannel(service_ref)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, filename, client, ip, port)
@@ -168,10 +167,10 @@ class StreamOpenWebIf(PluginBase):
 				service_ref = None
 				if not tunerstate.number:
 					service_ref = ServiceReference(ref)
-					tunerstate.number = service_ref and getNumber(service_ref.ref)
+					tunerstate.number = getNumber(service_ref)
 				if not tunerstate.channel:
 					service_ref = service_ref or ServiceReference(ref)
-					tunerstate.channel = tunerstate.channel or service_ref and service_ref.getServiceName()
+					tunerstate.channel = getChannel(service_ref)
 				
 				return True
 				
