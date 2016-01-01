@@ -217,6 +217,7 @@ def start(reason, **kwargs):
 				session = kwargs["session"]
 				try:
 					gInfoBarTunerState = InfoBarTunerState(session)
+					gInfoBarTunerState.updateEvents()
 				except Exception, e:
 					print "InfoBarTunerState start exception " + str(e)
 	# Do not cleanup on session shutdown, it will break the movie player integration

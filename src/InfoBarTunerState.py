@@ -140,10 +140,6 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		#Events:
 		#eventNewProgramInfo
 		#decoder state
-		
-		# Add current running records / streams
-		# We do it right here to ensure the InfoBar is intantiated
-		self.updateEvents()
 
 	def appendEvents(self):
 		for plugin in self.getPlugins():
