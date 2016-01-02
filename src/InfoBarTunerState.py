@@ -73,7 +73,9 @@ SecondInfobarAvailable = False
 
 
 # Type Enum
-INFO, LIVE, RECORD, STREAM, FINISHED = range( 5 )
+# 1. Used for pixmap mapping
+# 2. Used to set priority for calling the plugins onShow event: Higher numbers will be served first
+UNKNOWN, INFO, LIVE, RECORD, STREAM, FINISHED = range( 6 )
 
 # Constants
 INFINITY =  u"\u221E".encode("utf-8")
@@ -783,6 +785,8 @@ class TunerState(TunerStateBase):
 					self["Type"].setPixmapNum(3)
 				elif self.type == LIVE:
 					self["Type"].setPixmapNum(4)
+				elif self.type == UNKNOWN:
+					self["Type"].setPixmapNum(5)
 				else:
 					widths.append( 0 )
 					continue
