@@ -307,7 +307,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				if win.type == FINISHED:
 					numberfinished += 1
 				if win.toberemoved == True \
-					or win.type == FINISHED and numberfinished > int( config.infobartunerstate.number_finished_records.value ):
+					or win.type == FINISHED and numberfinished > int( config.infobartunerstate.number_finished_entries.value ):
 					# Delete Stopped Timers
 					win.hide()
 					self.session.deleteDialog(win)
@@ -672,7 +672,7 @@ class TunerState(TunerStateBase):
 			# Check if timer is already started
 			if not self.removeTimer.isActive():
 				# Check if timeout is configured
-				timeout = int(config.infobartunerstate.timeout_finished_records.value)
+				timeout = int(config.infobartunerstate.timeout_finished_entries.value)
 				if timeout > 0:
 					self.removeTimer.startLongTimer( timeout )
 

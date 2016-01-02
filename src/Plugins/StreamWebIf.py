@@ -16,12 +16,18 @@ from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getClient, getEventName
 
+
 HAS_WEBIF = False
 try:
 	from Plugins.Extensions.WebInterface.WebScreens import StreamingWebScreen 
 	HAS_WEBIF = True
 except:
 	StreamingWebScreen = None
+
+
+# Config options
+config.infobartunerstate.plugin_webif         = ConfigSubsection()
+config.infobartunerstate.plugin_webif.enabled = ConfigYesNo(default = False)
 
 
 def getStreamID(stream):
@@ -59,8 +65,11 @@ class StreamWebIf(PluginBase):
 		# Pixmap number to be displayed as icon
 		return STREAM
 
+	def getOptions(self):
+		return [(_("Show stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.enabled),]
+
 	def appendEvent(self):
-		if config.infobartunerstate.show_streams.value:
+		if config.infobartunerstate.plugin_webif.enabled.value:
 			if HAS_WEBIF:
 				try:
 					from Plugins.Extensions.WebInterface.WebScreens import streamingEvents
@@ -79,16 +88,17 @@ class StreamWebIf(PluginBase):
 				pass
 
 	def onInit(self):
-		if HAS_WEBIF:
-			try:
-				from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
-			except:
-				streamingScreens = []
-			#TODO file streaming actually not supported
-			for stream in streamingScreens:
-				# Check if screen exists
-				if stream and stream.request and 'file' not in stream.request.args:
-					self.onEvent(StreamingWebScreen.EVENT_START, stream)
+		if config.infobartunerstate.plugin_webif.enabled.value:
+			if HAS_WEBIF:
+				try:
+					from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
+				except:
+					streamingScreens = []
+				#TODO file streaming actually not supported
+				for stream in streamingScreens:
+					# Check if screen exists
+					if stream and stream.request and 'file' not in stream.request.args:
+						self.onEvent(StreamingWebScreen.EVENT_START, stream)
 
 	def onEvent(self, event, stream):
 		if StreamingWebScreen and stream:
@@ -135,20 +145,18 @@ class StreamWebIf(PluginBase):
 
 	def update(self, id, tunerstate):
 		
-		if config.infobartunerstate.show_streams.value:
-			#TODO Avolid blocking - avoid using getStream to update the current name
-			stream = getStream( id )
-			if stream:
+		stream = getStream( id )
+		if stream:
+		
+			eservicereference = stream.getRecordServiceRef()
 			
-				eservicereference = stream.getRecordServiceRef()
-				
-				del stream
-				
-				tunerstate.name = getEventName(eservicereference)
-				
-				return True
-				
-			else:
-				
-				# Stream is not active anymore				
-				return None
+			del stream
+			
+			tunerstate.name = getEventName(eservicereference)
+			
+			return True
+			
+		else:
+			
+			# Stream is not active anymore				
+			return None

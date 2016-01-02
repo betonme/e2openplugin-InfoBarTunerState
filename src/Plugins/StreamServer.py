@@ -18,12 +18,18 @@ from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getTunerByServiceReference, getClient, getEventName
 
+
 HAS_STREAMSERVER = False
 try:
 	from Components.StreamServerControl import streamServerControl
 	HAS_STREAMSERVER = True
 except:
 	StreamingWebScreen = None
+
+	
+# Config options
+config.infobartunerstate.plugin_streamserver         = ConfigSubsection()
+config.infobartunerstate.plugin_streamserver.enabled = ConfigYesNo(default = False)
 
 
 def getStreamID(count, ip):
@@ -60,8 +66,11 @@ class StreamServer(PluginBase):
 		# Pixmap number to be displayed as icon
 		return STREAM
 
+	def getOptions(self):
+		return [(_("Show transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_streamserver.enabled),]
+
 	def appendEvent(self):
-		if config.infobartunerstate.show_streams.value:
+		if config.infobartunerstate.plugin_streamserver.enabled.value:
 			if HAS_STREAMSERVER:
 				try:
 					from Components.StreamServerControl import streamServerControl
@@ -86,13 +95,14 @@ class StreamServer(PluginBase):
 					streamServerControl.onUriParametersChanged.remove(self.onEventParametersChanged)
 
 	def onInit(self):
-		if HAS_STREAMSERVER:
-			try:
-				from Components.StreamServerControl import streamServerControl
-				for stream in range(streamServerControl.rtspClientCount):
-					self.onEventClientCountChanged(streamServerControl.rtspClientCount, "")
-			except:
-				pass
+		if config.infobartunerstate.plugin_streamserver.enabled.value:
+			if HAS_STREAMSERVER:
+				try:
+					from Components.StreamServerControl import streamServerControl
+					for stream in range(streamServerControl.rtspClientCount):
+						self.onEventClientCountChanged(streamServerControl.rtspClientCount, "")
+				except:
+					pass
 
 	def onEventClientCountChanged(self, count, client, force=False):
 		if len(self.ids) < count:

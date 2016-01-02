@@ -12,6 +12,11 @@ from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
 
 
+# Config options
+config.infobartunerstate.plugin_records         = ConfigSubsection()
+config.infobartunerstate.plugin_records.enabled = ConfigYesNo(default = True)
+
+
 def getTimerID(timer):
 	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
 	return str( timer )
@@ -38,13 +43,17 @@ class Records(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
 		return RECORD
 
+	def getOptions(self):
+		return [(_("Show record(s)"), config.infobartunerstate.plugin_records.enabled),]
+
 	def appendEvent(self):
-		from NavigationInstance import instance
-		if instance is not None:
-			# Recording Events
-			# If we append our function, we will never see the timer state StateEnded for repeating timer
-			if self.onEvent not in instance.RecordTimer.on_state_change:
-				instance.RecordTimer.on_state_change.insert(0, self.onEvent)
+		if config.infobartunerstate.plugin_records.enabled.value:
+			from NavigationInstance import instance
+			if instance is not None:
+				# Recording Events
+				# If we append our function, we will never see the timer state StateEnded for repeating timer
+				if self.onEvent not in instance.RecordTimer.on_state_change:
+					instance.RecordTimer.on_state_change.insert(0, self.onEvent)
 
 	def removeEvent(self):
 		from NavigationInstance import instance
@@ -55,11 +64,12 @@ class Records(PluginBase):
 				instance.RecordTimer.on_state_change.remove(self.onEvent)
 
 	def onInit(self):
-		from NavigationInstance import instance
-		if instance is not None:
-			for timer in instance.RecordTimer.timer_list:
-				if timer.isRunning() and not timer.justplay:
-					self.onEvent(timer)
+		if config.infobartunerstate.plugin_records.enabled.value:
+			from NavigationInstance import instance
+			if instance is not None:
+				for timer in instance.RecordTimer.timer_list:
+					if timer.isRunning() and not timer.justplay:
+						self.onEvent(timer)
 
 	def onEvent(self, timer):
 		if not timer.justplay:

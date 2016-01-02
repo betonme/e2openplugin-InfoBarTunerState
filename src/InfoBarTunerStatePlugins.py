@@ -29,7 +29,7 @@ from . import _
 from PluginBase import PluginBase
 
 # Constants
-IBTS_PLUGINS_PATH = os.path.join( resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/Plugins/" )
+IBTS_PLUGINS_PATH = os.path.join( resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/Handler/" )
 
 
 class InfoBarTunerStatePlugins(object):

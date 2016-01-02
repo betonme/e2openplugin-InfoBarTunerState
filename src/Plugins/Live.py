@@ -13,6 +13,11 @@ from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getEventData
 
 
+# Config options
+config.infobartunerstate.plugin_live         = ConfigSubsection()
+config.infobartunerstate.plugin_live.enabled = ConfigYesNo(default = False)
+
+
 class Live(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
@@ -26,18 +31,23 @@ class Live(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import LIVE
 		return LIVE
 
+	def getOptions(self):
+		return [(_("Show live tuner"), config.infobartunerstate.plugin_live.enabled),]
+
 	def onInit(self):
-		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-		if gInfoBarTunerState:
-			
-			gInfoBarTunerState.addEntry("Live", self.getPluginName(), self.getType(), self.getText())
+		if config.infobartunerstate.plugin_live.enabled.value:
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			if gInfoBarTunerState:
+				
+				gInfoBarTunerState.addEntry("Live", self.getPluginName(), self.getType(), self.getText())
 
 	def onShow(self, tunerstates):
-		for id, tunerstate in tunerstates.items():
-			if tunerstate.plugin == "Live":
-				break
-		else:
-			self.onInit()
+		if config.infobartunerstate.plugin_live.enabled.value:
+			for id, tunerstate in tunerstates.items():
+				if tunerstate.plugin == "Live":
+					break
+			else:
+				self.onInit()
 
 	def update(self, id, tunerstate):
 		

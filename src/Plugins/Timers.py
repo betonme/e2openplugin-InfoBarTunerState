@@ -13,6 +13,14 @@ from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
 
+
+# Config options
+config.infobartunerstate.plugin_timers         = ConfigSubsection()
+config.infobartunerstate.plugin_timers.enabled = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_timers.number_pending_timers     = ConfigSelectionNumber(0, 10, 1, default = 1)
+config.infobartunerstate.plugin_timers.pending_hours             = ConfigSelectionNumber(0, 1000, 1, default = 0)
+
+
 def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
@@ -111,71 +119,79 @@ class Timers(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
 		return INFO
 
+	def getOptions(self):
+		return [
+					(_("Show pending timer(s)"),                      config.infobartunerstate.plugin_timers.enabled),
+					(_("Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers),
+					(_("Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours),
+				]
+
 	def onShow(self, tunerstates):
-		number_pending_records = int( config.infobartunerstate.number_pending_records.value )
-		#print "IBTS number_pending_records", number_pending_records
-		
-		toremove = self.nextids[:]
-		
-		if number_pending_records:
-			pending_seconds = int( config.infobartunerstate.pending_hours.value ) * 3600
-			pending_limit = (time() + pending_seconds) if pending_seconds else 0
-			#print "IBTS pending_limit", pending_limit
+		if config.infobartunerstate.plugin_timers.enabled.value:
+			number_pending_timers = int( config.infobartunerstate.plugin_timers.number_pending_timers.value )
+			#print "IBTS number_pending_timers", number_pending_timers
 			
-			timer_list = getNextPendingRecordTimers(pending_limit)[:number_pending_records]
-			#pprint.pprint(timer_list)
+			toremove = self.nextids[:]
 			
-			if timer_list:
+			if number_pending_timers:
+				pending_seconds = int( config.infobartunerstate.plugin_timers.pending_hours.value ) * 3600
+				pending_limit = (time() + pending_seconds) if pending_seconds else 0
+				#print "IBTS pending_limit", pending_limit
 				
-				timer_list.reverse()
+				timer_list = getNextPendingRecordTimers(pending_limit)[:number_pending_timers]
+				#pprint.pprint(timer_list)
 				
-				for i, timer in enumerate(timer_list):
+				if timer_list:
 					
-					if timer:
+					timer_list.reverse()
+					
+					for i, timer in enumerate(timer_list):
 						
-						id = getTimerID( timer )
-						print "IBTS toadd", id
-						
-						name = timer.name
-						servicereference = timer.service_ref
-						
-						# Is this really necessary?
-						try: timer.Filename
-						except: timer.calculateFilename()
-						
-						try: filename = timer.Filename
-						except: filename = timer.name
-						
-						begin = timer.begin
-						end = timer.end
-						endless = timer.autoincrease
-						
-						# Delete references to avoid blocking tuners
-						del timer
-						
-						number = getNumber(servicereference.ref)
-						channel = getChannel(servicereference.ref)
-						
-						if id in toremove:
-							toremove.remove(id)
-						
-						# Only add timer if not recording
-						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-						from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO
-						if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
-							self.nextids.append(id)
-							gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", name, number, channel, begin, end, endless, filename)
-			
-			# Close all not touched next timers
-			if toremove:
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				print "IBTS toremove"
-				pprint.pprint(toremove)
-				for id in toremove:
-					print "IBTS toremove", id
-					if id in self.nextids:
-						self.nextids.remove(id)
-					gInfoBarTunerState.removeEntry(id)
+						if timer:
+							
+							id = getTimerID( timer )
+							print "IBTS toadd", id
+							
+							name = timer.name
+							servicereference = timer.service_ref
+							
+							# Is this really necessary?
+							try: timer.Filename
+							except: timer.calculateFilename()
+							
+							try: filename = timer.Filename
+							except: filename = timer.name
+							
+							begin = timer.begin
+							end = timer.end
+							endless = timer.autoincrease
+							
+							# Delete references to avoid blocking tuners
+							del timer
+							
+							number = getNumber(servicereference.ref)
+							channel = getChannel(servicereference.ref)
+							
+							if id in toremove:
+								toremove.remove(id)
+							
+							# Only add timer if not recording
+							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+							from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO
+							if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
+								self.nextids.append(id)
+								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", name, number, channel, begin, end, endless, filename)
+				
+				# Close all not touched next timers
+				if toremove:
+					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+					print "IBTS toremove"
+					pprint.pprint(toremove)
+					for id in toremove:
+						print "IBTS toremove", id
+						if id in self.nextids:
+							self.nextids.remove(id)
+						gInfoBarTunerState.removeEntry(id)
 
 	def update(self, id, tunerstate):
 		
