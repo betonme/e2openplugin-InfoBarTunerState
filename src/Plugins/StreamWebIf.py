@@ -109,7 +109,7 @@ class StreamWebIf(PluginBase):
 				# Delete references to avoid blocking tuners
 				del stream
 				
-				tuner, tunertype = getTunerByPlayableService( irecordservice ) 
+				tuner, tunertype, tunernumber = getTunerByPlayableService( irecordservice ) 
 				
 				name = getEventName(eservicereference)
 				
@@ -119,7 +119,7 @@ class StreamWebIf(PluginBase):
 				client = getClient(ip)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, "", client, ip)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
 				
 			elif event == StreamingWebScreen.EVENT_END:
 				
@@ -143,9 +143,6 @@ class StreamWebIf(PluginBase):
 				eservicereference = stream.getRecordServiceRef()
 				
 				del stream
-				
-				#if not tunerstate.tuner or not tunerstate.tunertype:
-				#	tunerstate.tuner, tunerstate.tunertype = getTunerByPlayableService(ref)
 				
 				tunerstate.name = getEventName(eservicereference)
 				

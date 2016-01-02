@@ -106,7 +106,7 @@ class StreamOpenWebIf(PluginBase):
 				# Delete references to avoid blocking tuners
 				del stream
 				
-				tuner, tunertype = getTunerByPlayableService(irecordservice) 
+				tuner, tunertype, tunernumber = getTunerByPlayableService(irecordservice) 
 				
 				name = getEventName(eservicereference)
 				
@@ -116,7 +116,7 @@ class StreamOpenWebIf(PluginBase):
 				client = getClient(ip)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, "", client, ip)
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
 			
 			elif event == StreamAdapter.EV_STOP:
 				

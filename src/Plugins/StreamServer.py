@@ -143,7 +143,7 @@ class StreamServer(PluginBase):
 						
 						service_ref = ServiceReference(servicereference_string)
 						
-						tuner, tunertype = getTunerByServiceReference( service_ref ) 
+						tuner, tunertype, tunernumber = getTunerByServiceReference( service_ref ) 
 						
 						name = getEventName(eservicereference)
 						
@@ -154,7 +154,7 @@ class StreamServer(PluginBase):
 						client = getClient(ip)
 						
 						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, time(), 0, True, "", client, ip)
+						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
 		except Exception, e:
 			print "IBTS exception " + str(e)
 			import os, sys, traceback

@@ -47,7 +47,7 @@ class Live(PluginBase):
 		if instance:
 			iplayableservice = instance.getCurrentService()
 			
-			tunerstate.tuner, tunerstate.tunertype = getTunerByPlayableService(iplayableservice)
+			tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = getTunerByPlayableService(iplayableservice)
 			tunerstate.name, tunerstate.begin, tunerstate.end = getEventData(iplayableservice)
 		
 			eservicereference = instance.getCurrentlyPlayingServiceReference()

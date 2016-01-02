@@ -116,7 +116,7 @@ class InfoBarTunerStatePlugins(object):
 		return self.__plugins[name]
 
 	def getPlugins(self):
-		return self.__plugins.values()
+		return sorted( self.__plugins.values(), key=lambda x: (x.getType()), reverse=True )
 
 	def instantiatePlugin(self, module):
 		if module and callable(module):

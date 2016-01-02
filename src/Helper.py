@@ -32,6 +32,12 @@ from ServiceReference import ServiceReference
 
 #######################################################
 # Global helper functions
+def getTunerName(tunernumber):
+	try:
+		return str(nimmanager.getNimSlotInputName(number))
+	except:
+		return str(chr( int(tunernumber) + ord('A') ))
+
 def normTuner(data):
 	if data:
 		type = str(data.get("tuner_type", ""))
@@ -39,16 +45,10 @@ def normTuner(data):
 		if number is None or number < 0:
 			number = data.get("tuner_number", -1)
 		if number is not None and number > -1:
-			try:
-				name = str(nimmanager.getNimSlotInputName(number))
-			except:
-				name = None
-			if not name:
-				name = str(chr( int(number) + ord('A') ))
-			return ( name, type )
+			return ( getTunerName(number), type, number )
 		else:
-			return ( "", type )
-	return ( "", "" )
+			return ( "", type, number )
+	return ( "", "", None )
 
 def getTunerByServiceReferenceOLD(eservicereference):
 	# service must be an instance of eServiceReference

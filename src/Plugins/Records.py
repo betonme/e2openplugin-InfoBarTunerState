@@ -1,4 +1,4 @@
- -*- coding: utf-8 -*-from
+# -*- coding: utf-8 -*-from
 # by betonme @2015
 
 from time import time
@@ -98,12 +98,12 @@ class Records(PluginBase):
 					# Delete references to avoid blocking tuners
 					del timer
 					
-					tuner, tunertype = getTunerByPlayableService(irecordservice)
+					tuner, tunertype, tunernumber = getTunerByPlayableService(irecordservice)
 					
 					number = getNumber(servicereference.ref)
 					channel = getChannel(servicereference.ref)
 					
-					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, name, number, channel, begin, end, endless, filename)
+					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, begin, end, endless, filename)
 			
 			# Finished repeating timer will report the state StateEnded+1 or StateWaiting
 			else:
