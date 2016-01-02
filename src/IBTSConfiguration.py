@@ -31,8 +31,7 @@ from Screens.Setup import SetupSummary
 
 # Plugin internal
 from InfoBarTunerState import InfoBarTunerState
-from InfoBarHandler import overwriteInfoBar, recoverInfoBar
-from ExtensionHandler import addExtension, removeExtension
+
 
 #######################################################
 # Configuration screen
@@ -210,35 +209,11 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 				# Plugin is active - close it
 				plugin.gInfoBarTunerState.close()
 			
+			
 			# Force new instance
 			plugin.gInfoBarTunerState = InfoBarTunerState(self.session)
-			plugin.gInfoBarTunerState.onInit()
 			
 			if plugin.gInfoBarTunerState:
-				
-				# Handle InfoBar overwrite
-				if config.infobartunerstate.show_overwrite.value:
-					overwriteInfoBar()
-				else:
-					recoverInfoBar()
-				
-				# Handle extension menu integration
-				if config.infobartunerstate.extensions_menu_show.value or config.infobartunerstate.extensions_menu_setup.value:
-					# Add to extension menu
-					addExtension()
-				else:
-					# Remove from extension menu
-					removeExtension()
-				
-				# Handle show with InfoBar
-				if config.infobartunerstate.show_infobar.value:
-					plugin.gInfoBarTunerState.bindInfoBar()
-				else:
-					plugin.gInfoBarTunerState.unbindInfoBar()
-				
-				# Remove and append because of show streams handling
-				plugin.gInfoBarTunerState.removeEvents()
-				plugin.gInfoBarTunerState.appendEvents()
 				
 				# Check for actual events
 				plugin.gInfoBarTunerState.onInit()
@@ -246,14 +221,6 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 			
 			# Plugin should be disabled
 			if plugin.gInfoBarTunerState:
-				
-				recoverInfoBar()
-				
-				removeExtension()
-				
-				plugin.gInfoBarTunerState.removeEvents()
-				
-				plugin.gInfoBarTunerState.unbindInfoBar()
 				
 				# Plugin is active, disable it
 				plugin.gInfoBarTunerState.close()

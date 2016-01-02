@@ -21,6 +21,10 @@ from enigma import eTimer
 # Config
 from Components.config import *
 
+# Plugin internal
+from ExtensionHandler import addExtension, removeExtension
+
+
 # Globals
 InfoBarShow = None
 InfoBarHide = None
@@ -117,6 +121,14 @@ class InfoBarHandler(object):
 		if config.infobartunerstate.show_overwrite.value:
 			overwriteInfoBar()
 		
+		# Handle extension menu integration
+		if config.infobartunerstate.extensions_menu_show.value or config.infobartunerstate.extensions_menu_setup.value:
+			# Add to extension menu
+			addExtension()
+		else:
+			# Remove from extension menu
+			removeExtension()
+
 	def bindInfoBar(self):
 		# Reimport InfoBar to force update of the class instance variable
 		# Rebind only if it isn't done already 
