@@ -26,7 +26,8 @@ from Components.config import *
 
 # Screen
 from Components.NimManager import nimmanager
-from enigma import eServiceCenter, eServiceReference, iServiceInformation, eEPGCache
+from enigma import eServiceCenter, eServiceReference, eEPGCache
+from enigma import iServiceInformation, iPlayableService, iRecordableService, iPlayableServicePtr
 from ServiceReference import ServiceReference
 
 
@@ -34,12 +35,12 @@ from ServiceReference import ServiceReference
 # Global helper functions
 def getTunerName(tunernumber):
 	try:
-		return str(nimmanager.getNimSlotInputName(number))
+		return str(nimmanager.getNimSlotInputName( int(tunernumber) ))
 	except:
 		return str(chr( int(tunernumber) + ord('A') ))
 
 def normTuner(data):
-	if data:
+	if isinstance(data, dict ):
 		type = str(data.get("tuner_type", ""))
 		number = data.get("slot_number", -1)
 		if number is None or number < 0:
@@ -51,34 +52,30 @@ def normTuner(data):
 	return ( "", "", None )
 
 def getTunerByServiceReferenceOLD(eservicereference):
-	# service must be an instance of eServiceReference
-	#if isinstance(service, eServiceReference):
-	if eservicereference:
+	if isinstance(eservicereference, eServiceReference):
 		serviceHandler = eServiceCenter.getInstance()
 		serviceInfo = serviceHandler.info(eservicereference)
 		data = serviceInfo and serviceInfo.getInfoObject(eservicereference, iServiceInformation.sTransponderData)
 		return normTuner(data)
-	return ( "", "" )
+	return ( "", "", None )
+
 def getTunerByServiceReference(servicereference):
-	# service must be an instance of ServiceReference
-	#if isinstance(service, ServiceReference):
-	if servicereference:
+	if isinstance(servicereference, ServiceReference):
 		info = servicereference.info()
 		data = info and info.getInfoObject(servicereference.ref, iServiceInformation.sTransponderData)
 		return normTuner(data)
-	return ( "", "" )
+	return ( "", "", None )
 
 def getTunerByPlayableService(iservice):
-	# service must be an instance of iPlayableService or iRecordableService
-	#if isinstance(service, iRecordableService):
-	feinfo = iservice and iservice.frontendInfo()
-	data = feinfo and feinfo.getFrontendData()
-	return normTuner(data)
+	if isinstance(iservice, ( iPlayableService, iRecordableService ) ):
+		feinfo = iservice and iservice.frontendInfo()
+		data = feinfo and feinfo.getFrontendData()
+		return normTuner(data)
+	return ( "", "", None )
 
 def getNumber(eservicereference):
-	# service must be an instance of eServiceReference
-	#if isinstance(service, eServiceReference):
-	if eservicereference:
+	print "IBTS getNumber type ###############################", type(eservicereference), str(eservicereference)
+	if isinstance(eservicereference, eServiceReference):
 		
 		from Screens.InfoBar import InfoBar
 		Servicelist = None
@@ -114,37 +111,33 @@ def getNumber(eservicereference):
 							if actbouquet:
 								if actbouquet == bouquet and eservicereference == service:
 									return number
-							else:
-								if eservicereference == service:
-									return number
+							elif eservicereference == service:
+								return number
 	return None
 
 def getChannel(eservicereference):
-	# service must be an instance of eServiceReference
-	#if isinstance(service, eServiceReference):
-	if eservicereference:
+	print "IBTS getChannel type ###############################", type(eservicereference), str(eservicereference)
+	if isinstance(eservicereference, eServiceReference):
 		servicereference = ServiceReference(eservicereference)
 		if servicereference:
 			return servicereference.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
 	return ""
 
-def getEventData(iplayableservice):
-	# service must be an instance of iPlayableService or iRecordableService
-	#if isinstance(service, iRecordableService):
-	info = iplayableservice and iplayableservice.info()
-	event = info and info.getEvent(0)
-	if event:
-		name = event.getEventName() or ""
-		begin = event.getBeginTime() or 0
-		duration = event.getDuration() or 0
-		end = begin + duration or 0
-		return (name,begin,end)
+def getEventData(iservice):
+	print "IBTS getEventData type ###############################", type(iservice), str(iservice)
+	if isinstance(iservice, ( iPlayableService, iRecordableService, iPlayableServicePtr ) ):
+		info = iservice and iservice.info()
+		event = info and info.getEvent(0)
+		if event:
+			name = event.getEventName() or ""
+			begin = event.getBeginTime() or 0
+			duration = event.getDuration() or 0
+			end = begin + duration or 0
+			return (name,begin,end)
 	return ("",0,0)
 
 def getEventName(eservicereference):
-	# service must be an instance of eServiceReference
-	#if isinstance(service, eServiceReference):
-	if eservicereference:
+	if isinstance(eservicereference, eServiceReference):
 		epg = eEPGCache.getInstance()
 		event = epg and epg.lookupEventTime(eservicereference, -1, 0)
 		if event: 

@@ -130,6 +130,7 @@ class StreamWebIf(PluginBase):
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
+				gInfoBarTunerState.onEvent()
 				
 			elif event == StreamingWebScreen.EVENT_END:
 				
@@ -142,6 +143,7 @@ class StreamWebIf(PluginBase):
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.finishEntry(id)
+				gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):
 		

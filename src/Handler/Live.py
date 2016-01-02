@@ -2,6 +2,7 @@
 # by betonme @2015
 
 from time import time
+from enigma import iPlayableService
 from ServiceReference import ServiceReference
 
 # Config
@@ -21,6 +22,8 @@ config.infobartunerstate.plugin_live.enabled = ConfigYesNo(default = False)
 class Live(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
+		self.tunerstate = None
+		self.eservicereference_string = ""
 
 	################################################
 	# To be implemented by subclass
@@ -34,35 +37,70 @@ class Live(PluginBase):
 	def getOptions(self):
 		return [(_("Show live tuner"), config.infobartunerstate.plugin_live.enabled),]
 
+	def appendEvent(self):
+		if config.infobartunerstate.plugin_live.enabled.value:
+			from NavigationInstance import instance
+			if instance is not None:
+				if self.onEvent not in instance.event:
+					instance.event.append(self.onEvent)
+
+	def removeEvent(self):
+		from NavigationInstance import instance
+		if instance is not None:
+			# Recording Events
+			# If we append our function, we will never see the timer state StateEnded for repeating timer
+			if self.onEvent in instance.event:
+				instance.event.remove(self.onEvent)
+
 	def onInit(self):
 		if config.infobartunerstate.plugin_live.enabled.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				
-				gInfoBarTunerState.addEntry("Live", self.getPluginName(), self.getType(), self.getText())
+				self.tunerstate = gInfoBarTunerState.addEntry("Live", self.getPluginName(), self.getType(), self.getText())
 
-	def onShow(self, tunerstates):
-		if config.infobartunerstate.plugin_live.enabled.value:
-			for id, tunerstate in tunerstates.items():
-				if tunerstate.plugin == "Live":
-					break
-			else:
-				self.onInit()
-
-	def update(self, id, tunerstate):
-		
-		print "IBTS Live update ID", self.getType()
-		
-		from NavigationInstance import instance
-		if instance:
-			iplayableservice = instance.getCurrentService()
+	def onEvent(self, ev):
+		#print "IBTS Live onEvent ev", ev, str(self.tunerstate)
+		if ev == iPlayableService.evUpdatedEventInfo or ev == iPlayableService.evUpdatedInfo:
 			
-			tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = getTunerByPlayableService(iplayableservice)
-			tunerstate.name, tunerstate.begin, tunerstate.end = getEventData(iplayableservice)
-		
-			eservicereference = instance.getCurrentlyPlayingServiceReference()
-			tunerstate.number = getNumber(eservicereference)
-			tunerstate.channel = getChannel(eservicereference)
-		
-		return True
-
+			if self.tunerstate:
+				tunerstate = self.tunerstate
+				
+				from NavigationInstance import instance
+				if instance:
+					
+					changed = False
+					
+					eservicereference = instance.getCurrentlyPlayingServiceReference()
+					eservicereference_string = str(eservicereference)
+					
+					# Avoid recalculations
+					if self.eservicereference_string != eservicereference_string:
+						tunerstate.number = None
+						tunerstate.channel = ""
+						
+						tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = "", "", None
+						tunerstate.name, tunerstate.begin, tunerstate.end = "", 0, 0
+						
+						self.eservicereference_string = eservicereference_string
+						
+					if not tunerstate.number:
+						tunerstate.number = getNumber(eservicereference)
+						changed = True
+					if not tunerstate.channel:
+						tunerstate.channel = getChannel(eservicereference)
+						changed = True
+						
+					iplayableservice = instance.getCurrentService()
+					
+					if not tunerstate.tuner or not tunerstate.tunertype or not tunerstate.tunernumber:
+						tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = getTunerByPlayableService(iplayableservice)
+						changed = True
+					
+					if not tunerstate.name or not tunerstate.begin or not tunerstate.end:
+						tunerstate.name, tunerstate.begin, tunerstate.end = getEventData(iplayableservice)
+						changed = True
+					
+					if changed:
+						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+						gInfoBarTunerState.updateMetrics()

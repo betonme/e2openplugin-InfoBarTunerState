@@ -98,7 +98,7 @@ class Unknown(PluginBase):
 		
 		if config.infobartunerstate.show_events.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-			gInfoBarTunerState and gInfoBarTunerState.show(True, True)
+			gInfoBarTunerState.onEvent()
 
 	def onShow(self, tunerstates):
 		if config.infobartunerstate.plugin_unknown.enabled.value:
@@ -119,9 +119,10 @@ class Unknown(PluginBase):
 						
 						tuner = getTunerName(tunernumber)
 						
-						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tuner, tunernumber, _("Used by unknown service") )
 						#print "IBTS UNKNOWN append ", tunernumber
 						self.tunerstates.append(tunernumber)
+						
+						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tuner, tunernumber, _("Used by unknown service") )
 			
 			# Check if we have to remove an entry
 			if self.tunerstates:
@@ -132,6 +133,7 @@ class Unknown(PluginBase):
 					if tunernumber not in self.tuners:
 						id = "Unknown"+str(tunernumber)
 						
-						gInfoBarTunerState.finishEntry(id)
 						#print "IBTS UNKNOWN remove ", tunernumber
 						self.tunerstates.remove(tunernumber)
+						
+						gInfoBarTunerState.finishEntry(id)

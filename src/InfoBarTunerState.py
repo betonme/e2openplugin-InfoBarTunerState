@@ -165,9 +165,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		print "IBTS addEntry", id
 		win = self.session.instantiateDialog(TunerState, plugin, type, text, tuner, tunertype, tunernumber, name, number, channel, begin, end, endless, filename, client, ip, port)
 		self.entries[id] = win
-		
-		if config.infobartunerstate.show_events.value:
-			self.show(True, True)
+		return win
 	
 	def updateEntry(self, id, type, begin, end, endless):
 		if id in self.entries:
@@ -175,10 +173,6 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win.updateType( type )
 			win.updateTimes( begin, end, endless )
 			win.update()
-		
-		# Show also if no matching id is found
-		#if config.infobartunerstate.show_events.value:
-		#	self.show(True)
 	
 	def finishEntry(self, id):
 		print "IBTS finishEntry", id
@@ -187,9 +181,6 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win.updateTimes( None, time(), False )
 			win.updateType( FINISHED )
 			win.update()
-			
-			if config.infobartunerstate.show_events.value:
-				self.show(True, True)
 	
 	def updateName(self, id, name):
 		if id in self.entries:
@@ -223,8 +214,15 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		print "IBTS timerUpdate"
 		self.update()
 	
+	def onEvent(self):
+		if config.infobartunerstate.show_events.value:
+			self.show(True, True)
+	
 	def show(self, autohide=False, forceshow=False):
 		print "IBTS show ", autohide, forceshow
+		
+		if self._shown:
+			return
 		
 		#TEST
 		#if SecondInfobarAvailable:
@@ -274,30 +272,9 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		else:
 			self.hide()
 
-	def tunerShow(self, forceshow=False):
-		print "IBTS tunerShow"
-		self._shown = True
-		
-		for plugin in self.getPlugins():
-			plugin.onShow(self.entries)
-		
+	
+	def handleFinished(self):
 		if self.entries:
-			# There are active entries
-			
-			# Close info screen
-			if self.info:
-				self.info.hide()
-			
-			# Rebind InfoBar Events
-			#self.bindInfoBar()
-			
-			# Only show the Tuner information dialog,
-			# if no screen is displayed or the InfoBar is visible
-			#TODO Info can also be showed if info.rectangle is outside currentdialog.rectangle
-	#		if self.session.current_dialog is None \
-	#			or isinstance(self.session.current_dialog, InfoBar):
-			#MAYBE Tuner Informationen werden zusammen mit der EMCMediaCenter InfoBar angezeigt
-			#or isinstance(self.session.current_dialog, EMCMediaCenter):
 			
 			# Delete entries:
 			#  if entry reached timeout
@@ -312,21 +289,14 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 					win.hide()
 					self.session.deleteDialog(win)
 					del self.entries[id]
-			
-			# Update windows
+
+	def updateMetrics(self):
+		if self.entries:
+		
 			# Dynamic column resizing and repositioning
 			widths = []
 			for id, win in self.entries.items():
-				if self.isPlugin(win.plugin):
-					result = self.getPlugin(win.plugin).update(id, win)
-					if result is None:
-						win.updateTimes( None, time(), False )
-						win.updateType( FINISHED )
-					win.update()
-					
-				else:
-					# Type INFO / FINISHED
-					win.update()
+				win.update()
 				
 				# Calculate field width
 				widths = map( lambda (w1, w2): max( w1, w2 ), zip_longest( widths, win.widths ) )
@@ -364,6 +334,40 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 					posy -= height
 				# Show windows
 				win.show()
+
+	def tunerShow(self, forceshow=False):
+		print "IBTS tunerShow"
+		self._shown = True
+		
+		for plugin in self.getPlugins():
+			plugin.onShow(self.entries)
+		
+		if self.entries:
+			# There are active entries
+			
+			# Close info screen
+			if self.info:
+				self.info.hide()
+			
+			# Only show the Tuner information dialog,
+			# if no screen is displayed or the InfoBar is visible
+			#TODO Info can also be showed if info.rectangle is outside currentdialog.rectangle
+			#if self.session.current_dialog is None \
+			#	or isinstance(self.session.current_dialog, InfoBar):
+			#MAYBE Tuner Informationen werden zusammen mit der EMCMediaCenter InfoBar angezeigt
+			#or isinstance(self.session.current_dialog, EMCMediaCenter):
+			
+			self.handleFinished()
+			
+			# Update window content
+			for id, win in self.entries.items():
+				if self.isPlugin(win.plugin):
+					result = self.getPlugin(win.plugin).update(id, win)
+					if result is None:
+						win.updateTimes( None, time(), False )
+						win.updateType( FINISHED )
+			
+			self.updateMetrics()
 			
 		elif forceshow:
 			# No entries available
@@ -734,28 +738,29 @@ class TunerState(TunerStateBase):
 			else:
 				progress = None
 			
-		self.duration = duration and duration is not None and math.ceil( ( duration ) / 60.0 )
-		self.timeleft = timeleft and timeleft is not None and math.ceil( ( timeleft ) / 60.0 )
-		self.timeelapsed = timeelapsed and timeelapsed is not None and math.ceil( ( timeelapsed ) / 60.0 )
-		self.progress = progress and progress is not None and int( progress )
+		self.duration    = duration and duration is not None and       int( math.ceil( ( duration ) / 60.0 ) )
+		self.timeleft    = timeleft and timeleft is not None and       int( math.ceil( ( timeleft ) / 60.0 ) )
+		self.timeelapsed = timeelapsed and timeelapsed is not None and int( math.ceil( ( timeelapsed ) / 60.0 ) )
+		self.progress    = progress and progress is not None and       int( progress )
 		#print "IBTS duration, timeleft, timeelapsed, progress", self.duration, self.timeleft, self.timeelapsed, self.progress
 		
 		# File site and free disk space
 		filename = self.filename
 		if filename and os.path.exists( filename ):
 			filesize = os.path.getsize( filename ) 
-			self.filesize = filesize / (1024*1024)
+			self.filesize = int( filesize / (1024*1024) )
 			
 			try:
 				stat = os.statvfs( filename )
-				self.freespace = ( stat.f_bfree / 1000 * stat.f_bsize / 1000 ) / 1024
-				#free = os.stat(path).st_size/1048576)
+				self.freespace = int ( ( stat.f_bfree / 1000 * stat.f_bsize / 1000 ) / 1024 )
+				#self.freespace = os.stat(filename).st_size/1048576)
 			except OSError:
 				pass
 
 	def update(self):
-		#TODO Handle Live / Stream Entries - Update several Labels
+		
 		self.updateDynamicContent()
+		
 		height = self.instance.size().height()
 		widths = []
 		
@@ -806,8 +811,10 @@ class TunerState(TunerStateBase):
 					text = self.tunertype
 			
 			elif field == "Number":
-				if self.number is not None:
+				if isinstance( self.number, int ):
 					text = _("%d") % ( self.number )
+				else:
+					print "IBTS DEBUG", self.plugin, self.number, self.text, self.name
 			
 			elif field == "Channel":
 				text = self.channel
@@ -816,31 +823,28 @@ class TunerState(TunerStateBase):
 				text = self.name
 			
 			elif field == "TimeLeft":
-				if not self.endless:
-					if self.timeleft is not None:
-						# Show timeleft recording time
-						text = _("%d Min") % ( self.timeleft )
-				else: 
+				if self.endless:
 					# Add infinity symbol for indefinitely recordings
 					text = INFINITY
+				elif isinstance( self.timeleft, int ):
+					# Show timeleft recording time
+					text = _("%d Min") % ( self.timeleft )
 			
 			elif field == "TimeElapsed":
-				if self.timeelapsed is not None:
+				if isinstance( self.timeelapsed, int ):
 					text = _("%d Min") % ( self.timeelapsed )
 			
 			elif field == "TimeLeftDuration":
 				# Calculate timeleft minutes
-				if not self.endless:
-					if self.type is not FINISHED and self.timeleft is not None:
-					#if self.timeleft is not None:
-						# Show timeleft recording time
-						text = _("%d Min") % ( self.timeleft )
-					elif self.duration is not None:
-						# Fallback show recording length
-						text = _("%d Min") % ( self.duration )
-				else: 
+				if self.endless:
 					# Add infinity symbol for indefinitely recordings
 					text = INFINITY
+				elif self.type is FINISHED:
+					if isinstance( self.duration, int ):
+						text = _("%d Min") % ( self.duration )
+				elif isinstance( self.timeleft, int ):
+					# Show timeleft recording time
+					text = _("%d Min") % ( self.timeleft )
 			
 			elif field == "Begin":
 				lbegin = self.begin and localtime( self.begin )
@@ -859,11 +863,11 @@ class TunerState(TunerStateBase):
 					text = lend and strftime( config.infobartunerstate.time_format_end.value, lend )
 			
 			elif field == "Duration":
-				if self.duration is not None:
+				if isinstance( self.duration, int ):
 					text = _("%d Min") % ( self.duration )
 			
 			elif field == "TimerProgressText":
-				if self.progress is not None:
+				if isinstance( self.progress, int ):
 					text = _("%d %%") % ( self.progress )
 			
 			elif field == "TimerProgressGraphical":
@@ -894,11 +898,11 @@ class TunerState(TunerStateBase):
 				text = self.destination or self.client or self.ip
 			
 			elif field == "FileSize":
-				if self.filesize  is not None:
+				if isinstance( self.filesize, int ):
 					text = _("%d MB") % ( self.filesize )
 			
 			elif field == "FreeSpace":
-				if self.freespace is not None:
+				if isinstance( self.freespace, int ):
 					text = _("%d GB") % ( self.freespace )
 			
 			elif field == "None":

@@ -100,7 +100,7 @@ class StreamServer(PluginBase):
 				try:
 					from Components.StreamServerControl import streamServerControl
 					for stream in range(streamServerControl.rtspClientCount):
-						self.onEventClientCountChanged(streamServerControl.rtspClientCount, "")
+						self.onEventClientCountChanged(streamServerControl.rtspClientCount, "", True)
 				except:
 					pass
 
@@ -121,7 +121,8 @@ class StreamServer(PluginBase):
 				client = getClient(ip)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", "", "", "", time(), 0, True, "", client, ip, "")
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", 0, "", 0, time(), 0, True, "", client, ip, "")
+				gInfoBarTunerState.onEvent()
 			
 		else:
 			
@@ -135,6 +136,7 @@ class StreamServer(PluginBase):
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				gInfoBarTunerState.finishEntry(id)
+				gInfoBarTunerState.onEvent()
 
 	def onEventParametersChanged(self, params):
 		try:
@@ -165,6 +167,7 @@ class StreamServer(PluginBase):
 						
 						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
+						gInfoBarTunerState.onEvent()
 		except Exception, e:
 			print "IBTS exception " + str(e)
 			import os, sys, traceback

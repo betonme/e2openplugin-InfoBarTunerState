@@ -208,7 +208,15 @@ class Timers(PluginBase):
 				tunerstate.end = timer.end
 				tunerstate.endless = timer.autoincrease
 				
+				servicereference = timer.service_ref
+				
 				del timer
+				
+				if servicereference:
+					if not tunerstate.number:
+						tunerstate.number = getNumber(servicereference.ref)
+					if not tunerstate.channel:
+						tunerstate.channel = getChannel(servicereference.ref)
 				
 				return True
 			else:
