@@ -150,24 +150,26 @@ class StreamServer(PluginBase):
 					
 					self.ids[-1] = (id, ip, servicereference_string)
 					
-					eservicereference = eServiceReference(servicereference_string)
-					if eservicereference.valid():
+					if servicereference_string:
 						
-						service_ref = ServiceReference(servicereference_string)
-						
-						tuner, tunertype, tunernumber = getTunerByServiceReference( service_ref ) 
-						
-						name = getEventName(eservicereference)
-						
-						number = getNumber(eservicereference)
-						channel = getChannel(eservicereference)
-						name = getEventName(eservicereference)
-						
-						client = getClient(ip)
-						
-						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-						gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
-						gInfoBarTunerState.onEvent()
+						eservicereference = eServiceReference(servicereference_string)
+						if eservicereference and eservicereference.valid():
+							
+							service_ref = ServiceReference(servicereference_string)
+							
+							tuner, tunertype, tunernumber = getTunerByServiceReference( service_ref ) 
+							
+							name = getEventName(eservicereference)
+							
+							number = getNumber(eservicereference)
+							channel = getChannel(eservicereference)
+							name = getEventName(eservicereference)
+							
+							client = getClient(ip)
+							
+							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+							gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
+							gInfoBarTunerState.onEvent()
 		except Exception, e:
 			print "IBTS exception " + str(e)
 			import os, sys, traceback
@@ -179,9 +181,20 @@ class StreamServer(PluginBase):
 		
 		servicereference_string = self.getRef(id)
 		
-		eservicereference = ref and eServiceReference(servicereference_string)
-		if eservicereference and eservicereference.valid():
+		if servicereference_string:
 			
-			tunerstate.name = getEventName(eservicereference)
+			eservicereference = eServiceReference(servicereference_string)
+			if eservicereference and eservicereference.valid():
+				
+				tunerstate.name = getEventName(eservicereference)
+				
+				if not tunerstate.number:
+					tunerstate.number = getNumber(eservicereference)
+				if not tunerstate.channel:
+					tunerstate.channel = getChannel(eservicereference)
 		
-		return True
+			return True
+		
+		else:
+			
+			return None

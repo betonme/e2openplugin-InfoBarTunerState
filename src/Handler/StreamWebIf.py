@@ -156,6 +156,11 @@ class StreamWebIf(PluginBase):
 			
 			tunerstate.name = getEventName(eservicereference)
 			
+			if not tunerstate.number:
+				tunerstate.number = getNumber(eservicereference)
+			if not tunerstate.channel:
+				tunerstate.channel = getChannel(eservicereference)
+			
 			return True
 			
 		else:
