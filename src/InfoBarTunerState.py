@@ -776,7 +776,8 @@ class TunerState(TunerStateBase):
 			fieldid = "Field"+str(i)
 			field = c.value
 			text = ""
-			print "IBTS DEBUG", self.plugin, field
+			#print "IBTS DEBUG", self.plugin, field
+			
 			if field == "TypeIcon":
 				self["Type"].show()
 				if self.type == TIMER:
@@ -814,8 +815,8 @@ class TunerState(TunerStateBase):
 			elif field == "Number":
 				if isinstance( self.number, int ):
 					text = _("%d") % ( self.number )
-				else:
-					print "IBTS DEBUG Number", self.plugin, self.number, self.text, self.name
+				elif isinstance( self.number, basestring ):
+					text = self.number
 			
 			elif field == "Channel":
 				text = self.channel
@@ -857,7 +858,6 @@ class TunerState(TunerStateBase):
 				text = lend and strftime( config.infobartunerstate.time_format_end.value, lend )
 			
 			elif field == "BeginEnd":
-				print "IBTS DEBUG BeginEnd", self.plugin, self.begin
 				if self.progress is None:
 					lbegin = self.begin and localtime( self.begin )
 					text = lbegin and strftime( config.infobartunerstate.time_format_begin.value, lbegin )
