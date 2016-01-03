@@ -171,7 +171,16 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 			x[1].cancel()
 		self.close()
 
-	# Overwrite ConfigListScreen keySave function
+	# Overwrite ConfigList functions
+	def saveAll(self):
+		for x in self["config"].list:
+			if isinstance(x, ConfigSubsection):
+				for y in x.content.items.values():
+					y.save()
+			x[1].save()
+		configfile.save()	
+
+	# Overwrite ConfigListScreen functions
 	def keySave(self):
 		# Check field configuration
 		fieldname = []
@@ -213,10 +222,11 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 		import plugin
 		if config.infobartunerstate.enabled.value:
 			# Plugin should be enabled
-			#TODO use a separate init function similar to the close
 			if plugin.gInfoBarTunerState:
+				
 				# Plugin is active - close it
 				plugin.gInfoBarTunerState.close()
+				plugin.gInfoBarTunerState = None
 			
 			
 			# Force new instance
