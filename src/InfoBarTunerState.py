@@ -75,7 +75,7 @@ SecondInfobarAvailable = False
 # Type Enum
 # 1. Used for pixmap mapping
 # 2. Used to set priority for calling the plugins onShow event: Higher numbers will be served first
-UNKNOWN, INFO, LIVE, RECORD, STREAM, FINISHED = range( 6 )
+UNKNOWN, INFO, TIMER, LIVE, RECORD, STREAM, FINISHED = range( 7 )
 
 # Constants
 INFINITY =  u"\u221E".encode("utf-8")
@@ -689,7 +689,6 @@ class TunerState(TunerStateBase):
 			self.endless = endless
 
 	def updateDynamicContent(self):
-		#TODO cleanup this function
 		
 		# Time and progress
 		now = time()
@@ -777,13 +776,13 @@ class TunerState(TunerStateBase):
 			fieldid = "Field"+str(i)
 			field = c.value
 			text = ""
-			
+			print "IBTS DEBUG", self.plugin, field
 			if field == "TypeIcon":
 				self["Type"].show()
-				if self.type == RECORD:
-					self["Type"].setPixmapNum(0)	
-				elif self.type == STREAM:
-					self["Type"].setPixmapNum(1)
+				if self.type == TIMER:
+					self["Type"].setPixmapNum(3)
+				elif self.type == RECORD:
+					self["Type"].setPixmapNum(0)
 				elif self.type == FINISHED:
 					self["Type"].setPixmapNum(2)
 				elif self.type == INFO:
@@ -792,6 +791,8 @@ class TunerState(TunerStateBase):
 					self["Type"].setPixmapNum(4)
 				elif self.type == UNKNOWN:
 					self["Type"].setPixmapNum(5)
+				elif self.type == STREAM:
+					self["Type"].setPixmapNum(1)
 				else:
 					widths.append( 0 )
 					continue
@@ -814,7 +815,7 @@ class TunerState(TunerStateBase):
 				if isinstance( self.number, int ):
 					text = _("%d") % ( self.number )
 				else:
-					print "IBTS DEBUG", self.plugin, self.number, self.text, self.name
+					print "IBTS DEBUG Number", self.plugin, self.number, self.text, self.name
 			
 			elif field == "Channel":
 				text = self.channel
@@ -847,6 +848,7 @@ class TunerState(TunerStateBase):
 					text = _("%d Min") % ( self.timeleft )
 			
 			elif field == "Begin":
+				
 				lbegin = self.begin and localtime( self.begin )
 				text = lbegin and strftime( config.infobartunerstate.time_format_begin.value, lbegin )
 			
@@ -855,7 +857,8 @@ class TunerState(TunerStateBase):
 				text = lend and strftime( config.infobartunerstate.time_format_end.value, lend )
 			
 			elif field == "BeginEnd":
-				if self.progress == 0:
+				print "IBTS DEBUG BeginEnd", self.plugin, self.begin
+				if self.progress is None:
 					lbegin = self.begin and localtime( self.begin )
 					text = lbegin and strftime( config.infobartunerstate.time_format_begin.value, lbegin )
 				elif self.progress > 0:

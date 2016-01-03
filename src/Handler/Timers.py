@@ -113,11 +113,11 @@ class Timers(PluginBase):
 	################################################
 	# To be implemented by subclass
 	def getText(self):
-		return "Info"
+		return "Timer"
 
 	def getType(self):
-		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
-		return INFO
+		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import TIMER
+		return TIMER
 
 	def getOptions(self):
 		return [
@@ -150,52 +150,57 @@ class Timers(PluginBase):
 						if timer:
 							
 							id = getTimerID( timer )
-							print "IBTS toadd", id
-							
-							name = timer.name
-							servicereference = timer.service_ref
-							
-							# Is this really necessary?
-							try: timer.Filename
-							except: timer.calculateFilename()
-							
-							try: filename = timer.Filename
-							except: filename = timer.name
-							
-							begin = timer.begin
-							end = timer.end
-							endless = timer.autoincrease
-							
-							# Delete references to avoid blocking tuners
-							del timer
-							
-							number = getNumber(servicereference.ref)
-							channel = getChannel(servicereference.ref)
-							
-							if id in toremove:
-								toremove.remove(id)
+							#print "IBTS toadd", id
 							
 							# Only add timer if not recording
 							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-							from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO
-							if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
+							if gInfoBarTunerState.hasEntry(id):
+								
+								# Delete references to avoid blocking tuners
+								del timer
+								
+							else:
+							
+								name = timer.name
+								servicereference = timer.service_ref
+								
+								# Is this really necessary?
+								try: timer.Filename
+								except: timer.calculateFilename()
+								
+								try: filename = timer.Filename
+								except: filename = timer.name
+								
+								begin = timer.begin
+								end = timer.end
+								endless = timer.autoincrease
+								
+								# Delete references to avoid blocking tuners
+								del timer
+								
+								number = getNumber(servicereference.ref)
+								channel = getChannel(servicereference.ref)
+								
 								self.nextids.append(id)
-								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", name, number, channel, begin, end, endless, filename)
+								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", None, name, number, channel, begin, end, endless, filename)
+							
+							if id in toremove:
+								toremove.remove(id)
 				
 				# Close all not touched next timers
 				if toremove:
 					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-					print "IBTS toremove"
-					pprint.pprint(toremove)
+					#print "IBTS toremove"
+					#pprint.pprint(toremove)
 					for id in toremove:
-						print "IBTS toremove", id
+						#print "IBTS toremove", id
 						if id in self.nextids:
 							self.nextids.remove(id)
 						gInfoBarTunerState.removeEntry(id)
 
 	def update(self, id, tunerstate):
 		
-		print "IBTS Timers update ID", id
+		#print "IBTS Timers update ID", id
 		
 		if id in self.nextids:
 			
@@ -212,11 +217,10 @@ class Timers(PluginBase):
 				
 				del timer
 				
-				if servicereference:
-					if not tunerstate.number:
-						tunerstate.number = getNumber(servicereference.ref)
-					if not tunerstate.channel:
-						tunerstate.channel = getChannel(servicereference.ref)
+				if not tunerstate.number:
+					tunerstate.number = getNumber(servicereference.ref)
+				if not tunerstate.channel:
+					tunerstate.channel = getChannel(servicereference.ref)
 				
 				return True
 			else:
