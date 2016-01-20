@@ -114,7 +114,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 			)
 		for i, configinfobartunerstatefieldwidth in enumerate( config.infobartunerstate.fieldswidth.dict().itervalues() ):
 			self.config.append(
-			(  _("Field %d width") % (i)                             , configinfobartunerstatefieldwidth )
+			(  _("Field %d width") % (i)                              , configinfobartunerstatefieldwidth )
 			)
 		
 		self.config.extend( [
@@ -126,9 +126,10 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 			(  _("Text spacing offset in pixel")                      , config.infobartunerstate.offset_spacing ),
 			(  _("Variable field width")                              , config.infobartunerstate.variable_field_width ),
 			(  _("Placeholder for Progressbar")                       , config.infobartunerstate.placeholder_pogressbar ),
-			(  _("List goes up")                       				  , config.infobartunerstate.list_goesup ),
+			(  _("List goes up")                                      , config.infobartunerstate.list_goesup ),
 			(  _("Background transparency")                           , config.infobartunerstate.background_transparency ),
 			(  _("Overwrite Infobar timeout")                         , config.infobartunerstate.infobar_timeout ),
+			(  _("Wake HDD for free space statistics")                , config.infobartunerstate.wake_hdd ),
 		] )
 		
 		self.config.extend( [
