@@ -31,13 +31,15 @@ from Screens.Setup import SetupSummary
 
 # Plugin internal
 from InfoBarTunerState import InfoBarTunerState
+from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
 
 
 #######################################################
 # Configuration screen
-class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
+class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerStatePlugins):
 	def __init__(self, session):
 		Screen.__init__(self, session)
+		InfoBarTunerStatePlugins.__init__(self)
 		self.skinName = [ "InfoBarTunerStateConfiguration", "Setup" ]
 		
 		# Summary
@@ -95,8 +97,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen):
 			(  separator                                              , config.infobartunerstate.about ),
 		]
 		
-		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-		for plugin in gInfoBarTunerState.getPlugins():
+		for plugin in self.getPlugins():
 			options = plugin.getOptions()
 			if options:
 				for text, element in plugin.getOptions():
