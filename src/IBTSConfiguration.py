@@ -131,6 +131,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 			(  _("Background transparency")                           , config.infobartunerstate.background_transparency ),
 			(  _("Overwrite Infobar timeout")                         , config.infobartunerstate.infobar_timeout ),
 			(  _("Wake HDD for free space statistics")                , config.infobartunerstate.wake_hdd ),
+			(  _("Skip mounts for free space statistics")             , config.infobartunerstate.skip_mounts ),
 		] )
 		
 		self.config.extend( [

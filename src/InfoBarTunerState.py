@@ -777,7 +777,10 @@ class TunerState(TunerStateBase):
 		filename = self.filename
 		if filename:
 			
-			if config.infobartunerstate.wake_hdd.value or hddIsAvailable( filename ):
+			if config.infobartunerstate.skip_mounts.value and os.path.ismount( filename ):
+				pass
+			
+			elif config.infobartunerstate.wake_hdd.value or hddIsAvailable( filename ):
 			
 				if os.path.exists( filename ):
 					filesize = os.path.getsize( filename ) 
