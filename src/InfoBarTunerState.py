@@ -775,9 +775,22 @@ class TunerState(TunerStateBase):
 		
 		# File site and free disk space
 		filename = self.filename
+		self.filesize = None
+		self.freespace = None
 		if filename:
 			
-			if config.infobartunerstate.skip_mounts.value and os.path.ismount( filename ):
+			for c in config.infobartunerstate.fields.dict().itervalues():
+				if c.value == "FileSize":
+					break
+				if c.value == "FreeSpace":
+					break
+			else:
+				# We do not need to calculate the following values
+				return
+			
+			# We need a replacement function for ismount
+			# Bad workaround - skip all pathes which start with /mnt
+			if config.infobartunerstate.skip_mounts.value and filename.startswith("/mnt/"): #os.path.ismount( filename ):
 				pass
 			
 			elif config.infobartunerstate.wake_hdd.value or hddIsAvailable( filename ):
