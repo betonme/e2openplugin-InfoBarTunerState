@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
-import pprint
-
 from time import strftime, time, localtime, mktime
 from datetime import datetime, timedelta
 
@@ -140,7 +138,6 @@ class Timers(PluginBase):
 				#print "IBTS pending_limit", pending_limit
 				
 				timer_list = getNextPendingRecordTimers(pending_limit)[:number_pending_timers]
-				#pprint.pprint(timer_list)
 				
 				if timer_list:
 					
@@ -194,7 +191,6 @@ class Timers(PluginBase):
 					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 					if gInfoBarTunerState:
 						#print "IBTS toremove"
-						#pprint.pprint(toremove)
 						for id in toremove:
 							#print "IBTS toremove", id
 							if id in self.nextids:
