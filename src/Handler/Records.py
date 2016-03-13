@@ -30,6 +30,15 @@ def getTimer(id):
 				return timer
 	return None
 
+def getProcessedTimer(id):
+	from NavigationInstance import instance
+	if instance is not None:
+		for timer in instance.RecordTimer.processed_timers:
+			#print "timerlist:", getTimerID( timer )
+			if getTimerID( timer ) == id:
+				return timer
+	return None
+
 class Records(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
@@ -162,4 +171,4 @@ class Records(PluginBase):
 			
 			self.onInit()
 			
-			return None
+			return False
