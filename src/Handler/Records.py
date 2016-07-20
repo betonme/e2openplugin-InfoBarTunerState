@@ -6,6 +6,8 @@ from time import time
 # Config
 from Components.config import *
 
+from enigma import eEPGCache
+
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
@@ -148,7 +150,33 @@ class Records(PluginBase):
 			
 			tunerstate.begin = timer.begin
 			tunerstate.end = timer.end
-			tunerstate.endless = timer.autoincrease
+			
+			if hasattr(timer, 'vpsplugin_enabled') and timer.vps_enabled:
+			#and hasattr(timer, 'vpsplugin_overwrite') and timer.vpsplugin_overwrite:
+				tunerstate.endless = False
+				epgcache = eEPGCache.getInstance()
+				
+				if timer.eit:
+					print "IBTS Records event by lookupEventId"
+					event = epgcache.lookupEventId(timer.service_ref.ref, timer.eit)
+				
+				if not event:
+					print "IBTS Records event by lookupEventTime"
+					event = epgcache.lookupEventTime( timer.service_ref.ref, timer.begin + 5 );
+				
+				if event:
+					print "IBTS Records event"
+					begin = event.getBeginTime() or 0
+					duration = event.getDuration() or 0
+					tunerstate.end  = begin + duration
+					
+					if not tunerstate.end:
+						print "IBTS Records no end"
+						tunerstate.endless = True
+				else:
+					tunerstate.endless = timer.autoincrease
+			else:
+				tunerstate.endless = timer.autoincrease
 			
 			irecordservice = timer.record_service
 			servicereference = timer.service_ref
