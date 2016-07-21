@@ -151,7 +151,7 @@ class Records(PluginBase):
 			tunerstate.begin = timer.begin
 			tunerstate.end = timer.end
 			
-			if hasattr(timer, 'vpsplugin_enabled') and timer.vps_enabled:
+			if hasattr(timer, 'vpsplugin_enabled') and timer.vpsplugin_enabled:
 			#and hasattr(timer, 'vpsplugin_overwrite') and timer.vpsplugin_overwrite:
 				tunerstate.endless = False
 				epgcache = eEPGCache.getInstance()
