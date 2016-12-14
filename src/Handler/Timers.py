@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
-import pprint
+#import pprint
 
 from time import strftime, time, localtime, mktime
 from datetime import datetime, timedelta
@@ -20,7 +20,7 @@ config.infobartunerstate.plugin_timers         = ConfigSubsection()
 config.infobartunerstate.plugin_timers.enabled = ConfigYesNo(default = True)
 config.infobartunerstate.plugin_timers.number_pending_timers     = ConfigSelectionNumber(0, 10, 1, default = 1)
 config.infobartunerstate.plugin_timers.pending_hours             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.plugin_timers.Energietimersenabled      = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_timers.show_energy_timers        = ConfigYesNo(default = True)
 
 def getTimer(id):
 	from NavigationInstance import instance
@@ -124,7 +124,7 @@ class Timers(PluginBase):
 		return [
 					(_("Show pending timer(s)"),                      config.infobartunerstate.plugin_timers.enabled),
 					(_("Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers),
-					(_("Show Energy shedule timers"),    config.infobartunerstate.plugin_timers.Energietimersenabled),
+					(_("Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers),
 					(_("Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours),
 				]
 
@@ -139,9 +139,10 @@ class Timers(PluginBase):
 				pending_seconds = int( config.infobartunerstate.plugin_timers.pending_hours.value ) * 3600
 				pending_limit = (time() + pending_seconds) if pending_seconds else 0
 				#print "IBTS pending_limit", pending_limit
-				Plus=0
+				timer_end = 0
 				#timer_list = getNextPendingRecordTimers(pending_limit)[:number_pending_timers]
-				timer_list = getNextPendingRecordTimers(pending_limit)[:(number_pending_timers+number_pending_timers)]
+				#timer_list = getNextPendingRecordTimers(pending_limit)[:(number_pending_timers+number_pending_timers)]
+				timer_list = getNextPendingRecordTimers(pending_limit)[:]
 				#pprint.pprint(timer_list)
 				
 				if timer_list:
@@ -150,7 +151,7 @@ class Timers(PluginBase):
 					#timer_list.reverse()
 					
 					for i, timer in enumerate(timer_list):
-						if i>=number_pending_timers+Plus:
+						if i>=number_pending_timers+timer_end:
 							break
 						if timer:
 							
@@ -187,9 +188,10 @@ class Timers(PluginBase):
 									number = getNumber(servicereference.ref)
 									channel = getChannel(servicereference.ref)
 
-									#if ((name=="Ausschalten")or(name=="Einschalten")or(name=="Standby"))and(config.infobartunerstate.plugin_timers.Energietimersenabled.value==False):
-									if (str(servicereference)[0]=="-")and(config.infobartunerstate.plugin_timers.Energietimersenabled.value==False):
-										Plus+=1
+									# if ((name=="Ausschalten")or(name=="Einschalten")or(name=="Standby"))and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
+									# isset zapbeforerecord="0" justremind="0" wakeup_t="0" shutdown_t="0" notify_t="0" standby_t="1"
+									if (str(servicereference)[0]=="-")and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
+										timer_end+=1
 									else:
 										self.nextids.append(id)
 										gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", None, name, number, channel, begin, end, endless, filename)
