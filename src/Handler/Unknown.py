@@ -64,12 +64,7 @@ class Unknown(PluginBase):
 				pass
 
 	def onInit(self):
-		if config.infobartunerstate.plugin_unknown.enabled.value:
-			from NavigationInstance import instance
-			if instance is not None:
-				for timer in instance.RecordTimer.timer_list:
-					if timer.isRunning() and not timer.justplay:
-						self.onEvent(timer)
+		pass
 
 	def onEvent(self, mask):
 		self.mask = mask
