@@ -831,7 +831,7 @@ class TunerState(TunerStateBase):
 			if field == "TypeIcon":
 				self["Type"].show()
 				if self.type == TIMER:
-					self["Type"].setPixmapNum(3)
+					self["Type"].setPixmapNum(6)
 				elif self.type == RECORD:
 					self["Type"].setPixmapNum(0)
 				elif self.type == FINISHED:
