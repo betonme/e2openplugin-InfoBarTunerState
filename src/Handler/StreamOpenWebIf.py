@@ -60,7 +60,7 @@ class StreamOpenWebIf(PluginBase):
 		return "Stream"
 
 	def getType(self):
-		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
+		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import STREAM
 		# Pixmap number to be displayed as icon
 		return STREAM
 

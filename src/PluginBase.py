@@ -27,7 +27,7 @@ class PluginBase(object):
 		pass
 
 	def getType(self):
-		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
+		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO
 		# Pixmap number to be displayed as icon
 		return INFO
 
