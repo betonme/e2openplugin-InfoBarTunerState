@@ -364,6 +364,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				if self.isPlugin(win.plugin):
 					result = self.getPlugin(win.plugin).update(id, win)
 					if result is None:
+						print "IBTS tunerShow FINISHED", id
 						win.updateTimes( None, time(), False )
 						win.updateType( FINISHED )
 			
@@ -831,7 +832,10 @@ class TunerState(TunerStateBase):
 			if field == "TypeIcon":
 				self["Type"].show()
 				if self.type == TIMER:
-					self["Type"].setPixmapNum(6)
+					if len(self["Type"].pixmaps) >= 6:
+						self["Type"].setPixmapNum(6)
+					else:
+						self["Type"].setPixmapNum(3)
 				elif self.type == RECORD:
 					self["Type"].setPixmapNum(0)
 				elif self.type == FINISHED:
