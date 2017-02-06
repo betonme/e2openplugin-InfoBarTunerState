@@ -21,7 +21,9 @@ config.infobartunerstate.plugin_records.enabled = ConfigYesNo(default = True)
 
 def getTimerID(timer):
 	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
-	return str( timer )
+	#return str( timer )
+	#return '<%s instance at %x name=%s %s>' % (self.__class__.__name__, id(self), self.name, hasattr(self,"Filename") and self.Filename or "")
+	return 'record %x %s %x' % ( id(timer), timer.name, timer.eit )
 
 def getTimer(id):
 	from NavigationInstance import instance
@@ -51,7 +53,7 @@ class Records(PluginBase):
 		return "Record"
 
 	def getType(self):
-		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO, RECORD, STREAM, FINISHED
+		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import RECORD
 		return RECORD
 
 	def getOptions(self):

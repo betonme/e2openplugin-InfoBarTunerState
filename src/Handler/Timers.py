@@ -26,14 +26,17 @@ def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
 		for timer in instance.RecordTimer.timer_list + instance.RecordTimer.processed_timers:
-			#print "timerlist:", getTimerID( timer )
+			print "IBTS timerlist:", getTimerID( timer )
 			if getTimerID( timer ) == id:
 				return timer
+		else:
+			print "IBTS getTimer for else"
 	return None
 
 def getTimerID(timer):
 	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
-	return "next_"+str( timer )
+	#return '<%s instance at %x name=%s %s>' % (self.__class__.__name__, id(self), self.name, hasattr(self,"Filename") and self.Filename or "")
+	return 'timer %x %s %x' % ( id(timer), timer.name, timer.eit )
 
 def getNextPendingRecordTimers(pending_limit):
 	from NavigationInstance import instance
@@ -146,7 +149,6 @@ class Timers(PluginBase):
 				#pprint.pprint(timer_list)
 				
 				if timer_list:
-				 
 					
 					#timer_list.reverse()
 					
@@ -157,6 +159,9 @@ class Timers(PluginBase):
 							
 							id = getTimerID( timer )
 							#print "IBTS toadd", id
+							
+							if id in toremove:
+								toremove.remove(id)
 							
 							# Only add timer if not recording
 							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
@@ -171,51 +176,48 @@ class Timers(PluginBase):
 									name = timer.name
 									servicereference = timer.service_ref
 									
-									# Is this really necessary?
-									try: timer.Filename
-									except: timer.calculateFilename()
-									
-									try: filename = timer.Filename
-									except: filename = timer.name
-									
-									begin = timer.begin
-									end = timer.end
-									endless = timer.autoincrease
-									
-									# Delete references to avoid blocking tuners
-									del timer
-									
-									number = getNumber(servicereference.ref)
-									channel = getChannel(servicereference.ref)
-
 									# if ((name=="Ausschalten")or(name=="Einschalten")or(name=="Standby"))and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
 									# isset zapbeforerecord="0" justremind="0" wakeup_t="0" shutdown_t="0" notify_t="0" standby_t="1"
+									
 									if (str(servicereference)[0]=="-")and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
 										timer_end+=1
+										
 									else:
+										# Is this really necessary?
+										try: timer.Filename
+										except: timer.calculateFilename()
+										
+										try: filename = timer.Filename
+										except: filename = timer.name
+										
+										begin = timer.begin
+										end = timer.end
+										endless = timer.autoincrease
+										
+										# Delete references to avoid blocking tuners
+										del timer
+										
+										number = getNumber(servicereference.ref)
+										channel = getChannel(servicereference.ref)
+									
 										self.nextids.append(id)
 										gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", None, name, number, channel, begin, end, endless, filename)
 
-
-								if id in toremove:
-									toremove.remove(id)
-				
 				# Close all not touched next timers
 				if toremove:
 					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 					if gInfoBarTunerState:
-						#print "IBTS toremove"
+						print "IBTS toremove"
 						#pprint.pprint(toremove)
 						for id in toremove:
-							#print "IBTS toremove", id
+							print "IBTS timers toremove", id
 							if id in self.nextids:
 								self.nextids.remove(id)
 							gInfoBarTunerState.removeEntry(id)
 
 	def update(self, id, tunerstate):
 		
-		#print "IBTS Timers update ID", id
-		
+		print "IBTS Timers update ID", id
 		if id in self.nextids:
 			
 			timer = getTimer( id )
@@ -238,6 +240,8 @@ class Timers(PluginBase):
 				
 				return True
 			else:
+				print "IBTS timers update FINISHED no timer", id
 				return None
 		else:
+			print "IBTS timers update FINISHED not in ids", id
 			return None
