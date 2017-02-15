@@ -113,7 +113,9 @@ class Records(PluginBase):
 					# Is this really necessary?
 					try: timer.Filename
 					except: timer.calculateFilename()
-					filename = timer.Filename
+					
+					try: filename = timer.Filename
+					except: filename = timer.name
 					
 					irecordservice = timer.record_service
 					servicereference = timer.service_ref
