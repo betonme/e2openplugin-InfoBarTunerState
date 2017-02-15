@@ -832,7 +832,8 @@ class TunerState(TunerStateBase):
 			if field == "TypeIcon":
 				self["Type"].show()
 				if self.type == TIMER:
-					if len(self["Type"].pixmaps) >= 6:
+					print "IBTS len pixmaps", len(self["Type"].pixmaps) 
+					if len(self["Type"].pixmaps) >= 5:
 						self["Type"].setPixmapNum(6)
 					else:
 						self["Type"].setPixmapNum(3)
