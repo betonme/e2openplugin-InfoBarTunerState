@@ -23,7 +23,7 @@ def getTimerID(timer):
 	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
 	#return str( timer )
 	#return '<%s instance at %x name=%s %s>' % (self.__class__.__name__, id(self), self.name, hasattr(self,"Filename") and self.Filename or "")
-	return 'record %x %s %x' % ( id(timer), timer.name, timer.eit )
+	return 'timer %x %s %x' % ( id(timer), timer.name, int(timer.eit or 0) )
 
 def getTimer(id):
 	from NavigationInstance import instance

@@ -36,7 +36,7 @@ def getTimer(id):
 def getTimerID(timer):
 	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
 	#return '<%s instance at %x name=%s %s>' % (self.__class__.__name__, id(self), self.name, hasattr(self,"Filename") and self.Filename or "")
-	return 'timer %x %s %x' % ( id(timer), timer.name, timer.eit )
+	return 'timer %x %s %x' % ( id(timer), timer.name, int(timer.eit or 0) )
 
 def getNextPendingRecordTimers(pending_limit):
 	from NavigationInstance import instance
