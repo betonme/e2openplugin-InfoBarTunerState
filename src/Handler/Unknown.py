@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
+# TODO
+# Currently I do not know any way to get the service (channel) from a used tuner
+
 from time import time
 from ServiceReference import ServiceReference
 from enigma import eDVBResourceManager
