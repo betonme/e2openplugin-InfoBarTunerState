@@ -65,6 +65,9 @@ class StreamWebIf(PluginBase):
 		# Pixmap number to be displayed as icon
 		return STREAM
 
+	def getPixmapNum(self):
+		return 1
+
 	def getOptions(self):
 		return [(_("Show stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.enabled),]
 

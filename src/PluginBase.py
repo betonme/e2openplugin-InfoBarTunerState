@@ -31,6 +31,11 @@ class PluginBase(object):
 		# Pixmap number to be displayed as icon
 		return INFO
 
+	def getPixmapNum(self):
+		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO
+		# Pixmap number to be displayed as icon
+		return INFO
+
 	def getOptions(self):
 		# Return a list of (text, config element ) tuples
 		pass

@@ -39,6 +39,9 @@ class Unknown(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import UNKNOWN
 		return UNKNOWN
 
+	def getPixmapNum(self):
+		return 5
+
 	def getOptions(self):
 		return [(_("Show undefined service(s)"), config.infobartunerstate.plugin_unknown.enabled),]
 

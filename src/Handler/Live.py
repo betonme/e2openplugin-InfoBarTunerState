@@ -34,6 +34,9 @@ class Live(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import LIVE
 		return LIVE
 
+	def getPixmapNum(self):
+		return 4
+
 	def getOptions(self):
 		return [(_("Show live tuner"), config.infobartunerstate.plugin_live.enabled),]
 

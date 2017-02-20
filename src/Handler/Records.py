@@ -56,6 +56,9 @@ class Records(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import RECORD
 		return RECORD
 
+	def getPixmapNum(self):
+		return 0
+
 	def getOptions(self):
 		return [(_("Show record(s)"), config.infobartunerstate.plugin_records.enabled),]
 

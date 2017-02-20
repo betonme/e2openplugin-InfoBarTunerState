@@ -64,6 +64,9 @@ class StreamOpenWebIf(PluginBase):
 		# Pixmap number to be displayed as icon
 		return STREAM
 
+	def getPixmapNum(self):
+		return 1
+
 	def getOptions(self):
 		return [(_("Show transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.enabled),]
 

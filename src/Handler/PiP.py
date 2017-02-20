@@ -31,8 +31,11 @@ class PiP(PluginBase):
 		return "PiP"
 
 	def getType(self):
-		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import INFO
-		return INFO
+		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import PIP
+		return PIP
+
+	def getPixmapNum(self):
+		return 7
 
 	def getOptions(self):
 		return [(_("Show PiP service(s)"), config.infobartunerstate.plugin_pip.enabled),]
@@ -142,8 +145,7 @@ class PiP(PluginBase):
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
-					gInfoBarTunerState.finishEntry(id)
-					gInfoBarTunerState.onEvent()
+					gInfoBarTunerState.removeEntry(id)
 				return False
 				
 			else:

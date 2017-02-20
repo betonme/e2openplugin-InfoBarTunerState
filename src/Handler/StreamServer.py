@@ -66,6 +66,9 @@ class StreamServer(PluginBase):
 		# Pixmap number to be displayed as icon
 		return STREAM
 
+	def getPixmapNum(self):
+		return 1
+
 	def getOptions(self):
 		return [(_("Show transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_streamserver.enabled),]
 

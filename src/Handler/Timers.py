@@ -123,6 +123,9 @@ class Timers(PluginBase):
 		from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import TIMER
 		return TIMER
 
+	def getPixmapNum(self):
+		return 6
+
 	def getOptions(self):
 		return [
 					(_("Show pending timer(s)"),                      config.infobartunerstate.plugin_timers.enabled),

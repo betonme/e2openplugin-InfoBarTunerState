@@ -71,11 +71,13 @@ from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
 #except:
 SecondInfobarAvailable = False
 
-
 # Type Enum
-# 1. Used for pixmap mapping
-# 2. Used to set priority for calling the plugins onShow event: Higher numbers will be served first
-UNKNOWN, INFO, TIMER, LIVE, RECORD, STREAM, FINISHED = range( 7 )
+# Used to set priority for calling the plugins onShow event: Higher numbers will be served first
+UNKNOWN, INFO, LIVE, PIP, TIMER, RECORD, STREAM, FINISHED = range( 8 )
+
+# Icons Enum
+# Used to identify the icon number from skin
+ICON_RECORD, ICON_STREAM, ICON_FINISHED, ICON_INFO, ICON_LIVE, ICON_UNKNOWN, ICON_TIMER, ICON_PIP = range( 8 )
 
 # Constants
 INFINITY =  u"\u221E".encode("utf-8")
@@ -831,27 +833,32 @@ class TunerState(TunerStateBase):
 			
 			if field == "TypeIcon":
 				self["Type"].show()
+				
 				if self.type == TIMER:
-					print "IBTS len pixmaps", len(self["Type"].pixmaps) 
-					if len(self["Type"].pixmaps) >= 5:
-						self["Type"].setPixmapNum(6)
-					else:
-						self["Type"].setPixmapNum(3)
+					pixmapnum = ICON_TIMER
 				elif self.type == RECORD:
-					self["Type"].setPixmapNum(0)
+					pixmapnum = ICON_RECORD
 				elif self.type == FINISHED:
-					self["Type"].setPixmapNum(2)
+					pixmapnum = ICON_FINISHED
 				elif self.type == INFO:
-					self["Type"].setPixmapNum(3)
+					pixmapnum = ICON_INFO
 				elif self.type == LIVE:
-					self["Type"].setPixmapNum(4)
+					pixmapnum = ICON_LIVE
 				elif self.type == UNKNOWN:
-					self["Type"].setPixmapNum(5)
+					pixmapnum = ICON_UNKNOWN
 				elif self.type == STREAM:
-					self["Type"].setPixmapNum(1)
-				else:
-					widths.append( 0 )
-					continue
+					pixmapnum = ICON_STREAM
+				elif self.type == PIP:
+					pixmapnum = ICON_PIP
+				
+				lenpixmaps = len(self["Type"].pixmaps) 
+				print "IBTS len pixmaps", lenpixmaps
+				if lenpixmaps < (pixmapnum):
+					# Set Info as default
+					pixmapnum = ICON_INFO
+				
+				self["Type"].setPixmapNum(pixmapnum)
+				
 				# No resize necessary
 				widths.append( self.typewidth )
 				continue
