@@ -115,8 +115,7 @@ class InfoBarHandler(object):
 		if config.infobartunerstate.show_infobar.value:
 			self.forceBindInfoBarTimer.start(1000, False)
 		
-		if config.infobartunerstate.show_overwrite.value:
-			overwriteInfoBar()
+		overwriteInfoBar()
 		
 		# Handle extension menu integration
 		if config.infobartunerstate.extensions_menu_show.value or config.infobartunerstate.extensions_menu_setup.value:
