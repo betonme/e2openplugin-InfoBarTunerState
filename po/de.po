@@ -51,7 +51,7 @@ msgstr "Ein-/ausblenden zusammen mit InfoBar"
 
 #: IBTSConfiguration.py:88 locale/plugin/IBTSConfiguration.py:88
 msgid "Show on events"
-msgstr "Beim Sendungswechsel anzeigen"
+msgstr "Bei Ereignissen anzeigen"
 
 #: IBTSConfiguration.py:89 locale/plugin/IBTSConfiguration.py:89
 msgid "Show on key press"
