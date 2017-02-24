@@ -47,7 +47,7 @@ def getNextPendingRecordTimers(pending_limit):
 			next_act = timer.getNextActivation()
 			if timer.justplay:
 				continue
-			if timer.isRunning() and not timer.repeated:
+			if timer.isRunning():
 				continue
 			if next_act < now:
 				continue
