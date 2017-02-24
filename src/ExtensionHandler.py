@@ -21,11 +21,6 @@ from Components.config import *
 
 from Plugins.Plugin import PluginDescriptor
 
-# Globals
-InfoBarShow = None
-InfoBarHide = None
-InfoBarToggle = None
-
 
 #######################################################
 # Extension menu

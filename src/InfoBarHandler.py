@@ -160,3 +160,8 @@ class InfoBarHandler(object):
 
 	def __onInfoBarEventHide(self):
 		self.hide()
+
+	def undoHandler(self):
+		recoverInfoBar()
+		removeExtension()
+		self.unbindInfoBar()

@@ -60,8 +60,7 @@ from enigma import eActionMap, eListboxPythonMultiContent, eListboxPythonStringC
 from skin import parseColor, parseFont
 
 # Plugin internal
-from InfoBarHandler import InfoBarHandler, overwriteInfoBar, recoverInfoBar
-from ExtensionHandler import addExtension, removeExtension
+from InfoBarHandler import InfoBarHandler
 from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
 
 # Extenal plugins
@@ -404,9 +403,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 
 	def close(self):
 		print "IBTS close"
-		recoverInfoBar()
-		removeExtension()
-		self.unbindInfoBar()
+		self.undoHandler()
 		self.removeEvents()
 		self.tunerHide()
 		for id, win in self.entries.items():
