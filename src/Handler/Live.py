@@ -66,6 +66,8 @@ class Live(PluginBase):
 		#print "IBTS Live onEvent ev", ev, str(self.tunerstate)
 		if ev == iPlayableService.evUpdatedEventInfo or ev == iPlayableService.evUpdatedInfo:
 			
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			
 			if self.tunerstate:
 				tunerstate = self.tunerstate
 				
@@ -105,6 +107,8 @@ class Live(PluginBase):
 						changed = True
 					
 					if changed:
-						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 						if gInfoBarTunerState:
 							gInfoBarTunerState.updateMetrics()
+			
+			if gInfoBarTunerState:
+				gInfoBarTunerState.onEvent()
