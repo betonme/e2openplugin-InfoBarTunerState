@@ -119,23 +119,6 @@ def InfoBarToggleTunerState(self):
 class InfoBarHandler(object):
 	def __init__(self):
 		
-		self.infobar = None
-		
-		self.forceBindInfoBarTimer = eTimer()
-		try:
-			self.forceBindInfoBarTimer_conn = self.forceBindInfoBarTimer.timeout.connect(self.bindInfoBar)
-		except:
-			self.forceBindInfoBarTimer.callback.append(self.bindInfoBar)
-		
-		# Bind InfoBarEvents
-		#self.bindInfoBar()
-		#self.onLayoutFinish.append(self.bindInfoBar)
-		# Workaround
-		# The Plugin starts before the InfoBar is instantiated
-		# Check every second if the InfoBar instance exists and try to bind our functions
-		# Is there an alternative solution?
-		self.forceBindInfoBarTimer.start(1000, False)
-		
 		overwriteInfoBar()
 		
 		# Handle extension menu integration
@@ -146,56 +129,6 @@ class InfoBarHandler(object):
 			# Remove from extension menu
 			removeExtension()
 
-	def bindInfoBar(self):
-		# Reimport InfoBar to force update of the class instance variable
-		# Rebind only if it isn't done already 
-		from Screens.InfoBar import InfoBar
-		if InfoBar.instance:
-			self.infobar = InfoBar.instance
-			bindShow = False
-			bindHide = False
-			if hasattr(InfoBar.instance, "onShow"):
-				if self.__onInfoBarEventShow not in InfoBar.instance.onShow:
-					InfoBar.instance.onShow.append(self.__onInfoBarEventShow)
-				bindShow = True
-			if hasattr(InfoBar.instance, "onHide"):
-				if self.__onInfoBarEventHide not in InfoBar.instance.onHide:
-					InfoBar.instance.onHide.append(self.__onInfoBarEventHide)
-				bindHide = True
-			if bindShow and bindHide:
-				# Bind was successful
-				self.forceBindInfoBarTimer.stop()
-
-	def unbindInfoBar(self):
-		if self.infobar:
-			if hasattr(self.infobar, "onShow"):
-				if self.__onInfoBarEventShow in self.infobar.onShow:
-					self.infobar.onShow.remove(self.__onInfoBarEventShow)
-			if hasattr(self.infobar, "onHide"):
-				if self.__onInfoBarEventHide in self.infobar.onHide:
-					self.infobar.onHide.remove(self.__onInfoBarEventHide)
-
-	def __onInfoBarEventShow(self):
-		#self.show()
-		show = False
-		player = type(self).__name__ != "InfoBar"
-		if config.infobartunerstate.show_withinfobar.value and not player:
-			show = True
-		elif config.infobartunerstate.show_withplayer.value and player:
-			show = True
-		if show:
-			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-			if gInfoBarTunerState:
-				gInfoBarTunerState.show()
-
-	def __onInfoBarEventHide(self):
-		# Always hide
-		#self.hide()
-		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-		if gInfoBarTunerState:
-			gInfoBarTunerState.hide()
-
 	def undoHandler(self):
 		recoverInfoBar()
 		removeExtension()
-		self.unbindInfoBar()
