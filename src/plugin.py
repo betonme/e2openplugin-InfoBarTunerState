@@ -37,7 +37,7 @@ from InfoBarTunerState import InfoBarTunerState, TunerStateInfo
 NAME = _("InfoBarTunerState")
 IBTSSHOW = _("Show InfoBarTunerState")
 IBTSSETUP = _("InfoBarTunerState Setup")
-VERSION = "3.2.3"
+VERSION = "3.2.3a"
 SUPPORT = "http://bit.ly/ibtsihad"
 DONATE = "http://bit.ly/ibtspaypal"
 ABOUT = "\n  " + NAME + " " + VERSION + "\n\n" \
@@ -116,10 +116,10 @@ config.infobartunerstate.extensions_menu_show      = ConfigYesNo(default = True)
 config.infobartunerstate.extensions_menu_setup     = ConfigYesNo(default = False)
 #config.infobartunerstate.popup_time               = ConfigSelectionNumber(0, 10, 1, default = 5)
 
-config.infobartunerstate.show_infobar              = ConfigYesNo(default = True)
+config.infobartunerstate.show_withinfobar          = ConfigYesNo(default = True)
+config.infobartunerstate.show_withplayer           = ConfigYesNo(default = False)		# Show with MoviePlayer only is actually not possible
 config.infobartunerstate.show_events               = ConfigYesNo(default = True)		#TODO Show on start, end, start/end
-config.infobartunerstate.show_ontoggle             = ConfigYesNo(default = False)
-config.infobartunerstate.show_overwrite            = ConfigYesNo(default = False)		# Show with MoviePlayer only is actually not possible
+config.infobartunerstate.show_onkeypress           = ConfigYesNo(default = False)
 
 config.infobartunerstate.time_format_begin         = ConfigSelection(default = "%H:%M", choices = date_choices)
 config.infobartunerstate.time_format_end           = ConfigSelection(default = "%H:%M", choices = date_choices)

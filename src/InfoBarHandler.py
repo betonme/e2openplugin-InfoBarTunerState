@@ -36,23 +36,21 @@ InfoBarToggle = None
 def overwriteInfoBar():
 	from Screens.InfoBarGenerics import InfoBarShowHide
 	global InfoBarShow, InfoBarHide, InfoBarToggle
-	if config.infobartunerstate.show_infobar.value:
-		if InfoBarShow is None:
-			# Backup original function
-			InfoBarShow = InfoBarShowHide._InfoBarShowHide__onShow
-			# Overwrite function
-			InfoBarShowHide._InfoBarShowHide__onShow = InfoBarShowTunerState
+	if InfoBarShow is None:
+		# Backup original function
+		InfoBarShow = InfoBarShowHide._InfoBarShowHide__onShow
+		# Overwrite function
+		InfoBarShowHide._InfoBarShowHide__onShow = InfoBarShowTunerState
 	if InfoBarHide is None:
 		# Backup original function
 		InfoBarHide = InfoBarShowHide._InfoBarShowHide__onHide
 		# Overwrite function
 		InfoBarShowHide._InfoBarShowHide__onHide = InfoBarHideTunerState
-	if config.infobartunerstate.show_ontoggle.value:
-		if InfoBarToggle is None:
-			# Backup original function
-			InfoBarToggle = InfoBarShowHide.toggleShow
-			# Overwrite function
-			InfoBarShowHide.toggleShow = InfoBarToggleTunerState
+	if InfoBarToggle is None:
+		# Backup original function
+		InfoBarToggle = InfoBarShowHide.toggleShow
+		# Overwrite function
+		InfoBarShowHide.toggleShow = InfoBarToggleTunerState
 
 # InfoBar Events
 def recoverInfoBar():
@@ -70,29 +68,51 @@ def recoverInfoBar():
 
 
 def InfoBarShowTunerState(self):
-	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 	global InfoBarShow
 	if InfoBarShow:
 		InfoBarShow(self)
-	if gInfoBarTunerState:
-		gInfoBarTunerState.show()
+	show = False
+	if config.infobartunerstate.show_withinfobar.value:
+		show = True
+	elif config.infobartunerstate.show_withplayer.value and type(self).__name__ != "InfoBar":
+		show = True
+	if show:
+		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+		if gInfoBarTunerState:
+			gInfoBarTunerState.show()
 
 def InfoBarHideTunerState(self):
 	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 	global InfoBarHide
 	if InfoBarHide:
 		InfoBarHide(self)
+	# Always hide
 	if gInfoBarTunerState:
 		gInfoBarTunerState.hide()
 
 def InfoBarToggleTunerState(self):
-	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 	global InfoBarToggle
 	if InfoBarToggle:
 		InfoBarToggle(self)
-	if gInfoBarTunerState:
-		gInfoBarTunerState.toggle()
-
+	
+	if self._InfoBarShowHide__state == self.STATE_HIDDEN:
+		# Always hide
+		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+		if gInfoBarTunerState:
+			gInfoBarTunerState.hide()
+		
+	elif self._InfoBarShowHide__state == self.STATE_SHOWN:
+		show = False
+		if config.infobartunerstate.show_withinfobar.value:
+			show = True
+		elif config.infobartunerstate.show_withplayer.value and type(self).__name__ != "InfoBar":
+			show = True
+		elif config.infobartunerstate.show_onkeypress.value:
+			show = True
+		if show:
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			if gInfoBarTunerState:
+				gInfoBarTunerState.show()
 
 class InfoBarHandler(object):
 	def __init__(self):
@@ -112,8 +132,7 @@ class InfoBarHandler(object):
 		# The Plugin starts before the InfoBar is instantiated
 		# Check every second if the InfoBar instance exists and try to bind our functions
 		# Is there an alternative solution?
-		if config.infobartunerstate.show_infobar.value:
-			self.forceBindInfoBarTimer.start(1000, False)
+		self.forceBindInfoBarTimer.start(1000, False)
 		
 		overwriteInfoBar()
 		
@@ -155,10 +174,23 @@ class InfoBarHandler(object):
 					self.infobar.onHide.remove(self.__onInfoBarEventHide)
 
 	def __onInfoBarEventShow(self):
-		self.show()
+		#self.show()
+		show = False
+		if config.infobartunerstate.show_withinfobar.value:
+			show = True
+		elif config.infobartunerstate.show_withplayer.value and type(self).__name__ != "InfoBar":
+			show = True
+		if show:
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			if gInfoBarTunerState:
+				gInfoBarTunerState.show()
 
 	def __onInfoBarEventHide(self):
-		self.hide()
+		# Always hide
+		#self.hide()
+		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+		if gInfoBarTunerState:
+			gInfoBarTunerState.hide()
 
 	def undoHandler(self):
 		recoverInfoBar()
