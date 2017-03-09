@@ -217,7 +217,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 	
 	def onEvent(self):
 		if config.infobartunerstate.show_events.value:
-			self.show(True, True)
+			self.show(True, False)
 	
 	def show(self, autohide=False, forceshow=False):
 		print "IBTS show ", autohide, forceshow

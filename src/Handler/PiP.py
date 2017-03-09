@@ -49,14 +49,7 @@ class PiP(PluginBase):
 	def checkPiP(self):
 		print "IBTS PiP check"
 		from Screens.InfoBar import InfoBar
-		if InfoBar.instance and InfoBar.instance.session:
-			print vars(InfoBar.instance.session)
-			import pprint
-			pprint.pprint(InfoBar.instance.session)
 		if InfoBar.instance and InfoBar.instance.session and hasattr(InfoBar.instance.session, "pip"):
-			print vars(InfoBar.instance.session.pip)
-			import pprint
-			pprint.pprint(InfoBar.instance.session.pip)
 			if hasattr(InfoBar.instance.session.pip, "currentService") and InfoBar.instance.session.pip.currentService is not None: 
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:

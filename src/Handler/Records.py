@@ -88,64 +88,62 @@ class Records(PluginBase):
 						self.onEvent(timer)
 
 	def onEvent(self, timer):
-		if not timer.justplay:
-			#print "IBTS Timer Event "+ str(timer.state) + ' ' + str(timer.repeated)
-			#TODO
-			# w.processRepeated()
-			# w.state = TimerEntry.StateWaiting
-			if timer.state == timer.StatePrepared:
-				print "IBTS Records StatePrepared"
-				pass
+		if timer.justplay:
+			return
+		
+		elif timer.state == timer.StatePrepared:
+			print "IBTS Records StatePrepared"
+			return
+		
+		elif timer.state == timer.StateRunning:
+			id = getTimerID( timer )
+			print "IBTS Records StateRunning ID " + id
 			
-			elif timer.state == timer.StateRunning:
-				id = getTimerID( timer )
-				print "IBTS Records StateRunning ID " + id
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
 				
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
-					
-					#TEST Bug Repeating timer blocking tuner and are not marked as finished
-					#timer.timeChanged = self.__OnTimeChanged
-					
-					name = timer.name
-					
-					begin = timer.begin
-					end = timer.end
-					endless = timer.autoincrease
-					
-					# Is this really necessary?
-					try: timer.Filename
-					except: timer.calculateFilename()
-					
-					try: filename = timer.Filename
-					except: filename = timer.name
-					
-					irecordservice = timer.record_service
-					servicereference = timer.service_ref
-					
-					# Delete references to avoid blocking tuners
-					del timer
-					
-					tuner, tunertype, tunernumber = getTunerByPlayableService(irecordservice)
-					
-					number = getNumber(servicereference.ref)
-					channel = getChannel(servicereference.ref)
-					
-					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, begin, end, endless, filename)
-					gInfoBarTunerState.onEvent()
-			
-			# Finished repeating timer will report the state StateEnded+1 or StateWaiting
-			else:
-				id = getTimerID( timer )
-				print "IBTS Records StateEnded ID " + id
+				#TEST Bug Repeating timer blocking tuner and are not marked as finished
+				#timer.timeChanged = self.__OnTimeChanged
+				
+				name = timer.name
+				
+				begin = timer.begin
+				end = timer.end
+				endless = timer.autoincrease
+				
+				# Is this really necessary?
+				try: timer.Filename
+				except: timer.calculateFilename()
+				
+				try: filename = timer.Filename
+				except: filename = timer.name
+				
+				irecordservice = timer.record_service
+				servicereference = timer.service_ref
 				
 				# Delete references to avoid blocking tuners
 				del timer
 				
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				if gInfoBarTunerState:
-					gInfoBarTunerState.finishEntry(id)
-					gInfoBarTunerState.onEvent()
+				tuner, tunertype, tunernumber = getTunerByPlayableService(irecordservice)
+				
+				number = getNumber(servicereference.ref)
+				channel = getChannel(servicereference.ref)
+				
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, begin, end, endless, filename)
+				gInfoBarTunerState.onEvent()
+		
+		# Finished repeating timer will report the state StateEnded+1 or StateWaiting
+		else:
+			id = getTimerID( timer )
+			print "IBTS Records StateEnded ID " + id
+			
+			# Delete references to avoid blocking tuners
+			del timer
+			
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			if gInfoBarTunerState:
+				gInfoBarTunerState.finishEntry(id)
+				gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):
 		
