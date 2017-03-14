@@ -8,7 +8,7 @@ from time import time
 from ServiceReference import ServiceReference
 
 # Config
-from Components.config import *
+from Components.config import config, ConfigSubsection, ConfigYesNo
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _

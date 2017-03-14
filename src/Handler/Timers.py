@@ -5,7 +5,7 @@ from time import strftime, time, localtime, mktime
 from datetime import datetime, timedelta
 
 # Config
-from Components.config import *
+from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigSelectionNumber
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _

@@ -4,7 +4,7 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 from os import environ as os_environ
 import gettext
 
-from Components.config import *
+from Components.config import config, ConfigSubsection, ConfigNothing, ConfigYesNo, ConfigSelectionNumber, ConfigSelection, ConfigEnableDisable, ConfigText
 
 # Config choices
 field_choices = [	

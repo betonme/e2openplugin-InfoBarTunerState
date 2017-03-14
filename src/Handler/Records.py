@@ -4,7 +4,7 @@
 from time import time
 
 # Config
-from Components.config import *
+from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigSelection
 
 from enigma import eEPGCache
 
