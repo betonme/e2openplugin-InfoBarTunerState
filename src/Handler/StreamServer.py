@@ -126,7 +126,7 @@ class StreamServer(PluginBase):
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
-					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", 0, "", 0, time(), 0, True, "", client, ip, "")
+					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", 0, "", 0, "", "", time(), 0, True, "", client, ip, "")
 					if config.infobartunerstate.plugin_openwebif.show_events.value:
 						gInfoBarTunerState.onEvent()
 			
@@ -172,12 +172,13 @@ class StreamServer(PluginBase):
 							number = getNumber(eservicereference)
 							channel = getChannel(eservicereference)
 							name = getEventName(eservicereference)
+							reference = str(eservicereference)
 							
 							client = getClient(ip)
 							
 							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 							if gInfoBarTunerState:
-								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
+								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
 								if config.infobartunerstate.plugin_openwebif.show_events.value:
 									gInfoBarTunerState.onEvent()
 		except Exception, e:

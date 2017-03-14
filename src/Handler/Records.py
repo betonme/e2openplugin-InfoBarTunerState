@@ -130,8 +130,9 @@ class Records(PluginBase):
 				
 				number = getNumber(servicereference.ref)
 				channel = getChannel(servicereference.ref)
-				
-				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, begin, end, endless, filename)
+				reference = str(servicereference.ref)
+					
+				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, begin, end, endless, filename)
 				if config.infobartunerstate.plugin_records.show_events.value:
 					gInfoBarTunerState.onEvent()
 		
@@ -200,6 +201,8 @@ class Records(PluginBase):
 				tunerstate.number = getNumber(servicereference.ref)
 			if not tunerstate.channel:
 				tunerstate.channel = getChannel(servicereference.ref)
+			if not tunerstate.reference:
+				tunerstate.reference = str(servicereference.ref)
 			
 			return True
 		

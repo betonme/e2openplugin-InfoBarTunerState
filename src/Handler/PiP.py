@@ -100,6 +100,7 @@ class PiP(PluginBase):
 							if self.eservicereference_string != eservicereference_string:
 								tunerstate.number = None
 								tunerstate.channel = ""
+								tunerstate.reference = ""
 								
 								tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = "", "", None
 								tunerstate.name, tunerstate.begin, tunerstate.end = "", 0, 0
@@ -111,6 +112,9 @@ class PiP(PluginBase):
 								changed = True
 							if not tunerstate.channel:
 								tunerstate.channel = getChannel(eservicereference)
+								changed = True
+							if not tunerstate.reference:
+								tunerstate.reference = eservicereference_string
 								changed = True
 							
 							iplayableservice = None

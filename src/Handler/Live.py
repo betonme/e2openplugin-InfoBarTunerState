@@ -59,14 +59,11 @@ class Live(PluginBase):
 		if config.infobartunerstate.plugin_live.enabled.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
-				
 				self.tunerstate = gInfoBarTunerState.addEntry("Live", self.getPluginName(), self.getType(), self.getText())
 
 	def onEvent(self, ev):
 		#log.debug( "IBTS Live onEvent ev", ev, str(self.tunerstate) )
 		if ev == iPlayableService.evUpdatedEventInfo or ev == iPlayableService.evUpdatedInfo:
-			
-			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			
 			if self.tunerstate:
 				tunerstate = self.tunerstate
@@ -95,7 +92,10 @@ class Live(PluginBase):
 					if not tunerstate.channel:
 						tunerstate.channel = getChannel(eservicereference)
 						changed = True
-						
+					if not tunerstate.reference:
+						tunerstate.reference = eservicereference_string
+						changed = True
+					
 					iplayableservice = instance.getCurrentService()
 					
 					if not tunerstate.tuner or not tunerstate.tunertype or not tunerstate.tunernumber:
@@ -107,6 +107,7 @@ class Live(PluginBase):
 						changed = True
 					
 					if changed:
+						from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 						if gInfoBarTunerState:
 							gInfoBarTunerState.updateMetrics()
 			

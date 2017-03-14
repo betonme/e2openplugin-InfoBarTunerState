@@ -127,7 +127,7 @@ class Unknown(PluginBase):
 							#log.debug( "IBTS UNKNOWN append ", tunernumber )
 							self.tunerstates.append(tunernumber)
 							
-							gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tuner, tunernumber, _("Used by unknown service"), "-", "-", time() )
+							gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, "-", tunernumber, _("Used by unknown service"), "-", "-", "", "", time() )
 			
 			# Check if we have to remove an entry
 			if self.tunerstates:

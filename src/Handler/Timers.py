@@ -202,9 +202,10 @@ class Timers(PluginBase):
 										
 										number = getNumber(servicereference.ref)
 										channel = getChannel(servicereference.ref)
-									
+										reference = str(servicereference.ref)
+										
 										self.nextids.append(id)
-										gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", None, name, number, channel, begin, end, endless, filename)
+										gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", None, name, number, channel, reference, begin, end, endless, filename)
 
 				# Close all not touched next timers
 				if toremove:
@@ -240,6 +241,8 @@ class Timers(PluginBase):
 					tunerstate.number = getNumber(servicereference.ref)
 				if not tunerstate.channel:
 					tunerstate.channel = getChannel(servicereference.ref)
+				if not tunerstate.reference:
+					tunerstate.reference = str(servicereference.ref)
 				
 				return True
 			else:

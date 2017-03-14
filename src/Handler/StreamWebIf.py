@@ -129,12 +129,13 @@ class StreamWebIf(PluginBase):
 				
 				number = getNumber(eservicereference)
 				channel = getChannel(eservicereference)
+				reference = str(eservicereference)
 				
 				client = getClient(ip)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
-					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
+					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
 					if config.infobartunerstate.plugin_webif.show_events.value:
 						gInfoBarTunerState.onEvent()
 				
