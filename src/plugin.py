@@ -97,15 +97,6 @@ date_choices = [
 									("-    %H:%M",				_("-    HH:MM")),
 								]
 
-event_choices = [	
-									("prepare",						_("Prepare record")),
-									("start",							_("Start record")),
-									("end",								_("End record")),
-									("startend",					_("Start / End record")),
-									("preparestartend",		_("Prepare / Start / End record")),
-								]
-#config.infobartunerstate.show_on_events            = ConfigSelection(default = "%H:%M", choices = event_choices)
-
 # Config options
 config.infobartunerstate                           = ConfigSubsection()
 
