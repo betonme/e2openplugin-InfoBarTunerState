@@ -31,13 +31,13 @@ from Screens.MessageBox import MessageBox
 # Plugin internal
 from IBTSConfiguration import InfoBarTunerStateConfiguration
 from InfoBarTunerState import InfoBarTunerState, TunerStateInfo
-
+from Logger import log
 
 # Contants
 NAME = _("InfoBarTunerState")
 IBTSSHOW = _("Show InfoBarTunerState")
 IBTSSETUP = _("InfoBarTunerState Setup")
-VERSION = "3.2.3c"
+VERSION = "3.2.4"
 SUPPORT = "http://bit.ly/ibtsihad"
 DONATE = "http://bit.ly/ibtspaypal"
 ABOUT = "\n  " + NAME + " " + VERSION + "\n\n" \
@@ -166,6 +166,14 @@ config.infobartunerstate.wake_hdd                  = ConfigYesNo(default = False
 config.infobartunerstate.skip_mounts               = ConfigYesNo(default = True)
 config.infobartunerstate.background_transparency   = ConfigYesNo(default = False)
 
+config.infobartunerstate.log_shell                 = ConfigYesNo(default = False) 
+config.infobartunerstate.log_write                 = ConfigYesNo(default = False) 
+config.infobartunerstate.log_file                  = ConfigText(default = "/tmp/infobartunerstate.log", fixed_size = False) 
+
+config.infobartunerstate.log_shell                 = ConfigEnableDisable(default = False) 
+config.infobartunerstate.log_write                 = ConfigEnableDisable(default = False) 
+config.infobartunerstate.log_file                  = ConfigText(default = "/tmp/pushservice.log", fixed_size = False) 
+
 
 # Temporary if we do not import the modules the config will not be loaded
 from Plugins.Extensions.InfoBarTunerState.Handler import *
@@ -192,7 +200,7 @@ def Plugins(**kwargs):
 #######################################################
 # Plugin # Plugin configuration
 def setup(session, **kwargs):
-	print "InfoBarTunerState setup"
+	log.info( "InfoBarTunerState setup" )
 	#TODO config
 	# Overwrite Skin Position
 	# Show Live TV Tuners PiP LiveStream FileStream
@@ -207,17 +215,13 @@ def setup(session, **kwargs):
 	try:
 		session.open(InfoBarTunerStateConfiguration)
 	except Exception, e:
-		print "InfoBarTunerStateMenu exception " + str(e)
-		import os, sys, traceback
-		print str(sys.exc_info()[0])
-		print str(traceback.format_exc())
-		sys.exc_clear()
+		log.exception( "InfoBarTunerStateMenu exception " + str(e) )
 
 
 #######################################################
 # Sessionstart
 def start(reason, **kwargs):
-	print "InfoBarTunerState start"
+	log.info( "InfoBarTunerState start" )
 	if reason == 0: # start
 		if kwargs.has_key("session"):
 			if config.infobartunerstate.enabled.value:
@@ -227,21 +231,21 @@ def start(reason, **kwargs):
 					gInfoBarTunerState = InfoBarTunerState(session)
 					gInfoBarTunerState.onInit()
 				except Exception, e:
-					print "InfoBarTunerState start exception " + str(e)
+					log.exception( "InfoBarTunerState start exception " + str(e) )
 	# Do not cleanup on session shutdown, it will break the movie player integration
 
 
 #######################################################
 # Extension Menu
 def show(session, **kwargs):
-	print "InfoBarTunerState show"
+	log.info( "InfoBarTunerState show" )
 	if gInfoBarTunerState:
 		try:
 			gInfoBarTunerState.show(True, forceshow=True)
 		except Exception, e:
-			print "InfoBarTunerState show exception " + str(e)
+			log.exception( "InfoBarTunerState show exception " + str(e) )
 	else:
 		# No InfoBarTunerState Instance running
-		print "InfoBarTunerState disabled"
+		log.info( "InfoBarTunerState disabled" )
 		session.open(MessageBox, _("InfoBarTunerState is disabled"), MessageBox.TYPE_INFO, 3)
 

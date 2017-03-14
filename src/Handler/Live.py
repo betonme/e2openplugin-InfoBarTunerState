@@ -12,7 +12,7 @@ from Components.config import *
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getEventData
-
+from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 config.infobartunerstate.plugin_live         = ConfigSubsection()
@@ -63,7 +63,7 @@ class Live(PluginBase):
 				self.tunerstate = gInfoBarTunerState.addEntry("Live", self.getPluginName(), self.getType(), self.getText())
 
 	def onEvent(self, ev):
-		#print "IBTS Live onEvent ev", ev, str(self.tunerstate)
+		#log.debug( "IBTS Live onEvent ev", ev, str(self.tunerstate) )
 		if ev == iPlayableService.evUpdatedEventInfo or ev == iPlayableService.evUpdatedInfo:
 			
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState

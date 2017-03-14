@@ -63,16 +63,16 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 		# Initialize Configuration part
 		self.list = []
 		self.config = []
-		self.defineConfig()
+		self.buildConfig()
 		ConfigListScreen.__init__(self, self.list, session = session, on_change = self.changed)
-		self.createConfig()
+		self.changeConfig()
 		
 		# Trigger change
 		self.changed()
 
 		self.onLayoutFinish.append(self.layoutFinished)
 
-	def defineConfig(self):
+	def buildConfig(self):
 		
 		separator = "".ljust(250,"-")
 		separatorE2Usage = "- E2 "+_("Usage")+" "
@@ -132,7 +132,15 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 			(  _("Overwrite Infobar timeout")                         , config.infobartunerstate.infobar_timeout ),
 			(  _("Wake HDD for free space statistics")                , config.infobartunerstate.wake_hdd ),
 			(  _("Skip mounts for free space statistics")             , config.infobartunerstate.skip_mounts ),
+			(  separator                                              , config.infobartunerstate.about ),
+			(  _("Log debug prints to shell")                         , config.infobartunerstate.log_shell ),
+			(  _("Log to file")                                       , config.infobartunerstate.log_write ),
 		] )
+		
+		if config.infobartunerstate.log_write.value:
+			self.config.append(
+				(  _("Log file path and name")                        , config.infobartunerstate.log_file )
+				)
 		
 		self.config.extend( [
 			(  separatorE2Usage                                       , config.infobartunerstate.about ),
@@ -140,8 +148,9 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 			(  _("Show Message when Recording starts")                , config.usage.show_message_when_recording_starts ),
 		] )
 
-	def createConfig(self):
+	def changeConfig(self):
 		list = []
+		self.buildConfig()
 		for conf in self.config:
 			# 0 entry text
 			# 1 variable
@@ -157,7 +166,10 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 	def changed(self):
 		for x in self.onChangedEntry:
 			x()
-		self.createConfig()
+		if (current == config.infobartunerstate.enabled or 
+			current == config.infobartunerstate.log_write ):
+			self.changeConfig()
+			return
 
 	# Overwrite ConfigListScreen keyCancel function
 	def keyCancel(self):

@@ -17,7 +17,7 @@ from Components.config import *
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getTunerByServiceReference, getClient, getEventName
-
+from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 HAS_STREAMSERVER = False
 try:
@@ -114,7 +114,7 @@ class StreamServer(PluginBase):
 			ip = str(client)
 			
 			id = getStreamID(count, ip)
-			print "IBTS Stream Event StreamServer Start " + id
+			log.debug( "IBTS Stream Event StreamServer Start " + id )
 			
 			self.ids.append( (id, ip, None) )
 			
@@ -131,7 +131,7 @@ class StreamServer(PluginBase):
 		else:
 			
 			# Remove Finished Stream
-			print "IBTS Stream Event StreamServer End", count, client
+			log.debug( "IBTS Stream Event StreamServer End", count, client )
 			
 			# There is no way to find the correct stream, just remove the oldest
 			if  self.ids:
@@ -147,7 +147,7 @@ class StreamServer(PluginBase):
 		try:
 			if self.ids:
 				id, ip, servicereference_string = self.ids[-1]
-				print "IBTS Stream Event StreamServer Changed " + id
+				log.debug( "IBTS Stream Event StreamServer Changed " + id )
 				
 				if servicereference_string is None:
 				
@@ -177,11 +177,7 @@ class StreamServer(PluginBase):
 								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
 								gInfoBarTunerState.onEvent()
 		except Exception, e:
-			print "IBTS exception " + str(e)
-			import os, sys, traceback
-			print str(sys.exc_info()[0])
-			print str(traceback.format_exc())
-			sys.exc_clear()
+			log.exception( "IBTS exception " + str(e) )
 
 	def update(self, id, tunerstate):
 		

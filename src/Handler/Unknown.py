@@ -15,7 +15,7 @@ from Components.config import *
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getEventData, getTunerName
-
+from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 config.infobartunerstate.plugin_unknown         = ConfigSubsection()
@@ -78,9 +78,9 @@ class Unknown(PluginBase):
 		
 		bit = 1;
 		for tunernumber in range(8):
-			#print "IBTS UNKNOWN ", tunernumber, bit, bool(mask & bit)
+			#log.debug( "IBTS UNKNOWN ", tunernumber, bit, bool(mask & bit) )
 			if bool(mask & bit):
-				#print "IBTS UNKNOWN append tuner", tunernumber
+				#log.debug( "IBTS UNKNOWN append tuner", tunernumber )
 				self.tuners.append(tunernumber)
 			bit = bit << 1
 		
@@ -90,9 +90,9 @@ class Unknown(PluginBase):
 			iplayableservice = instance and instance.getCurrentService()
 			if iplayableservice:
 				tuner, tunertype, tunernumber = getTunerByPlayableService(iplayableservice)
-				#print "IBTS UNKNOWN live tuner", tunernumber
+				#log.debug( "IBTS UNKNOWN live tuner", tunernumber )
 				if tunernumber in self.tuners:
-					#print "IBTS UNKNOWN remove tuner", tunernumber
+					#log.debug( "IBTS UNKNOWN remove tuner", tunernumber )
 					self.tuners.remove(tunernumber)
 				else:
 					del self.tuners[-1]
@@ -108,7 +108,7 @@ class Unknown(PluginBase):
 			for id, tunerstate in tunerstates.items():
 				if tunerstate.plugin == "Record" or tunerstate.plugin == "Stream":
 					if tunerstate.tunernumber in toadd:
-						#print "IBTS UNKNOWN toadd remove", tunerstate.tunernumber
+						#log.debug( "IBTS UNKNOWN toadd remove", tunerstate.tunernumber )
 						toadd.remove(tunerstate.tunernumber)
 			
 			# Check if we have to add an entry
@@ -122,7 +122,7 @@ class Unknown(PluginBase):
 							
 							tuner = getTunerName(tunernumber)
 							
-							#print "IBTS UNKNOWN append ", tunernumber
+							#log.debug( "IBTS UNKNOWN append ", tunernumber )
 							self.tunerstates.append(tunernumber)
 							
 							gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tuner, tunernumber, _("Used by unknown service"), "-", "-", time() )
@@ -136,7 +136,7 @@ class Unknown(PluginBase):
 						if tunernumber not in self.tuners:
 							id = "Unknown"+str(tunernumber)
 							
-							#print "IBTS UNKNOWN remove ", tunernumber
+							#log.debug( "IBTS UNKNOWN remove ", tunernumber )
 							self.tunerstates.remove(tunernumber)
 							
 							gInfoBarTunerState.finishEntry(id)

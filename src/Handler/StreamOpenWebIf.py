@@ -14,7 +14,7 @@ from Components.config import *
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getClient, getEventName
-
+from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 HAS_OPENWEBIF = False
 try:
@@ -103,11 +103,11 @@ class StreamOpenWebIf(PluginBase):
 						self.onEvent(StreamAdapter.EV_BEGIN, stream)
 
 	def onEvent(self, event, stream):
-		print "IBTS Stream Event OpenWebIf"
+		log.debug( "IBTS Stream Event OpenWebIf" )
 		if StreamAdapter and stream:
 			if (event == StreamAdapter.EV_BEGIN):
 				id = getStreamID(stream)
-				print "IBTS Stream Event OpenWebIf Start " + id
+				log.debug( "IBTS Stream Event OpenWebIf Start " + id )
 				
 				irecordservice = stream.getService()
 				
@@ -137,7 +137,7 @@ class StreamOpenWebIf(PluginBase):
 				
 				# Remove Finished Stream
 				id = getStreamID(stream)
-				print "IBTS Stream Event OpenWebIf End " + id
+				log.debug( "IBTS Stream Event OpenWebIf End " + id )
 				
 				# Delete references to avoid blocking tuners
 				del stream

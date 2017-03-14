@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
-#import pprint
-
 from time import strftime, time, localtime, mktime
 from datetime import datetime, timedelta
 
@@ -13,7 +11,7 @@ from Components.config import *
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
-
+from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 config.infobartunerstate.plugin_timers         = ConfigSubsection()
@@ -26,11 +24,11 @@ def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
 		for timer in instance.RecordTimer.timer_list + instance.RecordTimer.processed_timers:
-			print "IBTS timerlist:", getTimerID( timer )
+			#log.debug( "IBTS timerlist:", getTimerID( timer ) )
 			if getTimerID( timer ) == id:
 				return timer
-		else:
-			print "IBTS getTimer for else"
+		#else:
+		#	log.debug( "IBTS getTimer for else" )
 	return None
 
 def getTimerID(timer):
@@ -88,7 +86,7 @@ def processRepeated(timer, findRunningEvent = False):
 		for x in (0, 1, 2, 3, 4, 5, 6):
 			if (flags & 1 == 1):
 				day.append(0)
-				print "Day: " + str(x)
+				#log.debug( "Day: " + str(x) )
 			else:
 				day.append(1)
 			flags = flags >> 1
@@ -137,14 +135,14 @@ class Timers(PluginBase):
 	def onShow(self, tunerstates):
 		if config.infobartunerstate.plugin_timers.enabled.value:
 			number_pending_timers = int( config.infobartunerstate.plugin_timers.number_pending_timers.value )
-			#print "IBTS number_pending_timers", number_pending_timers
+			#log.debug( "IBTS number_pending_timers", number_pending_timers )
 			
 			toremove = self.nextids[:]
 			
 			if number_pending_timers:
 				pending_seconds = int( config.infobartunerstate.plugin_timers.pending_hours.value ) * 3600
 				pending_limit = (time() + pending_seconds) if pending_seconds else 0
-				#print "IBTS pending_limit", pending_limit
+				#log.debug( "IBTS pending_limit", pending_limit )
 				timer_end = 0
 				#timer_list = getNextPendingRecordTimers(pending_limit)[:number_pending_timers]
 				#timer_list = getNextPendingRecordTimers(pending_limit)[:(number_pending_timers+number_pending_timers)]
@@ -161,7 +159,7 @@ class Timers(PluginBase):
 						if timer:
 							
 							id = getTimerID( timer )
-							#print "IBTS toadd", id
+							#log.debug( "IBTS toadd", id )
 							
 							if id in toremove:
 								toremove.remove(id)
@@ -210,17 +208,17 @@ class Timers(PluginBase):
 				if toremove:
 					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 					if gInfoBarTunerState:
-						print "IBTS toremove"
+						log.debug( "IBTS toremove" )
 						#pprint.pprint(toremove)
 						for id in toremove:
-							print "IBTS timers toremove", id
+							log.debug( "IBTS timers toremove", id )
 							if id in self.nextids:
 								self.nextids.remove(id)
 							gInfoBarTunerState.removeEntry(id)
 
 	def update(self, id, tunerstate):
 		
-		print "IBTS Timers update ID", id
+		log.debug( "IBTS Timers update ID", id )
 		if id in self.nextids:
 			
 			timer = getTimer( id )
@@ -243,8 +241,8 @@ class Timers(PluginBase):
 				
 				return True
 			else:
-				print "IBTS timers update FINISHED no timer", id
+				log.debug( "IBTS timers update FINISHED no timer", id )
 				return None
 		else:
-			print "IBTS timers update FINISHED not in ids", id
+			log.debug( "IBTS timers update FINISHED not in ids", id )
 			return None

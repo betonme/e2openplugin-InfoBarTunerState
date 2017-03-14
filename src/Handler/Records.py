@@ -12,7 +12,7 @@ from enigma import eEPGCache
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
-
+from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 config.infobartunerstate.plugin_records         = ConfigSubsection()
@@ -29,7 +29,7 @@ def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
 		for timer in instance.RecordTimer.timer_list:
-			#print "timerlist:", getTimerID( timer )
+			#log.debug( "timerlist:", getTimerID( timer ) )
 			if getTimerID( timer ) == id:
 				return timer
 	return None
@@ -38,7 +38,7 @@ def getProcessedTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
 		for timer in instance.RecordTimer.processed_timers:
-			#print "timerlist:", getTimerID( timer )
+			#log.debug( "timerlist:", getTimerID( timer ) )
 			if getTimerID( timer ) == id:
 				return timer
 	return None
@@ -92,12 +92,12 @@ class Records(PluginBase):
 			return
 		
 		elif timer.state == timer.StatePrepared:
-			print "IBTS Records StatePrepared"
+			log.debug( "IBTS Records StatePrepared" )
 			return
 		
 		elif timer.state == timer.StateRunning:
 			id = getTimerID( timer )
-			print "IBTS Records StateRunning ID " + id
+			log.debug( "IBTS Records StateRunning ID " + id )
 			
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
@@ -135,7 +135,7 @@ class Records(PluginBase):
 		# Finished repeating timer will report the state StateEnded+1 or StateWaiting
 		else:
 			id = getTimerID( timer )
-			print "IBTS Records StateEnded ID " + id
+			log.debug( "IBTS Records StateEnded ID " + id )
 			
 			# Delete references to avoid blocking tuners
 			del timer
@@ -162,21 +162,21 @@ class Records(PluginBase):
 				epgcache = eEPGCache.getInstance()
 				
 				if timer.eit:
-					print "IBTS Records event by lookupEventId"
+					log.debug( "IBTS Records event by lookupEventId" )
 					event = epgcache.lookupEventId(timer.service_ref.ref, timer.eit)
 				
 				if not event:
-					print "IBTS Records event by lookupEventTime"
+					log.debug( "IBTS Records event by lookupEventTime" )
 					event = epgcache.lookupEventTime( timer.service_ref.ref, timer.begin + 5 );
 				
 				if event:
-					print "IBTS Records event"
+					log.debug( "IBTS Records event" )
 					begin = event.getBeginTime() or 0
 					duration = event.getDuration() or 0
 					tunerstate.end  = begin + duration
 					
 					if not tunerstate.end:
-						print "IBTS Records no end"
+						log.debug( "IBTS Records no end" )
 						tunerstate.endless = True
 				else:
 					tunerstate.endless = timer.autoincrease

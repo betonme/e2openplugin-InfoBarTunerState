@@ -62,6 +62,7 @@ from skin import parseColor, parseFont
 # Plugin internal
 from InfoBarHandler import InfoBarHandler
 from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
+from Logger import log
 
 # Extenal plugins
 #try:
@@ -152,6 +153,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			plugin.removeEvent()
 	
 	def onInit(self):
+		log.reinit()
 		for plugin in self.getPlugins():
 			plugin.onInit()
 	
@@ -163,7 +165,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		return id in self.entries
 	
 	def addEntry(self, id, plugin, type, text, tuner="", tunertype="", tunernumber=None, name="", number=None, channel="", begin=0, end=0, endless=False, filename="", client="", ip="", port=""):
-		print "IBTS addEntry", id
+		log.debug( "IBTS addEntry", id )
 		win = self.session.instantiateDialog(TunerState, plugin, type, text, tuner, tunertype, tunernumber, name, number, channel, begin, end, endless, filename, client, ip, port)
 		self.entries[id] = win
 		return win
@@ -176,7 +178,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win.update()
 	
 	def finishEntry(self, id):
-		print "IBTS finishEntry", id
+		log.debug( "IBTS finishEntry", id )
 		if id in self.entries:
 			win = self.entries[id]
 			win.updateTimes( None, time(), False )
@@ -204,15 +206,15 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win.remove()
 	
 	def timerShow(self):
-		print "IBTS timerShow"
+		log.debug( "IBTS timerShow" )
 		self.tunerShow()
 	
 	def timerHide(self):
-		print "IBTS timerHide"
+		log.debug( "IBTS timerHide" )
 		self.tunerHide()
 	
 	def timerUpdate(self):
-		print "IBTS timerUpdate"
+		log.debug( "IBTS timerUpdate" )
 		self.update()
 	
 	def onEvent(self):
@@ -220,7 +222,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			self.show(True, False)
 	
 	def show(self, autohide=False, forceshow=False):
-		print "IBTS show ", autohide, forceshow
+		log.debug( "IBTS show ", autohide, forceshow )
 		
 		if self._shown:
 			return
@@ -229,10 +231,10 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		#if SecondInfobarAvailable:
 		#	try:
 		#		if self.infobar.SIBdialog.shown:
-		#			print "IBTS SecondInfobar is shown"
+		#			log.debug( "IBTS SecondInfobar is shown" )
 		#			return
 		#	except Exception, e:
-		#		print "InfoBarTunerState show SIB exception " + str(e)
+		#		log.exception( "InfoBarTunerState show SIB exception " + str(e) )
 		
 		allowclosing = True
 		if self.updateTimer.isActive() and autohide:
@@ -267,7 +269,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				self.hideTimer.stop()
 
 	def toggle(self):
-		print "IBTS toggle"
+		log.debug( "IBTS toggle" )
 		if self._shown is False:
 			self.show()
 		else:
@@ -304,23 +306,23 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			
 			# Get initial padding / offset position and apply user offset
 			padding = self.padding + int(config.infobartunerstate.offset_padding.value)
-			#print "IBTS px, self.padding, config.padding", px, self.padding, int(config.infobartunerstate.offset_padding.value)
+			#log.debug( "IBTS px, self.padding, config.padding", px, self.padding, int(config.infobartunerstate.offset_padding.value) )
 			
 			# Calculate field spacing
 			spacing = self.spacing + int(config.infobartunerstate.offset_spacing.value)
-			#print "IBTS spacing, self.spaceing, config.spacing", spacing, self.spacing, int(config.infobartunerstate.offset_spacing.value)
+			#log.debug( "IBTS spacing, self.spaceing, config.spacing", spacing, self.spacing, int(config.infobartunerstate.offset_spacing.value) )
 			#widths = [ width+spacing if width>0 else 0 for width in widths ]
 			
 			# Apply user offsets
 			posx = self.positionx + int(config.infobartunerstate.offset_horizontal.value)
-			#print "IBTS posx, self.positionx, config.offset_horizontal", posx, self.positionx, int(config.infobartunerstate.offset_horizontal.value)
+			#log.debug( "IBTS posx, self.positionx, config.offset_horizontal", posx, self.positionx, int(config.infobartunerstate.offset_horizontal.value) )
 			posy = self.positiony + int(config.infobartunerstate.offset_vertical.value)
 			height = self.height
-			#print "IBTS widths", widths
+			#log.debug( "IBTS widths", widths )
 			
 			# Handle maximum width
 			overwidth = posx + sum(widths) + len([w for w in widths if w]) * spacing + padding - self.desktopwidth + int(config.infobartunerstate.offset_rightside.value)
-			#print "IBTS overwidth", overwidth
+			#log.debug( "IBTS overwidth", overwidth )
 			
 			# Order windows
 			wins = sorted( self.entries.itervalues(), key=lambda x: (x.type, x.endless, x.begin), reverse=config.infobartunerstate.list_goesup.value )
@@ -337,7 +339,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				win.show()
 
 	def tunerShow(self, forceshow=False):
-		print "IBTS tunerShow"
+		log.debug( "IBTS tunerShow" )
 		self._shown = True
 		
 		for plugin in self.getPlugins():
@@ -365,7 +367,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				if self.isPlugin(win.plugin):
 					result = self.getPlugin(win.plugin).update(id, win)
 					if result is None:
-						print "IBTS tunerShow FINISHED", id
+						log.debug( "IBTS tunerShow FINISHED", id )
 						win.updateTimes( None, time(), False )
 						win.updateType( FINISHED )
 			
@@ -377,16 +379,16 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				if not self.info:
 					self.info = self.session.instantiateDialog( TunerStateInfo, _("Nothing running") )
 				self.info.show()
-				print "IBTS self.info.type", self.info.type
+				log.debug( "IBTS self.info.type", self.info.type )
 			except Exception, e:
-				print "InfoBarTunerState show exception " + str(e)
+				log.exception( "InfoBarTunerState show exception " + str(e) )
 
 	def update(self):
-		print "IBTS update"
+		log.debug( "IBTS update" )
 		self.tunerShow()
 
 	def hide(self):
-		print "IBTS hide"
+		log.debug( "IBTS hide" )
 		if self.updateTimer.isActive():
 			self.updateTimer.stop()
 		if self.hideTimer.isActive():
@@ -394,7 +396,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		self.hideTimer.start( 10, True )
 
 	def tunerHide(self):
-		print "IBTS tunerHide"
+		log.debug( "IBTS tunerHide" )
 		for win in self.entries.itervalues():
 			win.hide()
 		if self.info:
@@ -402,7 +404,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		self._shown = False
 
 	def close(self):
-		print "IBTS close"
+		log.debug( "IBTS close" )
 		self.undoHandler()
 		self.removeEvents()
 		self.tunerHide()
@@ -469,16 +471,16 @@ class TunerStateBase(Screen):
 	def reorder(self, widths, overwidth=0):
 		# Get initial padding / offset position and apply user offset
 		padding = self.padding + int(config.infobartunerstate.offset_padding.value)
-		#print "IBTS px, self.padding, config.padding", px, self.padding, int(config.infobartunerstate.offset_padding.value)
+		#log.debug( "IBTS px, self.padding, config.padding", px, self.padding, int(config.infobartunerstate.offset_padding.value) )
 		
 		# Calculate field spacing
 		spacing = self.spacing + int(config.infobartunerstate.offset_spacing.value)
-		#print "IBTS spacing, self.spaceing, config.spacing", spacing, self.spacing, int(config.infobartunerstate.offset_spacing.value)
+		#log.debug( "IBTS spacing, self.spaceing, config.spacing", spacing, self.spacing, int(config.infobartunerstate.offset_spacing.value) )
 		
 		px = padding
 		py = 0
 		sh = self.instance.size().height()
-		#print self.widths
+		#log.debug( self.widths )
 		
 		fieldwidths = config.infobartunerstate.fieldswidth.dict().values()
 		
@@ -572,7 +574,7 @@ class TunerStateInfo(TunerStateBase):
 		self.onLayoutFinish.append(self.popup)
 
 	def popup(self):
-		print "IBTS popup"
+		log.debug( "IBTS popup" )
 		
 		self["Type"].setPixmapNum(3)
 		
@@ -589,7 +591,7 @@ class TunerStateInfo(TunerStateBase):
 			self[fieldid].instance.resize( eSize(1000, height) )
 			
 			width = max(self[fieldid].instance.calculateSize().width(), 0)
-			#print width
+			#log.debug( width )
 			
 			#Workaround#2 Expand the calculate size
 			width = int( width * 1.10 )
@@ -670,7 +672,7 @@ class TunerState(TunerStateBase):
 		if self.type != type:
 			self.type = type
 		if self.type == FINISHED:
-			print "IBTS updateType FINISHED"
+			log.debug( "IBTS updateType FINISHED" )
 			self.tuner = _("-")
 			self.tunertype = _("-")
 			# Check if timer is already started
@@ -741,7 +743,7 @@ class TunerState(TunerStateBase):
 		self.timeleft    = timeleft and timeleft is not None and       int( math.ceil( ( timeleft ) / 60.0 ) )
 		self.timeelapsed = timeelapsed and timeelapsed is not None and int( math.ceil( ( timeelapsed ) / 60.0 ) )
 		self.progress    = progress and progress is not None and       int( progress )
-		#print "IBTS duration, timeleft, timeelapsed, progress", self.duration, self.timeleft, self.timeelapsed, self.progress
+		#log.debug( "IBTS duration, timeleft, timeelapsed, progress", self.duration, self.timeleft, self.timeelapsed, self.progress )
 		
 		
 		#Adapted from: from Components.Harddisk import findMountPoint
@@ -826,7 +828,7 @@ class TunerState(TunerStateBase):
 			fieldid = "Field"+str(i)
 			field = c.value
 			text = ""
-			#print "IBTS DEBUG", self.plugin, field
+			#log.debug( "IBTS DEBUG", self.plugin, field )
 			
 			if field == "TypeIcon":
 				self["Type"].show()
@@ -849,7 +851,7 @@ class TunerState(TunerStateBase):
 					pixmapnum = ICON_PIP
 				
 				lenpixmaps = len(self["Type"].pixmaps) 
-				print "IBTS len pixmaps", lenpixmaps
+				log.debug( "IBTS len pixmaps", lenpixmaps )
 				if lenpixmaps < (pixmapnum):
 					# Set Info as default
 					pixmapnum = ICON_INFO
@@ -982,7 +984,7 @@ class TunerState(TunerStateBase):
 			self[fieldid].instance.resize( eSize(1000, height) )
 			
 			width = max(self[fieldid].instance.calculateSize().width(), 0)
-			#print width
+			#log.debug( width )
 			
 			#Workaround#2: Width calculation seems to be not enough
 			width = int( width * 1.10 )
@@ -990,7 +992,7 @@ class TunerState(TunerStateBase):
 			#Workaround#3: Calculation of left aligned fields seems to be broken
 			if 0 < width and width < 30:
 				width = 30
-			#print "IBTS Update", field, width, self[fieldid].instance.calculateSize().width()
+			#log.debug( "IBTS Update", field, width, self[fieldid].instance.calculateSize().width() )
 			
 			#self[fieldid].instance.resize( eSize(width, height) )
 			
