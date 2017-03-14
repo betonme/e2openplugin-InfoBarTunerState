@@ -117,7 +117,6 @@ config.infobartunerstate.extensions_menu_setup     = ConfigYesNo(default = False
 
 config.infobartunerstate.show_withinfobar          = ConfigYesNo(default = True)
 config.infobartunerstate.show_withplayer           = ConfigYesNo(default = False)		# Show with MoviePlayer only is actually not possible
-config.infobartunerstate.show_events               = ConfigYesNo(default = True)		#TODO Show on start, end, start/end
 config.infobartunerstate.show_onkeypress           = ConfigYesNo(default = False)
 
 config.infobartunerstate.time_format_begin         = ConfigSelection(default = "%H:%M", choices = date_choices)

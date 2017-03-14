@@ -218,8 +218,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		self.update()
 	
 	def onEvent(self):
-		if config.infobartunerstate.show_events.value:
-			self.show(True, False)
+		self.show(True, True)
 	
 	def show(self, autohide=False, forceshow=False):
 		log.debug( "IBTS show ", autohide, forceshow )

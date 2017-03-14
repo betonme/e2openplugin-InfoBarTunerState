@@ -88,7 +88,6 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 #			(  _("Pop-Up time in seconds")                            , config.infobartunerstate.popup_time ),
 			(  _("Show and hide with InfoBar")                        , config.infobartunerstate.show_withinfobar ),
 			(  _("MoviePlayer integration")                           , config.infobartunerstate.show_withplayer ),
-			(  _("Show on events")                                    , config.infobartunerstate.show_events ),
 			(  _("Show on key press")                                 , config.infobartunerstate.show_onkeypress ),
 			(  _("Time format begin")                                 , config.infobartunerstate.time_format_begin ),
 			(  _("Time format end")                                   , config.infobartunerstate.time_format_end ),
