@@ -25,8 +25,9 @@ except:
 
 
 # Config options
-config.infobartunerstate.plugin_openwebif         = ConfigSubsection()
-config.infobartunerstate.plugin_openwebif.enabled = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_openwebif             = ConfigSubsection()
+config.infobartunerstate.plugin_openwebif.enabled     = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_openwebif.show_events = ConfigYesNo(default = False)
 
 
 def getStreamID(stream):
@@ -131,7 +132,8 @@ class StreamOpenWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
-					gInfoBarTunerState.onEvent()
+					if config.infobartunerstate.plugin_openwebif.show_events.value:
+						gInfoBarTunerState.onEvent()
 			
 			elif event == StreamAdapter.EV_STOP:
 				
@@ -145,7 +147,8 @@ class StreamOpenWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
-					gInfoBarTunerState.onEvent()
+					if config.infobartunerstate.plugin_openwebif.show_events.value:
+						gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):
 		

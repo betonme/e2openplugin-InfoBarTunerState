@@ -14,9 +14,11 @@ from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
 from Plugins.Extensions.InfoBarTunerState.Logger import log
 
+
 # Config options
-config.infobartunerstate.plugin_records         = ConfigSubsection()
-config.infobartunerstate.plugin_records.enabled = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_records             = ConfigSubsection()
+config.infobartunerstate.plugin_records.enabled     = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_records.show_events = ConfigYesNo(default = False)
 
 
 def getTimerID(timer):
@@ -130,7 +132,8 @@ class Records(PluginBase):
 				channel = getChannel(servicereference.ref)
 				
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, begin, end, endless, filename)
-				gInfoBarTunerState.onEvent()
+				if config.infobartunerstate.plugin_records.show_events.value:
+					gInfoBarTunerState.onEvent()
 		
 		# Finished repeating timer will report the state StateEnded+1 or StateWaiting
 		else:
@@ -143,7 +146,8 @@ class Records(PluginBase):
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.finishEntry(id)
-				gInfoBarTunerState.onEvent()
+				if config.infobartunerstate.plugin_records.show_events.value:
+					gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):
 		

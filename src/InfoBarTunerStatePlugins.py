@@ -27,7 +27,7 @@ import imp, inspect
 # Plugin internal
 from . import _
 from PluginBase import PluginBase
-from Plugins.Extensions.InfoBarTunerState.Logger import log
+from Logger import log
 
 # Constants
 IBTS_PLUGINS_PATH = os.path.join( resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/Handler/" )

@@ -13,12 +13,14 @@ from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
 from Plugins.Extensions.InfoBarTunerState.Logger import log
 
+
 # Config options
-config.infobartunerstate.plugin_timers         = ConfigSubsection()
-config.infobartunerstate.plugin_timers.enabled = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_timers                           = ConfigSubsection()
+config.infobartunerstate.plugin_timers.enabled                   = ConfigYesNo(default = True)
 config.infobartunerstate.plugin_timers.number_pending_timers     = ConfigSelectionNumber(0, 10, 1, default = 1)
 config.infobartunerstate.plugin_timers.pending_hours             = ConfigSelectionNumber(0, 1000, 1, default = 0)
 config.infobartunerstate.plugin_timers.show_energy_timers        = ConfigYesNo(default = True)
+
 
 def getTimer(id):
 	from NavigationInstance import instance

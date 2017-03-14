@@ -17,9 +17,11 @@ from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getEventData, getTunerName
 from Plugins.Extensions.InfoBarTunerState.Logger import log
 
+
 # Config options
-config.infobartunerstate.plugin_unknown         = ConfigSubsection()
-config.infobartunerstate.plugin_unknown.enabled = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_unknown             = ConfigSubsection()
+config.infobartunerstate.plugin_unknown.enabled     = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_unknown.show_events = ConfigYesNo(default = False)
 
 
 class Unknown(PluginBase):
@@ -97,7 +99,7 @@ class Unknown(PluginBase):
 				else:
 					del self.tuners[-1]
 		
-		if config.infobartunerstate.show_events.value:
+		if config.infobartunerstate.plugin_unknown.show_events.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.onEvent()

@@ -37,7 +37,7 @@ from Logger import log
 NAME = _("InfoBarTunerState")
 IBTSSHOW = _("Show InfoBarTunerState")
 IBTSSETUP = _("InfoBarTunerState Setup")
-VERSION = "3.2.4"
+VERSION = "3.2.5"
 SUPPORT = "http://bit.ly/ibtsihad"
 DONATE = "http://bit.ly/ibtspaypal"
 ABOUT = "\n  " + NAME + " " + VERSION + "\n\n" \
@@ -97,7 +97,6 @@ date_choices = [
 									("-    %H:%M",				_("-    HH:MM")),
 								]
 
-#TODO New Config Show on timer prepare Event
 event_choices = [	
 									("prepare",						_("Prepare record")),
 									("start",							_("Start record")),

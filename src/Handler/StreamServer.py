@@ -28,8 +28,9 @@ except:
 
 	
 # Config options
-config.infobartunerstate.plugin_streamserver         = ConfigSubsection()
-config.infobartunerstate.plugin_streamserver.enabled = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_streamserver             = ConfigSubsection()
+config.infobartunerstate.plugin_streamserver.enabled     = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_streamserver.show_events = ConfigYesNo(default = False)
 
 
 def getStreamID(count, ip):
@@ -126,7 +127,8 @@ class StreamServer(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", 0, "", 0, time(), 0, True, "", client, ip, "")
-					gInfoBarTunerState.onEvent()
+					if config.infobartunerstate.plugin_openwebif.show_events.value:
+						gInfoBarTunerState.onEvent()
 			
 		else:
 			
@@ -141,7 +143,8 @@ class StreamServer(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
-					gInfoBarTunerState.onEvent()
+					if config.infobartunerstate.plugin_openwebif.show_events.value:
+						gInfoBarTunerState.onEvent()
 
 	def onEventParametersChanged(self, params):
 		try:
@@ -175,7 +178,8 @@ class StreamServer(PluginBase):
 							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 							if gInfoBarTunerState:
 								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, time(), 0, True, "", client, ip)
-								gInfoBarTunerState.onEvent()
+								if config.infobartunerstate.plugin_openwebif.show_events.value:
+									gInfoBarTunerState.onEvent()
 		except Exception, e:
 			log.exception( "IBTS exception " + str(e) )
 
