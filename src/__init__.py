@@ -82,12 +82,9 @@ config.infobartunerstate.about                     = ConfigNothing()
 config.infobartunerstate.enabled                   = ConfigYesNo(default = True)
 config.infobartunerstate.extensions_menu_show      = ConfigYesNo(default = True)
 config.infobartunerstate.extensions_menu_setup     = ConfigYesNo(default = False)
-#config.infobartunerstate.popup_time               = ConfigSelectionNumber(0, 10, 1, default = 5)
-config.infobartunerstate.popups_error_timeout      = ConfigSelectionNumber(0, 10, 1, default = 5)
 
-#config.infobartunerstate.show_withinfobar          = ConfigYesNo(default = True)
-#config.infobartunerstate.show_withplayer           = ConfigYesNo(default = False)		# Show with MoviePlayer only is actually not possible
-#config.infobartunerstate.show_onkeypress           = ConfigYesNo(default = False)
+config.infobartunerstate.popups_warning_timeout    = ConfigSelectionNumber(0, 10, 1, default = 5)
+config.infobartunerstate.popups_error_timeout      = ConfigSelectionNumber(0, 10, 1, default = 5)
 
 config.infobartunerstate.show_withinfobar          = ConfigSelection(default = "False", choices = infobar_choices)
 config.infobartunerstate.show_withplayer           = ConfigSelection(default = "False", choices = infobar_choices)
