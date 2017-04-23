@@ -74,10 +74,10 @@ def InfoBarShowTunerState(self):
 	show = False
 	player = type(self).__name__ != "InfoBar"
 	if player:
-		if config.infobartunerstate.show_withplayer.value:
+		if config.infobartunerstate.show_withplayer.value == "True":
 			show = True
 	else:
-		if config.infobartunerstate.show_withinfobar.value:
+		if config.infobartunerstate.show_withinfobar.value == "True":
 			show = True
 	if show:
 		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
@@ -108,13 +108,11 @@ def InfoBarToggleTunerState(self):
 		show = False
 		player = type(self).__name__ != "InfoBar"
 		if player:
-			if config.infobartunerstate.show_withplayer.value:
+			if config.infobartunerstate.show_withplayer.value == "only_onkeypress":
 				show = True
 		else:
-			if config.infobartunerstate.show_withinfobar.value:
+			if config.infobartunerstate.show_withinfobar.value == "only_onkeypress":
 				show = True
-		#if config.infobartunerstate.show_onkeypress.value:
-		#	show = True
 		if show:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
