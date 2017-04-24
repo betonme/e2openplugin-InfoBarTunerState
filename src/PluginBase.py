@@ -5,10 +5,16 @@
 from Plugins.Extensions.PushService.Logger import log
 
 # Internal
+try:
+	#Python >= 2.7
+	from collections import OrderedDict
+except:
+	from OrderedDict import OrderedDict
+
 
 class PluginBase(object):
 	def __init__(self):
-		pass
+		self.options = OrderedDict()
 	
 	################################################
 	# Base classmethod functions
