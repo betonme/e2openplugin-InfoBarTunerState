@@ -86,9 +86,8 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 			(  _("Add Show to extension menu")                        , config.infobartunerstate.extensions_menu_show ),
 			(  _("Add Setup to extension menu")                       , config.infobartunerstate.extensions_menu_setup ),
 #			(  _("Pop-Up time in seconds")                            , config.infobartunerstate.popup_time ),
-			(  _("Show and hide with InfoBar")                        , config.infobartunerstate.show_withinfobar ),
-			(  _("MoviePlayer integration")                           , config.infobartunerstate.show_withplayer ),
-#			(  _("Show on key press")                                 , config.infobartunerstate.show_onkeypress ),
+			(  _("Show with InfoBar (TV-mode)")                       , config.infobartunerstate.show_withinfobar ),
+			(  _("Show with Infobar (MoviePlayer)")                   , config.infobartunerstate.show_withplayer ),
 			(  _("Time format begin")                                 , config.infobartunerstate.time_format_begin ),
 			(  _("Time format end")                                   , config.infobartunerstate.time_format_end ),
 			(  _("Number of finished entries in list")                , config.infobartunerstate.number_finished_entries ),
@@ -165,8 +164,9 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 	def changed(self):
 		for x in self.onChangedEntry:
 			x()
+		current = self["config"].getCurrent()[1]
 		if (current == config.infobartunerstate.enabled or 
-			current == config.infobartunerstate.log_write ):
+			current == config.infobartunerstate.log_write):
 			self.changeConfig()
 			return
 

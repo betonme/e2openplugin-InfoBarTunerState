@@ -73,7 +73,7 @@ SecondInfobarAvailable = False
 
 # Type Enum
 # Used to set priority for calling the plugins onShow event: Higher numbers will be served first
-UNKNOWN, INFO, LIVE, PIP, TIMER, RECORD, STREAM, FINISHED = range( 8 )
+UNKNOWN, INFO, LIVE, RECORD, TIMER, PIP, STREAM, FINISHED = range( 8 )
 
 # Icons Enum
 # Used to identify the icon number from skin
