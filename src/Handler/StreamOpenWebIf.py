@@ -8,7 +8,7 @@ from time import time
 from ServiceReference import ServiceReference
 
 # Config
-from Components.config import config, ConfigSubsection, ConfigYesNo
+from Components.config import config, NoSave, ConfigYesNo
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
@@ -22,12 +22,6 @@ try:
 	HAS_OPENWEBIF = True
 except:
 	StreamAdapter = None
-
-
-# Config options
-config.infobartunerstate.plugin_openwebif             = ConfigSubsection()
-config.infobartunerstate.plugin_openwebif.enabled     = ConfigYesNo(default = False)
-config.infobartunerstate.plugin_openwebif.show_events = ConfigYesNo(default = False)
 
 
 def getStreamID(stream):
@@ -54,6 +48,10 @@ def getStream(id):
 class StreamOpenWebIf(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
+		
+		# Default configuration
+		self.setOption( 'plugin_openwebif_enabled', NoSave(ConfigYesNo( default = False )), _("Show OpenWebInterface streams") )
+		self.setOption( 'plugin_openwebif_showonevents', NoSave(ConfigYesNo( default = False )), _("Show on OpenWebInterface streams events") )
 
 	################################################
 	# To be implemented by subclass
@@ -68,11 +66,8 @@ class StreamOpenWebIf(PluginBase):
 	def getPixmapNum(self):
 		return 1
 
-	def getOptions(self):
-		return [(_("Show transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.enabled),]
-
 	def appendEvent(self):
-		if config.infobartunerstate.plugin_openwebif.enabled.value:
+		if self.getValue('plugin_openwebif_enabled'):
 			if HAS_OPENWEBIF:
 				try:
 					from Plugins.Extensions.OpenWebif.controllers.stream import streamStates
@@ -91,7 +86,7 @@ class StreamOpenWebIf(PluginBase):
 				pass
 
 	def onInit(self):
-		if config.infobartunerstate.plugin_openwebif.enabled.value:
+		if self.getValue('plugin_openwebif_enabled'):
 			if HAS_OPENWEBIF:
 				try:
 					from Plugins.Extensions.WebInterface.WebScreens import streamList
@@ -133,7 +128,7 @@ class StreamOpenWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
-					if config.infobartunerstate.plugin_openwebif.show_events.value:
+					if self.getValue('plugin_openwebif_showonevents'):
 						gInfoBarTunerState.onEvent()
 			
 			elif event == StreamAdapter.EV_STOP:
@@ -148,7 +143,7 @@ class StreamOpenWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
-					if config.infobartunerstate.plugin_openwebif.show_events.value:
+					if self.getValue('plugin_openwebif_showonevents'):
 						gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):

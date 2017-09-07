@@ -6,7 +6,7 @@ from ServiceReference import ServiceReference
 from enigma import eDVBResourceManager, eServiceReference
 
 # Config
-from Components.config import config, ConfigSubsection, ConfigYesNo
+from Components.config import config, NoSave, ConfigYesNo
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
@@ -14,16 +14,14 @@ from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getEventData, getTunerName
 from Plugins.Extensions.InfoBarTunerState.Logger import log
 
-# Config options
-config.infobartunerstate.plugin_pip         = ConfigSubsection()
-config.infobartunerstate.plugin_pip.enabled = ConfigYesNo(default = False)
-
-
 class PiP(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
 		self.tunerstate = None
 		self.eservicereference_string = None
+		
+		# Default configuration
+		self.setOption( 'plugin_pip_enabled', NoSave(ConfigYesNo( default = False )), _("Show PiP tuner") )
 
 	################################################
 	# To be implemented by subclass
@@ -36,9 +34,6 @@ class PiP(PluginBase):
 
 	def getPixmapNum(self):
 		return 7
-
-	def getOptions(self):
-		return [(_("Show PiP service(s)"), config.infobartunerstate.plugin_pip.enabled),]
 
 	def appendEvent(self):
 		pass
@@ -58,7 +53,7 @@ class PiP(PluginBase):
 		return None
 
 	def onInit(self):
-		if config.infobartunerstate.plugin_pip.enabled.value:
+		if self.getValue('plugin_pip_enabled'):
 			if not self.tunerstate:
 				self.tunerstate = self.checkPiP()
 
@@ -66,12 +61,12 @@ class PiP(PluginBase):
 		pass
 
 	def onShow(self, tunerstates):
-		if config.infobartunerstate.plugin_pip.enabled.value:
+		if self.getValue('plugin_pip_enabled'):
 			if not self.tunerstate:
 				self.tunerstate = self.checkPiP()
 
 	def update(self, id, tunerstate):
-		if config.infobartunerstate.plugin_pip.enabled.value:
+		if self.getValue('plugin_pip_enabled'):
 			
 			remove = True
 			

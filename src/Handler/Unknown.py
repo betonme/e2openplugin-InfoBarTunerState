@@ -9,7 +9,7 @@ from ServiceReference import ServiceReference
 from enigma import eDVBResourceManager
 
 # Config
-from Components.config import config, ConfigSubsection, ConfigYesNo
+from Components.config import config, NoSave, ConfigYesNo
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
@@ -31,6 +31,10 @@ class Unknown(PluginBase):
 		self.mask = 0
 		self.tuners = []
 		self.tunerstates = []
+		
+		# Default configuration
+		self.setOption( 'plugin_unknown_enabled', NoSave(ConfigYesNo( default = False )), _("Show tuners blocked by unknown services") )
+		self.setOption( 'plugin_unknown_showonevents', NoSave(ConfigYesNo( default = False )), _("Show on unknown events") )
 
 	################################################
 	# To be implemented by subclass
@@ -44,11 +48,8 @@ class Unknown(PluginBase):
 	def getPixmapNum(self):
 		return 5
 
-	def getOptions(self):
-		return [(_("Show undefined service(s)"), config.infobartunerstate.plugin_unknown.enabled),]
-
 	def appendEvent(self):
-		if config.infobartunerstate.plugin_unknown.enabled.value:
+		if self.getValue('plugin_unknown_enabled'):
 			res_mgr = eDVBResourceManager.getInstance()
 			if res_mgr:
 				try:
@@ -99,13 +100,13 @@ class Unknown(PluginBase):
 				else:
 					del self.tuners[-1]
 		
-		if config.infobartunerstate.plugin_unknown.show_events.value:
+		if self.getValue('plugin_unknown_showonevents'):
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.onEvent()
 
 	def onShow(self, tunerstates):
-		if config.infobartunerstate.plugin_unknown.enabled.value:
+		if self.getValue('plugin_unknown_enabled'):
 			toadd = self.tuners[:]
 			for id, tunerstate in tunerstates.items():
 				if tunerstate.plugin == "Record" or tunerstate.plugin == "Stream":
