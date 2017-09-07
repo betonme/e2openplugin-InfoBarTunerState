@@ -5,13 +5,21 @@ from time import strftime, time, localtime, mktime
 from datetime import datetime, timedelta
 
 # Config
-from Components.config import config, NoSave, ConfigYesNo, ConfigSelectionNumber
+from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigSelectionNumber
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
 from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel
 from Plugins.Extensions.InfoBarTunerState.Logger import log
+
+
+# Config options
+config.infobartunerstate.plugin_timers                           = ConfigSubsection()
+config.infobartunerstate.plugin_timers.enabled                   = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_timers.number_pending_timers     = ConfigSelectionNumber(0, 10, 1, default = 1)
+config.infobartunerstate.plugin_timers.pending_hours             = ConfigSelectionNumber(0, 1000, 1, default = 0)
+config.infobartunerstate.plugin_timers.show_energy_timers        = ConfigYesNo(default = True)
 
 
 def getTimer(id):
@@ -105,12 +113,6 @@ class Timers(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
 		self.nextids = []
-		
-		# Default configuration
-		self.setOption( 'plugin_timers_enabled',             NoSave(ConfigYesNo( default = False )),                 _("Show pending timer(s)") )
-		self.setOption( 'plugin_timers_numberpendingtimers', NoSave(ConfigSelectionNumber(0, 10, 1, default = 1)),   _("Number of pending timer(s)") )
-		self.setOption( 'plugin_timers_showenergytimers',    NoSave(ConfigYesNo( default = False )),                 _("Show Energy shedule timers") )
-		self.setOption( 'plugin_timers_pendinghours',        NoSave(ConfigSelectionNumber(0, 1000, 1, default = 0)), _("Show pending records only within x hour(s)") )
 
 	################################################
 	# To be implemented by subclass
@@ -124,15 +126,23 @@ class Timers(PluginBase):
 	def getPixmapNum(self):
 		return 6
 
+	def getOptions(self):
+		return [
+					(_("Show pending timer(s)"),                      config.infobartunerstate.plugin_timers.enabled),
+					(_("Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers),
+					(_("Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers),
+					(_("Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours),
+				]
+
 	def onShow(self, tunerstates):
-		if self.getValue('plugin_timers_enabled'):
-			number_pending_timers = int( self.getValue('plugin_timers_numberpendingtimers') )
+		if config.infobartunerstate.plugin_timers.enabled.value:
+			number_pending_timers = int( config.infobartunerstate.plugin_timers.number_pending_timers.value )
 			#log.debug( "IBTS number_pending_timers", number_pending_timers )
 			
 			toremove = self.nextids[:]
 			
 			if number_pending_timers:
-				pending_seconds = int( self.getValue('plugin_timers_pendinghours') ) * 3600
+				pending_seconds = int( config.infobartunerstate.plugin_timers.pending_hours.value ) * 3600
 				pending_limit = (time() + pending_seconds) if pending_seconds else 0
 				#log.debug( "IBTS pending_limit", pending_limit )
 				timer_end = 0
@@ -169,7 +179,10 @@ class Timers(PluginBase):
 									name = timer.name
 									servicereference = timer.service_ref
 									
-									if (str(servicereference)[0]=="-")and( self.getValue('plugin_timers_showenergytimers') == False):
+									# if ((name=="Ausschalten")or(name=="Einschalten")or(name=="Standby"))and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
+									# isset zapbeforerecord="0" justremind="0" wakeup_t="0" shutdown_t="0" notify_t="0" standby_t="1"
+									
+									if (str(servicereference)[0]=="-")and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
 										timer_end+=1
 										
 									else:

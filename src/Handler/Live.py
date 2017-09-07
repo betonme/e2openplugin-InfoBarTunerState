@@ -6,7 +6,7 @@ from enigma import iPlayableService
 from ServiceReference import ServiceReference
 
 # Config
-from Components.config import config, NoSave, ConfigYesNo
+from Components.config import config, ConfigSubsection, ConfigYesNo
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
@@ -14,15 +14,16 @@ from Plugins.Extensions.InfoBarTunerState.PluginBase import PluginBase
 from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableService, getNumber, getChannel, getEventData
 from Plugins.Extensions.InfoBarTunerState.Logger import log
 
+# Config options
+config.infobartunerstate.plugin_live         = ConfigSubsection()
+config.infobartunerstate.plugin_live.enabled = ConfigYesNo(default = False)
+
 
 class Live(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
 		self.tunerstate = None
 		self.eservicereference_string = ""
-		
-		# Default configuration
-		self.setOption( 'plugin_live_enabled', NoSave(ConfigYesNo( default = False )), _("Show live tuner") )
 
 	################################################
 	# To be implemented by subclass
@@ -36,8 +37,11 @@ class Live(PluginBase):
 	def getPixmapNum(self):
 		return 4
 
+	def getOptions(self):
+		return [(_("Show live tuner"), config.infobartunerstate.plugin_live.enabled),]
+
 	def appendEvent(self):
-		if self.getValue('plugin_live_enabled'):
+		if config.infobartunerstate.plugin_live.enabled.value:
 			from NavigationInstance import instance
 			if instance is not None:
 				if self.onEvent not in instance.event:
@@ -52,7 +56,7 @@ class Live(PluginBase):
 				instance.event.remove(self.onEvent)
 
 	def onInit(self):
-		if self.getValue('plugin_live_enabled'):
+		if config.infobartunerstate.plugin_live.enabled.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				self.tunerstate = gInfoBarTunerState.addEntry("Live", self.getPluginName(), self.getType(), self.getText())

@@ -83,16 +83,13 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 		self.config = [
 			(  _("Enable InfoBarTunerState")                          , config.infobartunerstate.enabled ),
 			(  separator                                              , config.infobartunerstate.about ),
-			
 			(  _("Add Show to extension menu")                        , config.infobartunerstate.extensions_menu_show ),
 			(  _("Add Setup to extension menu")                       , config.infobartunerstate.extensions_menu_setup ),
-
-			(  _("Show and hide with InfoBar")                        , config.infobartunerstate.show_withinfobar ),
-			(  _("MoviePlayer integration")                           , config.infobartunerstate.show_withplayer ),
-			
+#			(  _("Pop-Up time in seconds")                            , config.infobartunerstate.popup_time ),
+			(  _("Show with InfoBar (TV-mode)")                       , config.infobartunerstate.show_withinfobar ),
+			(  _("Show with Infobar (MoviePlayer)")                   , config.infobartunerstate.show_withplayer ),
 			(  _("Time format begin")                                 , config.infobartunerstate.time_format_begin ),
 			(  _("Time format end")                                   , config.infobartunerstate.time_format_end ),
-			
 			(  _("Number of finished entries in list")                , config.infobartunerstate.number_finished_entries ),
 			(  _("Number of seconds for displaying finished entries") , config.infobartunerstate.timeout_finished_entries ),
 			(  separator                                              , config.infobartunerstate.about ),
@@ -133,8 +130,6 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 			(  _("Overwrite Infobar timeout")                         , config.infobartunerstate.infobar_timeout ),
 			(  _("Wake HDD for free space statistics")                , config.infobartunerstate.wake_hdd ),
 			(  _("Skip mounts for free space statistics")             , config.infobartunerstate.skip_mounts ),
-			(  _("Warning popup timeout in seconds")                  , config.infobartunerstate.popups_warning_timeout ),
-			(  _("Error popup timeout in seconds")                    , config.infobartunerstate.popups_error_timeout ),
 			(  separator                                              , config.infobartunerstate.about ),
 			(  _("Log debug prints to shell")                         , config.infobartunerstate.log_shell ),
 			(  _("Log to file")                                       , config.infobartunerstate.log_write ),
@@ -169,8 +164,9 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 	def changed(self):
 		for x in self.onChangedEntry:
 			x()
+		current = self["config"].getCurrent()[1]
 		if (current == config.infobartunerstate.enabled or 
-			current == config.infobartunerstate.log_write ):
+			current == config.infobartunerstate.log_write):
 			self.changeConfig()
 			return
 

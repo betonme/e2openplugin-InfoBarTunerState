@@ -4,7 +4,7 @@
 from time import time
 
 # Config
-from Components.config import config, NoSave, ConfigYesNo, ConfigSelection
+from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigSelection
 
 from enigma import eEPGCache
 
@@ -21,6 +21,10 @@ event_choices = [
 					( "end",		_("End record")),
 					( "startend",	_("Start / End record"))
 				]
+config.infobartunerstate.plugin_records             = ConfigSubsection()
+config.infobartunerstate.plugin_records.enabled     = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_records.show_events = ConfigSelection(default = "startend", choices = event_choices)
+
 
 def getTimerID(timer):
 	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
@@ -49,10 +53,6 @@ def getProcessedTimer(id):
 class Records(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
-		
-		# Default configuration
-		self.setOption( 'plugin_records_enabled', NoSave(ConfigYesNo( default = False )), _("Show records") )
-		self.setOption( 'plugin_records_showonevents', NoSave(ConfigSelection(default = "startend", choices = event_choices)), _("Show on record events") )
 
 	################################################
 	# To be implemented by subclass
@@ -66,8 +66,11 @@ class Records(PluginBase):
 	def getPixmapNum(self):
 		return 0
 
+	def getOptions(self):
+		return [(_("Show record(s)"), config.infobartunerstate.plugin_records.enabled),]
+
 	def appendEvent(self):
-		if self.getValue('plugin_records_enabled'):
+		if config.infobartunerstate.plugin_records.enabled.value:
 			from NavigationInstance import instance
 			if instance is not None:
 				# Recording Events
@@ -84,7 +87,7 @@ class Records(PluginBase):
 				instance.RecordTimer.on_state_change.remove(self.onEvent)
 
 	def onInit(self):
-		if self.getValue('plugin_records_enabled'):
+		if config.infobartunerstate.plugin_records.enabled.value:
 			from NavigationInstance import instance
 			if instance is not None:
 				for timer in instance.RecordTimer.timer_list:
@@ -135,7 +138,7 @@ class Records(PluginBase):
 				reference = str(servicereference.ref)
 					
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, begin, end, endless, filename)
-				if self.getValue('plugin_records_showonevents') == "start" or if self.getValue('plugin_records_showonevents') == "startend":
+				if config.infobartunerstate.plugin_records.show_events.value == "start" or config.infobartunerstate.plugin_records.show_events.value == "startend":
 					gInfoBarTunerState.onEvent()
 		
 		# Finished repeating timer will report the state StateEnded+1 or StateWaiting
@@ -149,7 +152,7 @@ class Records(PluginBase):
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.finishEntry(id)
-				if self.getValue('plugin_records_showonevents') == "startend" or if self.getValue('plugin_records_showonevents') == "end":
+				if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 					gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):

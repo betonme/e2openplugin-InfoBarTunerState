@@ -11,7 +11,7 @@ from enigma import eServiceReference
 from ServiceReference import ServiceReference
 
 # Config
-from Components.config import config, NoSave, ConfigYesNo
+from Components.config import config, ConfigSubsection, ConfigYesNo
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
@@ -25,6 +25,12 @@ try:
 	HAS_STREAMSERVER = True
 except:
 	StreamingWebScreen = None
+
+	
+# Config options
+config.infobartunerstate.plugin_streamserver             = ConfigSubsection()
+config.infobartunerstate.plugin_streamserver.enabled     = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_streamserver.show_events = ConfigYesNo(default = False)
 
 
 def getStreamID(count, ip):
@@ -40,10 +46,6 @@ class StreamServer(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
 		self.ids = []
-		
-		# Default configuration
-		self.setOption( 'plugin_streamserver_enabled', NoSave(ConfigYesNo( default = False )), _("Show streams from StreamServer") )
-		self.setOption( 'plugin_streamserver_showonevents', NoSave(ConfigYesNo( default = False )), _("Show on StreamServer events") )
 
 	def getStream(self, id):
 		for sid, ip, servicereference_string in self.ids:
@@ -68,8 +70,11 @@ class StreamServer(PluginBase):
 	def getPixmapNum(self):
 		return 1
 
+	def getOptions(self):
+		return [(_("Show transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_streamserver.enabled),]
+
 	def appendEvent(self):
-		if self.getValue('plugin_streamserver_enabled'):
+		if config.infobartunerstate.plugin_streamserver.enabled.value:
 			if HAS_STREAMSERVER:
 				try:
 					from Components.StreamServerControl import streamServerControl
@@ -94,7 +99,7 @@ class StreamServer(PluginBase):
 					streamServerControl.onUriParametersChanged.remove(self.onEventParametersChanged)
 
 	def onInit(self):
-		if self.getValue('plugin_streamserver_enabled'):
+		if config.infobartunerstate.plugin_streamserver.enabled.value:
 			if HAS_STREAMSERVER:
 				try:
 					from Components.StreamServerControl import streamServerControl
@@ -122,7 +127,7 @@ class StreamServer(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", 0, "", 0, "", "", time(), 0, True, "", client, ip, "")
-					if self.getValue('plugin_streamserver_showonevents'):
+					if config.infobartunerstate.plugin_openwebif.show_events.value:
 						gInfoBarTunerState.onEvent()
 			
 		else:
@@ -138,7 +143,7 @@ class StreamServer(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
-					if self.getValue('plugin_streamserver_showonevents'):
+					if config.infobartunerstate.plugin_openwebif.show_events.value:
 						gInfoBarTunerState.onEvent()
 
 	def onEventParametersChanged(self, params):
@@ -174,7 +179,7 @@ class StreamServer(PluginBase):
 							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 							if gInfoBarTunerState:
 								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
-								if self.getValue('plugin_streamserver_showonevents'):
+								if config.infobartunerstate.plugin_openwebif.show_events.value:
 									gInfoBarTunerState.onEvent()
 		except Exception, e:
 			log.exception( "IBTS exception " + str(e) )

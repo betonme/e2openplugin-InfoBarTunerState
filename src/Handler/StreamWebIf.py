@@ -9,7 +9,7 @@ from time import time
 from ServiceReference import ServiceReference
 
 # Config
-from Components.config import config, NoSave, ConfigYesNo
+from Components.config import config, ConfigSubsection, ConfigYesNo
 
 # Plugin internal
 from Plugins.Extensions.InfoBarTunerState.__init__ import _
@@ -55,10 +55,6 @@ def getStream(id):
 class StreamWebIf(PluginBase):
 	def __init__(self):
 		PluginBase.__init__(self)
-		
-		# Default configuration
-		self.setOption( 'plugin_webif_enabled', NoSave(ConfigYesNo( default = False )), _("Show WebInterface streams") )
-		self.setOption( 'plugin_webif_showonevents', NoSave(ConfigYesNo( default = False )), _("Show on Webinterface stream events") )
 
 	################################################
 	# To be implemented by subclass
@@ -73,8 +69,11 @@ class StreamWebIf(PluginBase):
 	def getPixmapNum(self):
 		return 1
 
+	def getOptions(self):
+		return [(_("Show stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.enabled),]
+
 	def appendEvent(self):
-		if self.getValue('plugin_webif_enabled'):
+		if config.infobartunerstate.plugin_webif.enabled.value:
 			if HAS_WEBIF:
 				try:
 					from Plugins.Extensions.WebInterface.WebScreens import streamingEvents
@@ -93,7 +92,7 @@ class StreamWebIf(PluginBase):
 				pass
 
 	def onInit(self):
-		if self.getValue('plugin_webif_enabled'):
+		if config.infobartunerstate.plugin_webif.enabled.value:
 			if HAS_WEBIF:
 				try:
 					from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
@@ -137,7 +136,7 @@ class StreamWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
-					if self.getValue('plugin_webif_showonevents'):
+					if config.infobartunerstate.plugin_webif.show_events.value:
 						gInfoBarTunerState.onEvent()
 				
 			elif event == StreamingWebScreen.EVENT_END:
@@ -152,7 +151,7 @@ class StreamWebIf(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
-					if self.getValue('plugin_webif_showonevents'):
+					if config.infobartunerstate.plugin_webif.show_events.value:
 						gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):
