@@ -171,6 +171,8 @@ class Records(PluginBase):
 				tunerstate.endless = False
 				epgcache = eEPGCache.getInstance()
 				
+				event = None
+				
 				if timer.eit:
 					log.debug( "IBTS Records event by lookupEventId" )
 					event = epgcache.lookupEventId(timer.service_ref.ref, timer.eit)
