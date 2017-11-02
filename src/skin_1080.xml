@@ -1,0 +1,15 @@
+﻿    <screen backgroundColor="#ff000000" flags="wfNoBorder" name="TunerState" padding="20" position="10,90" size="1900,37" spacing="15">
+        <widget name="Background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/background.png" position="0,0" size="1900,37" zPosition="-1" />
+        <widget name="Type" pixmaps="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/record.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/stream.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/finished.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/info.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/live.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/unknown.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/clock.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/pip.png" position="1,1" size="35,35" />
+        <widget backgroundColor="black" borderColor="grey" borderWidth="2" name="Progress" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/progress.png" position="0,0" size="100,12" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field0" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field1" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field2" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field3" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field4" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field5" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field6" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field7" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field8" noWrap="1" transparent="1" />
+        <widget backgroundColor="black" font="Regular;30" foregroundColor="white" halign="left" name="Field9" noWrap="1" transparent="1" />
+    </screen>
