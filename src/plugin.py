@@ -37,7 +37,7 @@ from Logger import log
 NAME = _("InfoBarTunerState")
 IBTSSHOW = _("Show InfoBarTunerState")
 IBTSSETUP = _("InfoBarTunerState Setup")
-VERSION = "3.2.8"
+VERSION = "3.3.0"
 SUPPORT = "http://bit.ly/ibtsihad"
 DONATE = "http://bit.ly/ibtspaypal"
 ABOUT = "\n  " + NAME + " " + VERSION + "\n\n" \
