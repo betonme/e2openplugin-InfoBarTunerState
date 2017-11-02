@@ -59,6 +59,8 @@ from enigma import eActionMap, eListboxPythonMultiContent, eListboxPythonStringC
 
 from skin import parseColor, parseFont
 
+sz_w = getDesktop(0).size().width()
+
 # Plugin internal
 from InfoBarHandler import InfoBarHandler
 from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
@@ -420,7 +422,10 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 # Base screen class, contains all skin relevant parts
 class TunerStateBase(Screen):
 	# Skin will only be read once
-	skinfile = os.path.join( resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/skin.xml" )
+	if sz_w == 1920:
+		skinfile = os.path.join( resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/skin_1080.xml" )
+	else:
+		skinfile = os.path.join( resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/skin.xml" )
 	skin = open(skinfile).read()
 
 	def __init__(self, session):
