@@ -80,23 +80,25 @@ field_choices = [
 									#Overall transfer
 									("FileSize",								_("File Size")),
 									("FreeSpace",								_("Free Space")),
-									("None",										_("None")),
+									("None",									_("None")),
 								]
 
 date_choices = [	
-									("%H:%M",							_("HH:MM")),
-									("%d.%m %H:%M",				_("DD.MM HH:MM")),
-									("%d.%m. %H:%M",			_("DD.MM. HH:MM")),
-									("%m/%d %H:%M",				_("MM/DD HH:MM")),
+									("%H:%M",				_("HH:MM")),
+									("%d.%m %H:%M",			_("DD.MM HH:MM")),
+									("%d.%m. %H:%M",		_("DD.MM. HH:MM")),
+									("%m/%d %H:%M",			_("MM/DD HH:MM")),
 									("%d.%m.%Y %H:%M",		_("DD.MM.YYYY HH:MM")),
 									("%Y/%m/%d %H:%M",		_("YYYY/MM/DD HH:MM")),
-									("%H:%M %d.%m",				_("HH:MM DD.MM")),
-									("%H:%M %m/%d",				_("HH:MM MM/DD")),
+									("%H:%M %d.%m",			_("HH:MM DD.MM")),
+									("%H:%M %m/%d",			_("HH:MM MM/DD")),
 									("%H:%M %d.%m.%Y",		_("HH:MM DD.MM.YYYY")),
 									("%H:%M %Y/%m/%d",		_("HH:MM YYYY/MM/DD")),
 									("%a %d.%m. %H:%M",		_("WD DD.MM. HH:MM")),
 									("%a, %d.%m. %H:%M",	_("WD, DD.MM. HH:MM")),
-									("-    %H:%M",				_("-    HH:MM")),
+									("%a %H:%M",            _("WD HH:MM")),
+									("-    %H:%M",			_("-    HH:MM")),
+									
 								]
 
 # Config options
