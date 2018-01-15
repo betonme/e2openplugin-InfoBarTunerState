@@ -111,5 +111,6 @@ class Live(PluginBase):
 						if gInfoBarTunerState:
 							gInfoBarTunerState.updateMetrics()
 			
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.onEvent()
