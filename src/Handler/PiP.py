@@ -69,6 +69,12 @@ class PiP(PluginBase):
 		if config.infobartunerstate.plugin_pip.enabled.value:
 			if not self.tunerstate:
 				self.tunerstate = self.checkPiP()
+			else:
+				from Screens.InfoBar import InfoBar
+				if InfoBar.instance and InfoBar.instance.session and hasattr(InfoBar.instance.session, "pip")==False:
+					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+					if gInfoBarTunerState:
+						gInfoBarTunerState.removeEntry("PiP")
 
 	def update(self, id, tunerstate):
 		if config.infobartunerstate.plugin_pip.enabled.value:
