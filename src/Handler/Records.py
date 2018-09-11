@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-from
+﻿# -*- coding: utf-8 -*-from
 # by betonme @2015
 
 from time import time
@@ -136,13 +136,12 @@ class Records(PluginBase):
 				number = getNumber(servicereference.ref)
 				channel = getChannel(servicereference.ref)
 				reference = str(servicereference.ref)
-					
+				
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, begin, end, endless, filename)
 				if config.infobartunerstate.plugin_records.show_events.value == "start" or config.infobartunerstate.plugin_records.show_events.value == "startend":
 					gInfoBarTunerState.onEvent()
 		
-		# Finished repeating timer will report the state StateEnded+1 or StateWaiting
-		else:
+		elif timer.state == timer.StateEnded:
 			id = getTimerID( timer )
 			log.debug( "IBTS Records StateEnded ID " + id )
 			
@@ -154,6 +153,54 @@ class Records(PluginBase):
 				gInfoBarTunerState.finishEntry(id)
 				if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 					gInfoBarTunerState.onEvent()
+		
+		elif timer.state == timer.StateWaiting:
+			id = getTimerID( timer )
+			log.debug( "IBTS Records StateWaiting ID " + id )
+			
+			finish = False
+			
+			# Finished repeating timer will report the state StateEnded+1 or StateWaiting
+			if (timer.repeated != 0):
+				finish = True
+			
+			# Delete references to avoid blocking tuners
+			del timer
+			
+			if finish:
+				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+				if gInfoBarTunerState:
+					gInfoBarTunerState.finishEntry(id)
+					if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
+						gInfoBarTunerState.onEvent()
+		
+		elif timer.state == (timer.StateEnded+1):
+			id = getTimerID( timer )
+			log.debug( "IBTS Records StateEnded+1 ID " + id )
+			
+			finish = False
+			
+			# Finished repeating timer will report the state StateEnded+1 or StateWaiting
+			if (timer.repeated != 0):
+				finish = True
+			
+			# Delete references to avoid blocking tuners
+			del timer
+			
+			if finish:
+				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+				if gInfoBarTunerState:
+					gInfoBarTunerState.finishEntry(id)
+					if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
+						gInfoBarTunerState.onEvent()
+		
+		else:
+			# Unknown timer state
+			id = getTimerID( timer )
+			log.debug( "IBTS Records unknown state  " + str(timer.state) + " ID " + id )
+			
+			# Delete references to avoid blocking tuners
+			del timer
 
 	def update(self, id, tunerstate):
 		
