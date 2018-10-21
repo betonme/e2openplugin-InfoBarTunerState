@@ -34,8 +34,6 @@ def getTimer(id):
 	return None
 
 def getTimerID(timer):
-	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
-	#return '<%s instance at %x name=%s %s>' % (self.__class__.__name__, id(self), self.name, hasattr(self,"Filename") and self.Filename or "")
 	return 'timer %x %s %x' % ( id(timer), timer.name, int(timer.eit or 0) )
 
 def getNextPendingRecordTimers(pending_limit):
@@ -146,8 +144,6 @@ class Timers(PluginBase):
 				pending_limit = (time() + pending_seconds) if pending_seconds else 0
 				#log.debug( "IBTS pending_limit", pending_limit )
 				timer_end = 0
-				#timer_list = getNextPendingRecordTimers(pending_limit)[:number_pending_timers]
-				#timer_list = getNextPendingRecordTimers(pending_limit)[:(number_pending_timers+number_pending_timers)]
 				timer_list = getNextPendingRecordTimers(pending_limit)[:]
 				#pprint.pprint(timer_list)
 				
