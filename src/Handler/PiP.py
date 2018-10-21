@@ -74,7 +74,7 @@ class PiP(PluginBase):
 				if InfoBar.instance and InfoBar.instance.session and hasattr(InfoBar.instance.session, "pip")==False:
 					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 					if gInfoBarTunerState:
-						gInfoBarTunerState.removeEntry("PiP")
+						gInfoBarTunerState.finishEntry("PiP")
 
 	def update(self, id, tunerstate):
 		if config.infobartunerstate.plugin_pip.enabled.value:
@@ -148,7 +148,7 @@ class PiP(PluginBase):
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
-					gInfoBarTunerState.removeEntry(id)
+					gInfoBarTunerState.finishEntry(id)
 				return False
 				
 			else:

@@ -219,7 +219,7 @@ class Records(PluginBase):
 						count += 1
 						if count > number_finished_records:
 							log.debug( "IBTS Records number_finished_records - Remove", id )
-							gInfoBarTunerState.removeEntry(id)
+							gInfoBarTunerState.finishEntry(id)
 
 	def update(self, id, tunerstate):
 		
@@ -284,7 +284,7 @@ class Records(PluginBase):
 			if ( tunerstate.end + finished_seconds ) < time():
 				log.debug( "IBTS Record end + limit < now - Remove", id )
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.removeEntry(id)
+				gInfoBarTunerState.finishEntry(id)
 			
 			return True
 		
