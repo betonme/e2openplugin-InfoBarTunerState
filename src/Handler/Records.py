@@ -4,7 +4,7 @@
 from time import time
 
 # Config
-from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigSelection
+from Components.config import config, ConfigSubsection, ConfigYesNo, ConfigSelection, ConfigSelectionNumber
 
 from enigma import eEPGCache
 
@@ -21,15 +21,14 @@ event_choices = [
 					( "end",		_("End record")),
 					( "startend",	_("Start / End record"))
 				]
-config.infobartunerstate.plugin_records             = ConfigSubsection()
-config.infobartunerstate.plugin_records.enabled     = ConfigYesNo(default = True)
-config.infobartunerstate.plugin_records.show_events = ConfigSelection(default = "startend", choices = event_choices)
+config.infobartunerstate.plugin_records                           = ConfigSubsection()
+config.infobartunerstate.plugin_records.enabled                   = ConfigYesNo(default = True)
+config.infobartunerstate.plugin_records.number_finished_records   = ConfigSelectionNumber(0, 10, 1, default = 3)
+config.infobartunerstate.plugin_records.finished_hours            = ConfigSelectionNumber(0, 1000, 1, default = 0)
+config.infobartunerstate.plugin_records.show_events               = ConfigSelection(default = "startend", choices = event_choices)
 
 
 def getTimerID(timer):
-	#return str( timer.name ) + str( timer.repeatedbegindate ) + str( timer.service_ref ) + str( timer.justplay )
-	#return str( timer )
-	#return '<%s instance at %x name=%s %s>' % (self.__class__.__name__, id(self), self.name, hasattr(self,"Filename") and self.Filename or "")
 	return 'record %x %s %x' % ( id(timer), timer.name, int(timer.eit or 0) )
 
 def getTimer(id):
@@ -67,8 +66,12 @@ class Records(PluginBase):
 		return 0
 
 	def getOptions(self):
-		return [(_("Show record(s)"), config.infobartunerstate.plugin_records.enabled),]
-
+		return [
+					(_("Show record(s)"),                           config.infobartunerstate.plugin_records.enabled),
+					(_("Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records),
+					(_("Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours)
+				]
+				
 	def appendEvent(self):
 		if config.infobartunerstate.plugin_records.enabled.value:
 			from NavigationInstance import instance
@@ -202,6 +205,22 @@ class Records(PluginBase):
 			# Delete references to avoid blocking tuners
 			del timer
 
+	def onShow(self, tunerstates):
+		if config.infobartunerstate.plugin_records.enabled.value:
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			number_finished_records = int(config.infobartunerstate.plugin_records.number_finished_records.value)
+			if number_finished_records == 0:
+				return
+			count = 0
+			now = time()
+			for id, tunerstate in tunerstates.items():
+				if tunerstate.plugin == "Record":
+					if tunerstate.end < time():
+						count += 1
+						if count > number_finished_records:
+							log.debug( "IBTS Records number_finished_records - Remove", id )
+							gInfoBarTunerState.removeEntry(id)
+
 	def update(self, id, tunerstate):
 		
 		#TODO Avolid blocking - avoid using getTimer to update the timer times use timer.time_changed if possible
@@ -237,6 +256,7 @@ class Records(PluginBase):
 					if not tunerstate.end:
 						log.debug( "IBTS Records no end" )
 						tunerstate.endless = True
+						
 				else:
 					tunerstate.endless = timer.autoincrease
 			else:
@@ -257,6 +277,14 @@ class Records(PluginBase):
 				tunerstate.channel = getChannel(servicereference.ref)
 			if not tunerstate.reference:
 				tunerstate.reference = str(servicereference.ref)
+			
+			finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
+			if finished_seconds == 0:
+				return True
+			if ( tunerstate.end + finished_seconds ) < time():
+				log.debug( "IBTS Record end + limit < now - Remove", id )
+				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+				gInfoBarTunerState.removeEntry(id)
 			
 			return True
 		
