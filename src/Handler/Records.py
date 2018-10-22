@@ -151,9 +151,10 @@ class Records(PluginBase):
 			# Delete references to avoid blocking tuners
 			del timer
 			
+			self.finish(id)
+			
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
-				gInfoBarTunerState.finishEntry(id)
 				if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 					gInfoBarTunerState.onEvent()
 		
@@ -171,9 +172,10 @@ class Records(PluginBase):
 			del timer
 			
 			if finish:
+				self.finish(id)
+				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
-					gInfoBarTunerState.finishEntry(id)
 					if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 						gInfoBarTunerState.onEvent()
 		
@@ -191,9 +193,10 @@ class Records(PluginBase):
 			del timer
 			
 			if finish:
+				self.finish(id)
+				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
-					gInfoBarTunerState.finishEntry(id)
 					if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 						gInfoBarTunerState.onEvent()
 		
@@ -215,7 +218,7 @@ class Records(PluginBase):
 			now = time()
 			for id, tunerstate in tunerstates.items():
 				if tunerstate.plugin == "Record":
-					if tunerstate.end < time():
+					if tunerstate.end < now:
 						count += 1
 						if count > number_finished_records:
 							log.debug( "IBTS Records number_finished_records - Remove", id )
@@ -278,13 +281,8 @@ class Records(PluginBase):
 			if not tunerstate.reference:
 				tunerstate.reference = str(servicereference.ref)
 			
-			finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
-			if finished_seconds == 0:
-				return True
-			if ( tunerstate.end + finished_seconds ) < time():
-				log.debug( "IBTS Record end + limit < now - Remove", id )
-				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
-				gInfoBarTunerState.finishEntry(id)
+			if tunerstate.end < time():
+				self.finish(id)
 			
 			return True
 		
@@ -294,3 +292,17 @@ class Records(PluginBase):
 			self.onInit()
 			
 			return False
+
+	def finish(self, id):
+		finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
+		if finished_seconds == 0:
+			return True
+		
+		timer = getTimer( id )
+		end = timer.end
+		del timer
+		
+		if ( end + finished_seconds ) < time():
+			log.debug( "IBTS Record end + limit < now - Remove", id )
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			gInfoBarTunerState.finishEntry(id)
