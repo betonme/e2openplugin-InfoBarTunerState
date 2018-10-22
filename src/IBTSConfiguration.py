@@ -99,9 +99,13 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 			options = plugin.getOptions()
 			if options:
 				for text, element in plugin.getOptions():
-					self.config.extend( [
-						(  text, element ),
-					] )
+					if ((element in (config.infobartunerstate.plugin_records.number_finished_records, config.infobartunerstate.plugin_records.finished_hours) and config.infobartunerstate.plugin_records.enabled.value == False) or 
+						(element in (config.infobartunerstate.plugin_timers.number_pending_timers, config.infobartunerstate.plugin_timers.pending_hours, config.infobartunerstate.plugin_timers.show_energy_timers) and config.infobartunerstate.plugin_timers.enabled.value == False)): 
+						pass
+					else:
+						self.config.extend( [
+							(  text, element ),
+						] )
 		
 		self.config.extend( [
 			(  separator                                              , config.infobartunerstate.about ),
@@ -166,7 +170,9 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 			x()
 		current = self["config"].getCurrent()[1]
 		if (current == config.infobartunerstate.enabled or 
-			current == config.infobartunerstate.log_write):
+			current == config.infobartunerstate.log_write or 
+			current == config.infobartunerstate.plugin_records.enabled or
+			current == config.infobartunerstate.plugin_timers.enabled):
 			self.changeConfig()
 			return
 

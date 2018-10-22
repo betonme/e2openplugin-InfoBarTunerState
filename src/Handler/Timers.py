@@ -127,9 +127,9 @@ class Timers(PluginBase):
 	def getOptions(self):
 		return [
 					(_("Show pending timer(s)"),                      config.infobartunerstate.plugin_timers.enabled),
-					(_("Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers),
-					(_("Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers),
-					(_("Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours),
+					(_("   Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers),
+					(_("   Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours),
+					(_("   Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers),
 				]
 
 	def onShow(self, tunerstates):

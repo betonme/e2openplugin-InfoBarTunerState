@@ -70,8 +70,8 @@ class Records(PluginBase):
 	def getOptions(self):
 		return [
 					(_("Show record(s)"),                           config.infobartunerstate.plugin_records.enabled),
-					(_("Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records),
-					(_("Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours)
+					(_("   Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records),
+					(_("   Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours)
 				]
 				
 	def appendEvent(self):
@@ -310,6 +310,8 @@ class Records(PluginBase):
 	def finish(self, id):
 		finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
 		if finished_seconds == 0:
+			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			gInfoBarTunerState.finishEntry(id)
 			return True
 		
 		timer = getTimer( id )
