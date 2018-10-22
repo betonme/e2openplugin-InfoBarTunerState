@@ -34,8 +34,10 @@ def getTimerID(timer):
 def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
-		for timer in instance.RecordTimer.timer_list:
+		#for timer in instance.RecordTimer.timer_list:
+		for timer in instance.RecordTimer.processed_timers:
 			#log.debug( "timerlist:", getTimerID( timer ) )
+			print "=== Timerid: ", id, getTimerID( timer )
 			if getTimerID( timer ) == id:
 				return timer
 	return None
@@ -151,10 +153,13 @@ class Records(PluginBase):
 			# Delete references to avoid blocking tuners
 			del timer
 			
-			self.finish(id)
+			if int(config.infobartunerstate.plugin_records.number_finished_records.value) > 0:
+				self.finish(id)
 			
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
+				if int(config.infobartunerstate.plugin_records.number_finished_records.value) == 0:
+					gInfoBarTunerState.finishEntry(id)
 				if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 					gInfoBarTunerState.onEvent()
 		
@@ -172,10 +177,13 @@ class Records(PluginBase):
 			del timer
 			
 			if finish:
-				self.finish(id)
+				if int(config.infobartunerstate.plugin_records.number_finished_records.value) > 0:
+					self.finish(id)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
+					if int(config.infobartunerstate.plugin_records.number_finished_records.value) == 0:
+						gInfoBarTunerState.finishEntry(id)
 					if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 						gInfoBarTunerState.onEvent()
 		
@@ -193,10 +201,13 @@ class Records(PluginBase):
 			del timer
 			
 			if finish:
-				self.finish(id)
+				if int(config.infobartunerstate.plugin_records.number_finished_records.value) > 0:
+					self.finish(id)
 				
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
+					if int(config.infobartunerstate.plugin_records.number_finished_records.value) == 0:
+						gInfoBarTunerState.finishEntry(id)
 					if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 						gInfoBarTunerState.onEvent()
 		
@@ -217,11 +228,14 @@ class Records(PluginBase):
 			count = 0
 			now = time()
 			for id, tunerstate in tunerstates.items():
-				if tunerstate.plugin == "Record":
+				print "=== IBTS remove finished Record", tunerstate.plugin
+				if tunerstate.plugin == "Records":
+					print "=== IBTS remove finished Record", tunerstate.end, now
 					if tunerstate.end < now:
 						count += 1
 						if count > number_finished_records:
 							log.debug( "IBTS Records number_finished_records - Remove", id )
+							print "=== IBTS remove finished Record", id
 							gInfoBarTunerState.finishEntry(id)
 
 	def update(self, id, tunerstate):
