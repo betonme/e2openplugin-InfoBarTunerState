@@ -213,7 +213,7 @@ class Timers(PluginBase):
 							log.debug( "IBTS timers toremove", id )
 							if id in self.nextids:
 								self.nextids.remove(id)
-							gInfoBarTunerState.finishEntry(id)
+							gInfoBarTunerState.removeEntry(id)
 
 	def update(self, id, tunerstate):
 		
