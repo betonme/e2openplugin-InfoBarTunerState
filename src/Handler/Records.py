@@ -207,8 +207,9 @@ class Records(PluginBase):
 				return
 			count = 0
 			now = time()
-			for id, tunerstate in tunerstates.items():
-				if tunerstate.plugin == "Records":
+			tunerstatessort = sorted(tunerstates.items(), key=lambda k: k[1].end, reverse=True)
+			for id, tunerstate in tunerstatessort:
+				if tunerstate.type == 3: #"Records"
 					if tunerstate.end < now:
 						count += 1
 						if count > number_finished_records:
