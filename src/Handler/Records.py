@@ -34,7 +34,7 @@ def getTimerID(timer):
 def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
-		for timer in instance.RecordTimer.timer_list + timer in instance.RecordTimer.processed_timers:
+		for timer in (instance.RecordTimer.timer_list + instance.RecordTimer.processed_timers):
 			#log.debug( "timerlist:", getTimerID( timer ) )
 			if getTimerID( timer ) == id:
 				return timer
