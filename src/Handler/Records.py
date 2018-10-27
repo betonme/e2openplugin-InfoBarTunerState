@@ -286,7 +286,8 @@ class Records(PluginBase):
 
 	def finish(self, id):
 		finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
-		if finished_seconds == 0:
+		number_finished_records = int(config.infobartunerstate.plugin_records.number_finished_records.value)
+		if finished_seconds == 0 or number_finished_records == 0:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.finishEntry(id)
