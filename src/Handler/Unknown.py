@@ -108,7 +108,7 @@ class Unknown(PluginBase):
 		if config.infobartunerstate.plugin_unknown.enabled.value:
 			toadd = self.tuners[:]
 			for id, tunerstate in tunerstates.items():
-				if tunerstate.plugin == "Record" or tunerstate.plugin == "Stream":
+				if tunerstate.plugin != "Unknown":
 					if tunerstate.tunernumber in toadd:
 						#log.debug( "IBTS UNKNOWN toadd remove", tunerstate.tunernumber )
 						toadd.remove(tunerstate.tunernumber)

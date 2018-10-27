@@ -208,7 +208,7 @@ class Records(PluginBase):
 			count = 0
 			now = time()
 			for id, tunerstate in tunerstates.items():
-				if tunerstate.plugin == "Record":
+				if tunerstate.plugin == "Records":
 					if tunerstate.end < now:
 						count += 1
 						if count > number_finished_records:
