@@ -202,6 +202,7 @@ class Records(PluginBase):
 	def onShow(self, tunerstates):
 		if config.infobartunerstate.plugin_records.enabled.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import RECORD_FINISHED
 			finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
 			number_finished_records = int(config.infobartunerstate.plugin_records.number_finished_records.value)
 			if number_finished_records == 0:
@@ -209,9 +210,8 @@ class Records(PluginBase):
 			count = 0
 			now = time()
 			tunerstatessort = sorted(tunerstates.items(), key=lambda k: k[1].end, reverse=True)
-			type = self.getType()
 			for id, tunerstate in tunerstatessort:
-				if tunerstate.type == type:
+				if tunerstate.type == RECORD_FINISHED:
 					if tunerstate.end < now:
 						count += 1
 						if count > number_finished_records or (tunerstate.end + finished_seconds) < now:

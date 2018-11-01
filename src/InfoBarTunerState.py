@@ -719,7 +719,7 @@ class TunerState(TunerStateBase):
 		if duration and duration < 0:
 			duration = None
 		
-		if self.type == FINISHED:
+		if self.type == FINISHED or self.type == RECORD_FINISHED:
 			# Finished events
 			timeelapsed = None #duration
 		elif begin and end and begin < now:
@@ -730,7 +730,7 @@ class TunerState(TunerStateBase):
 		
 		if not self.endless and self.end:
 			
-			if self.type == FINISHED:
+			if self.type == FINISHED or self.type == RECORD_FINISHED:
 				# Finished events
 				timeleft = None #0
 			elif begin and end and begin < now:
