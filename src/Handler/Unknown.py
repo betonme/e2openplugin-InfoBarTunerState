@@ -107,8 +107,9 @@ class Unknown(PluginBase):
 	def onShow(self, tunerstates):
 		if config.infobartunerstate.plugin_unknown.enabled.value:
 			toadd = self.tuners[:]
+			type = self.getType()
 			for id, tunerstate in tunerstates.items():
-				if tunerstate.plugin != "Unknown":
+				if tunerstate.type != type:
 					if tunerstate.tunernumber in toadd:
 						#log.debug( "IBTS UNKNOWN toadd remove", tunerstate.tunernumber )
 						toadd.remove(tunerstate.tunernumber)
