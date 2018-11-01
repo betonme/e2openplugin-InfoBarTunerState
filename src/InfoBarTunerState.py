@@ -179,11 +179,12 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win.updateTimes( begin, end, endless )
 			win.update()
 	
-	def finishEntry(self, id):
+	def finishEntry(self, id, setCurrentTime = True):
 		log.debug( "IBTS finishEntry", id )
 		if id in self.entries:
 			win = self.entries[id]
-			win.updateTimes( None, time(), False )
+			if setCurrentTime:
+				win.updateTimes( None, time(), False )
 			win.updateType( FINISHED )
 			win.update()
 	

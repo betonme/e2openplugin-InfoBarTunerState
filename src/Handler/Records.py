@@ -216,7 +216,7 @@ class Records(PluginBase):
 						count += 1
 						if count > number_finished_records or (tunerstate.end + finished_seconds) < now:
 							log.debug( "IBTS Records number_finished_records - Remove", id )
-							gInfoBarTunerState.finishEntry(id)
+							gInfoBarTunerState.finishEntry(id,False)
 
 	def update(self, id, tunerstate):
 		
