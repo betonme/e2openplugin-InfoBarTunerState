@@ -75,11 +75,11 @@ SecondInfobarAvailable = False
 
 # Type Enum
 # Used to set priority for calling the plugins onShow event: Higher numbers will be served first
-UNKNOWN, INFO, LIVE, RECORD, TIMER, PIP, STREAM, FINISHED = range( 8 )
+UNKNOWN, INFO, LIVE, RECORD, RECORD_FINISHED, TIMER, PIP, STREAM, FINISHED = range( 9 )
 
 # Icons Enum
 # Used to identify the icon number from skin
-ICON_RECORD, ICON_STREAM, ICON_FINISHED, ICON_INFO, ICON_LIVE, ICON_UNKNOWN, ICON_TIMER, ICON_PIP = range( 8 )
+ICON_RECORD, ICON_STREAM, ICON_FINISHED, ICON_INFO, ICON_LIVE, ICON_UNKNOWN, ICON_TIMER, ICON_PIP, ICON_RECORD_FINISHED = range( 9 )
 
 # Constants
 INFINITY =  u"\u221E".encode("utf-8")
@@ -187,7 +187,14 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				win.updateTimes( None, time(), False )
 			win.updateType( FINISHED )
 			win.update()
-	
+
+	def RecordfinishEntry(self, id):
+		log.debug( "IBTS RecordfinishEntry", id )
+		if id in self.entries:
+			win = self.entries[id]
+			win.updateType( RECORD_FINISHED )
+			win.update()
+
 	def updateName(self, id, name):
 		if id in self.entries:
 			win = self.entries[id]
@@ -855,6 +862,8 @@ class TunerState(TunerStateBase):
 					pixmapnum = ICON_STREAM
 				elif self.type == PIP:
 					pixmapnum = ICON_PIP
+				elif self.type == RECORD_FINISHED:
+					pixmapnum = ICON_RECORD_FINISHED
 				
 				lenpixmaps = len(self["Type"].pixmaps) 
 				log.debug( "IBTS len pixmaps", lenpixmaps )

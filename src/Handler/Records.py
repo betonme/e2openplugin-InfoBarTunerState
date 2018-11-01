@@ -306,5 +306,11 @@ class Records(PluginBase):
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id, False)
+				return
 		else:
 			log.debug( "IBTS Record finish no timer", id )
+		
+		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+		if gInfoBarTunerState:
+			gInfoBarTunerState.RecordfinishEntry(id)
+
