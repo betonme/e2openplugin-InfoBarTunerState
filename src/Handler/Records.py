@@ -202,6 +202,7 @@ class Records(PluginBase):
 	def onShow(self, tunerstates):
 		if config.infobartunerstate.plugin_records.enabled.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
+			finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
 			number_finished_records = int(config.infobartunerstate.plugin_records.number_finished_records.value)
 			if number_finished_records == 0:
 				return
@@ -213,7 +214,7 @@ class Records(PluginBase):
 				if tunerstate.type == type:
 					if tunerstate.end < now:
 						count += 1
-						if count > number_finished_records:
+						if count > number_finished_records or (tunerstate.end + finished_seconds) < now:
 							log.debug( "IBTS Records number_finished_records - Remove", id )
 							gInfoBarTunerState.finishEntry(id)
 
