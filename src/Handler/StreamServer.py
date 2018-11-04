@@ -70,8 +70,17 @@ class StreamServer(PluginBase):
 	def getPixmapNum(self):
 		return 1
 
+	def getOnChanged(self):
+		return [ config.infobartunerstate.plugin_streamserver.enabled ]
+
 	def getOptions(self):
-		return [(_("Show transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_streamserver.enabled),]
+		options = []
+		options.append( (_("Show transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.enabled) )
+		
+		if config.infobartunerstate.plugin_streamserver.enabled.value:
+			options.append( (_("Show events of transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.show_events) )
+		
+		return options
 
 	def appendEvent(self):
 		if config.infobartunerstate.plugin_streamserver.enabled.value:

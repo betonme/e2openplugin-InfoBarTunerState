@@ -68,8 +68,17 @@ class StreamOpenWebIf(PluginBase):
 	def getPixmapNum(self):
 		return 1
 
+	def getOnChanged(self):
+		return [ config.infobartunerstate.plugin_openwebif.enabled ]
+
 	def getOptions(self):
-		return [(_("Show transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.enabled),]
+		options = []
+		options.append( (_("Show transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.enabled) )
+		
+		if config.infobartunerstate.plugin_openwebif.enabled.value:
+			options.append( (_("Show events of transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.show_events) )
+		
+		return options
 
 	def appendEvent(self):
 		if config.infobartunerstate.plugin_openwebif.enabled.value:

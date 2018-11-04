@@ -63,6 +63,13 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 		# Initialize Configuration part
 		self.list = []
 		self.config = []
+		self.onChanged = [ config.infobartunerstate.enabled, config.infobartunerstate.log_write ]
+		
+		for plugin in self.getPlugins():
+			onChanged = plugin.getOnChanged()
+			if onChanged:
+				self.onChanged.extend(onChanged)
+		
 		self.buildConfig()
 		ConfigListScreen.__init__(self, self.list, session = session, on_change = self.changed)
 		self.changeConfig()
@@ -98,14 +105,10 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 		for plugin in self.getPlugins():
 			options = plugin.getOptions()
 			if options:
-				for text, element in plugin.getOptions():
-					if ((element in (config.infobartunerstate.plugin_records.number_finished_records, config.infobartunerstate.plugin_records.finished_hours) and config.infobartunerstate.plugin_records.enabled.value == False) or 
-						(element in (config.infobartunerstate.plugin_timers.number_pending_timers, config.infobartunerstate.plugin_timers.pending_hours, config.infobartunerstate.plugin_timers.show_energy_timers) and config.infobartunerstate.plugin_timers.enabled.value == False)): 
-						pass
-					else:
-						self.config.extend( [
-							(  text, element ),
-						] )
+				for text, element in options:
+					self.config.extend( [
+						(  text, element ),
+					] )
 		
 		self.config.extend( [
 			(  separator                                              , config.infobartunerstate.about ),
@@ -169,10 +172,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 		for x in self.onChangedEntry:
 			x()
 		current = self["config"].getCurrent()[1]
-		if (current == config.infobartunerstate.enabled or 
-			current == config.infobartunerstate.log_write or 
-			current == config.infobartunerstate.plugin_records.enabled or
-			current == config.infobartunerstate.plugin_timers.enabled):
+		if current in self.onChanged:
 			self.changeConfig()
 			return
 

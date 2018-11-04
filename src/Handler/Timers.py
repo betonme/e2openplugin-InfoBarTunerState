@@ -124,13 +124,19 @@ class Timers(PluginBase):
 	def getPixmapNum(self):
 		return 6
 
+	def getOnChanged(self):
+		return [ config.infobartunerstate.plugin_timers.enabled ]
+
 	def getOptions(self):
-		return [
-					(_("Show pending timer(s)"),                      config.infobartunerstate.plugin_timers.enabled),
-					(_("   Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers),
-					(_("   Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours),
-					(_("   Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers),
-				]
+		options = []
+		options.append( (_("Show pending timer(s)"), config.infobartunerstate.plugin_timers.enabled ) )
+		
+		if config.infobartunerstate.plugin_timers.enabled.value:
+			options.append( (_("   Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers) )
+			options.append( (_("   Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours) )
+			options.append( (_("   Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers) )
+		
+		return options
 
 	def onShow(self, tunerstates):
 		if config.infobartunerstate.plugin_timers.enabled.value:

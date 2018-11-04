@@ -44,8 +44,17 @@ class Unknown(PluginBase):
 	def getPixmapNum(self):
 		return 5
 
+	def getOnChanged(self):
+		return [ config.infobartunerstate.plugin_unknown.enabled ]
+
 	def getOptions(self):
-		return [(_("Show undefined service(s)"), config.infobartunerstate.plugin_unknown.enabled),]
+		options = []
+		options.append( (_("Show undefined service(s)"), config.infobartunerstate.plugin_unknown.enabled) )
+		
+		if config.infobartunerstate.plugin_unknown.enabled.value:
+			options.append( (_("Show events of undefined service(s)"), config.infobartunerstate.plugin_unknown.show_events) )
+		
+		return options
 
 	def appendEvent(self):
 		if config.infobartunerstate.plugin_unknown.enabled.value:
