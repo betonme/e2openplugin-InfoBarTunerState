@@ -61,7 +61,6 @@ from skin import parseColor, parseFont
 
 # for picon
 from ServiceReference import ServiceReference
-from Components.ServiceList import PiconLoader
 
 sz_w = getDesktop(0).size().width()
 
@@ -646,7 +645,11 @@ class TunerState(TunerStateBase):
 		except:
 			self.removeTimer.callback.append(self.remove)
 		
-		self.piconLoader = PiconLoader()
+		try:
+			from Components.ServiceList import PiconLoader
+			self.piconLoader = PiconLoader()
+		except:
+			self.piconLoader = None
 		
 		self.plugin = plugin
 		
@@ -663,18 +666,10 @@ class TunerState(TunerStateBase):
 		self.channel = channel
 		self.reference = reference
 		
-		try:
-			print "=== IBTS reference:", reference
-			#provider = ServiceReference(reference)
-			#providerName = provider.getServiceName()
-			#print "=== IBTS provider.ref:", provider.ref, providerName
-
-			#print "=== IBTS reference:", str(reference), channel
+		if self.piconLoader:
 			self.picon = self.piconLoader.getPicon(reference)
-			print "=== IBTS picon:", self.picon
-		except:
-			import traceback
-			traceback.print_exc()
+		else:
+			self.picon = None
 		
 		self.filename = filename + ".ts"
 		self.destination = filename and os.path.dirname( filename )
@@ -705,7 +700,8 @@ class TunerState(TunerStateBase):
 	def updatePicon(self):
 		print "=== IBTS updatePicon:", str(self.reference), self.channel
 		self["picon"].hide()
-		self.picon = self.piconLoader.getPicon(self.reference)
+		if self.piconLoader:
+			self.picon = self.piconLoader.getPicon(self.reference)
 		if self.picon is not None:
 			self["picon"].setPixmap(self.picon)
 			self["picon"].show()
