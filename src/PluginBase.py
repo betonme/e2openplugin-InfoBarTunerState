@@ -36,6 +36,10 @@ class PluginBase(object):
 		# Pixmap number to be displayed as icon
 		return INFO
 
+	def getOnChanged(self):
+		# Return a list of config elements to check for changes in config list
+		pass
+
 	def getOptions(self):
 		# Return a list of (text, config element ) tuples
 		pass

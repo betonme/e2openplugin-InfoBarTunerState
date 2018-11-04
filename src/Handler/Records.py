@@ -56,13 +56,19 @@ class Records(PluginBase):
 	def getPixmapNum(self):
 		return 0
 
+	def getOnChanged(self):
+		return [ config.infobartunerstate.plugin_records.enabled ]
+
 	def getOptions(self):
-		return [
-					(_("Show record(s)"),                           config.infobartunerstate.plugin_records.enabled),
-					(_("   Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records),
-					(_("   Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours)
-				]
-				
+		options = []
+		options.append( (_("Show record(s)"), config.infobartunerstate.plugin_records.enabled) )
+		
+		if config.infobartunerstate.plugin_records.enabled.value:
+			options.append( (_("   Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records) )
+			options.append( (_("   Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours) )
+		
+		return options
+
 	def appendEvent(self):
 		if config.infobartunerstate.plugin_records.enabled.value:
 			from NavigationInstance import instance
