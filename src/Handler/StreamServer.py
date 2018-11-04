@@ -193,12 +193,14 @@ class StreamServer(PluginBase):
 			eservicereference = eServiceReference(servicereference_string)
 			if eservicereference and eservicereference.valid():
 				
+				tunerstate.reference = servicereference_string
 				tunerstate.name = getEventName(eservicereference)
 				
 				if not tunerstate.number:
 					tunerstate.number = getNumber(eservicereference)
 				if not tunerstate.channel:
 					tunerstate.channel = getChannel(eservicereference)
+				
 		
 			return True
 		

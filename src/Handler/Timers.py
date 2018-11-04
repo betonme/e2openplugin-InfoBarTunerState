@@ -198,7 +198,7 @@ class Timers(PluginBase):
 										
 										number = getNumber(servicereference.ref)
 										channel = getChannel(servicereference.ref)
-										reference = str(servicereference.ref)
+										reference = str(servicereference)
 										
 										self.nextids.append(id)
 										gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", None, name, number, channel, reference, begin, end, endless, filename)

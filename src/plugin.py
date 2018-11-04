@@ -37,7 +37,7 @@ from Logger import log
 NAME = _("InfoBarTunerState")
 IBTSSHOW = _("Show InfoBarTunerState")
 IBTSSETUP = _("InfoBarTunerState Setup")
-VERSION = "3.3.2"
+VERSION = "3.3.3"
 SUPPORT = "http://bit.ly/ibtsihad"
 DONATE = "http://bit.ly/ibtspaypal"
 ABOUT = "\n  " + NAME + " " + VERSION + "\n\n" \
@@ -62,6 +62,7 @@ field_choices = [
 									("TunerType",								_("Tuner Type")),
 									("Number",									_("Channel Number")),
 									("Channel",									_("Channel Name")),
+									("ChannelIcon",							_("Channel Icon")),
 									("Name",										_("Name")),
 									("TimeLeftDuration",				_("Time Left / Duration")),
 									("TimeLeft",								_("Time Left")),

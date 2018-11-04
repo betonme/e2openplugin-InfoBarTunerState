@@ -129,7 +129,7 @@ class Records(PluginBase):
 				
 				number = getNumber(servicereference.ref)
 				channel = getChannel(servicereference.ref)
-				reference = str(servicereference.ref)
+				reference = str(servicereference)
 				
 				gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, begin, end, endless, filename)
 				if config.infobartunerstate.plugin_records.show_events.value == "start" or config.infobartunerstate.plugin_records.show_events.value == "startend":

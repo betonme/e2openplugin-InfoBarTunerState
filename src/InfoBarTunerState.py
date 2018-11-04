@@ -59,6 +59,10 @@ from enigma import eActionMap, eListboxPythonMultiContent, eListboxPythonStringC
 
 from skin import parseColor, parseFont
 
+# for picon
+from ServiceReference import ServiceReference
+from Components.ServiceList import PiconLoader
+
 sz_w = getDesktop(0).size().width()
 
 # Plugin internal
@@ -441,6 +445,7 @@ class TunerStateBase(Screen):
 		self.skinName = "TunerState"
 		
 		self["Background"] = Pixmap()
+		self["picon"] = Pixmap()
 		self["Type"] = MultiPixmap()
 		self["Progress"] = ProgressBar()
 		
@@ -479,6 +484,7 @@ class TunerStateBase(Screen):
 		#TODO Possible to read in applySkin
 		self.typewidth = self["Type"].instance.size().width()
 		self.progresswidth = self["Progress"].instance.size().width()
+		self.piconwidth = self["picon"].instance.size().width() + 5
 
 	def reorder(self, widths, overwidth=0):
 		# Get initial padding / offset position and apply user offset
@@ -501,6 +507,9 @@ class TunerStateBase(Screen):
 			field = c.value
 			if field == "TypeIcon":
 				self["Type"].instance.move( ePoint(px, py) )
+			
+			elif field == "ChannelIcon":
+				self["picon"].instance.move( ePoint(px, py) )
 			
 			elif field == "TimerProgressGraphical":
 				#self[field].instance.resize( eSize(width, sh) )
@@ -637,6 +646,8 @@ class TunerState(TunerStateBase):
 		except:
 			self.removeTimer.callback.append(self.remove)
 		
+		self.piconLoader = PiconLoader()
+		
 		self.plugin = plugin
 		
 		self.type = type
@@ -651,6 +662,19 @@ class TunerState(TunerStateBase):
 		self.number = number
 		self.channel = channel
 		self.reference = reference
+		
+		try:
+			print "=== IBTS reference:", reference
+			#provider = ServiceReference(reference)
+			#providerName = provider.getServiceName()
+			#print "=== IBTS provider.ref:", provider.ref, providerName
+
+			#print "=== IBTS reference:", str(reference), channel
+			self.picon = self.piconLoader.getPicon(reference)
+			print "=== IBTS picon:", self.picon
+		except:
+			import traceback
+			traceback.print_exc()
 		
 		self.filename = filename + ".ts"
 		self.destination = filename and os.path.dirname( filename )
@@ -677,6 +701,14 @@ class TunerState(TunerStateBase):
 	def updateNumberChannel(self, number, channel):
 		self.number = number
 		self.channel = channel
+
+	def updatePicon(self):
+		print "=== IBTS updatePicon:", str(self.reference), self.channel
+		self["picon"].hide()
+		self.picon = self.piconLoader.getPicon(self.reference)
+		if self.picon is not None:
+			self["picon"].setPixmap(self.picon)
+			self["picon"].show()
 
 	def updateFilename(self, filename):
 		self.filename = filename + ".ts"
@@ -836,6 +868,7 @@ class TunerState(TunerStateBase):
 		
 		self["Type"].hide()
 		self["Progress"].hide()
+		self["picon"].hide()
 		
 		for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
 			fieldid = "Field"+str(i)
@@ -961,7 +994,20 @@ class TunerState(TunerStateBase):
 					else:	
 						widths.append( self.progresswidth )
 				continue
-			
+
+			elif field == "ChannelIcon":
+				if self.picon is not None:
+					self["picon"].setPixmap(self.picon)
+					self["picon"].show()
+					# No resize necessary
+					widths.append( self.piconwidth )
+				else:
+					if not config.infobartunerstate.placeholder_pogressbar.value:
+						widths.append( 0 )
+					else:	
+						widths.append( self.piconwidth )
+				continue
+				
 			elif field == "TimerDestination":
 				text = self.destination
 			

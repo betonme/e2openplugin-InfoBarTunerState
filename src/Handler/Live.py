@@ -80,6 +80,7 @@ class Live(PluginBase):
 					if self.eservicereference_string != eservicereference_string:
 						tunerstate.number = None
 						tunerstate.channel = ""
+						tunerstate.reference = ""
 						
 						tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = "", "", None
 						tunerstate.name, tunerstate.begin, tunerstate.end = "", 0, 0
@@ -93,7 +94,8 @@ class Live(PluginBase):
 						tunerstate.channel = getChannel(eservicereference)
 						changed = True
 					if not tunerstate.reference:
-						tunerstate.reference = eservicereference_string
+						tunerstate.reference = str(ServiceReference(eservicereference))
+						tunerstate.updatePicon()
 						changed = True
 					
 					iplayableservice = instance.getCurrentService()

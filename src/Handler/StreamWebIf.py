@@ -129,7 +129,10 @@ class StreamWebIf(PluginBase):
 				
 				number = getNumber(eservicereference)
 				channel = getChannel(eservicereference)
-				reference = str(eservicereference)
+				
+				reference = None
+				if eservicereference is not None:
+					reference = str(ServiceReference(eservicereference))
 				
 				client = getClient(ip)
 				
@@ -169,7 +172,10 @@ class StreamWebIf(PluginBase):
 				tunerstate.number = getNumber(eservicereference)
 			if not tunerstate.channel:
 				tunerstate.channel = getChannel(eservicereference)
-			
+			if tunerstate.reference != str(ServiceReference(eservicereference)):
+				tunerstate.reference = str(ServiceReference(eservicereference))
+				tunerstate.updatePicon()
+
 			return True
 			
 		else:
