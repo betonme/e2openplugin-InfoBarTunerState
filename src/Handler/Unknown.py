@@ -52,7 +52,7 @@ class Unknown(PluginBase):
 		options.append( (_("Show undefined service(s)"), config.infobartunerstate.plugin_unknown.enabled) )
 		
 		if config.infobartunerstate.plugin_unknown.enabled.value:
-			options.append( (_("Show events of undefined service(s)"), config.infobartunerstate.plugin_unknown.show_events) )
+			options.append( (_("   Show events of undefined service(s)"), config.infobartunerstate.plugin_unknown.show_events) )
 		
 		return options
 

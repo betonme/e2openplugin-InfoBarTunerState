@@ -78,7 +78,7 @@ class StreamServer(PluginBase):
 		options.append( (_("Show transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.enabled) )
 		
 		if config.infobartunerstate.plugin_streamserver.enabled.value:
-			options.append( (_("Show events of transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.show_events) )
+			options.append( (_("   Show events of transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.show_events) )
 		
 		return options
 

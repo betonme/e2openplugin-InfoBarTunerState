@@ -77,7 +77,7 @@ class StreamWebIf(PluginBase):
 		options.append( (_("Show transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.enabled) )
 		
 		if config.infobartunerstate.plugin_webif.enabled.value:
-			options.append( (_("Show events of transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.show_events) )
+			options.append( (_("   Show events of transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.show_events) )
 		
 		return options
 
@@ -139,7 +139,7 @@ class StreamWebIf(PluginBase):
 				number = getNumber(eservicereference)
 				channel = getChannel(eservicereference)
 				
-				reference = None
+				reference = ""
 				if eservicereference is not None:
 					reference = str(ServiceReference(eservicereference))
 				
@@ -183,6 +183,7 @@ class StreamWebIf(PluginBase):
 				tunerstate.channel = getChannel(eservicereference)
 			if tunerstate.reference != str(ServiceReference(eservicereference)):
 				tunerstate.reference = str(ServiceReference(eservicereference))
+				print "=== IBTS update Stream reference:", tunerstate.reference
 				tunerstate.updatePicon()
 
 			return True

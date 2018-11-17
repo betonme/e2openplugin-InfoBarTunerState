@@ -76,7 +76,7 @@ class StreamOpenWebIf(PluginBase):
 		options.append( (_("Show transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.enabled) )
 		
 		if config.infobartunerstate.plugin_openwebif.enabled.value:
-			options.append( (_("Show events of transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.show_events) )
+			options.append( (_("   Show events of transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.show_events) )
 		
 		return options
 
