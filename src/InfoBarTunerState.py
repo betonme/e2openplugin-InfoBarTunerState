@@ -648,9 +648,18 @@ class TunerState(TunerStateBase):
 		try:
 			from Components.ServiceList import PiconLoader
 			self.piconLoader = PiconLoader()
+			print "=== IBTS import module PiconLoader for DMM"
 		except:
 			self.piconLoader = None
-		
+			print "=== IBTS not found DMM-module PiconLoader"
+			try:
+				from Tools.FindPicon import findPicon
+				self.findPicon = True
+				print "=== IBTS import module Tools.FindPicon for VTI"	
+			except:
+				self.findPicon = False
+				print "=== IBTS not found VTI-module Tools.FindPicon"			
+
 		self.plugin = plugin
 		
 		self.type = type
@@ -670,7 +679,11 @@ class TunerState(TunerStateBase):
 			self.picon = self.piconLoader.getPicon(reference)
 		else:
 			self.picon = None
-		
+			if self.findPicon:
+				pngname = findPicon(reference)
+				if pngname != "":
+					self.picon = LoadPixmap(cached = True, path = pngname)
+				
 		self.filename = filename + ".ts"
 		self.destination = filename and os.path.dirname( filename )
 		
@@ -702,6 +715,12 @@ class TunerState(TunerStateBase):
 		self["picon"].hide()
 		if self.piconLoader:
 			self.picon = self.piconLoader.getPicon(self.reference)
+		else:
+			self.picon = None
+			if self.findPicon:
+				pngname = findPicon(reference)
+				if pngname != "":
+					self.picon = LoadPixmap(cached = True, path = pngname)
 		if self.picon is not None:
 			self["picon"].setPixmap(self.picon)
 			self["picon"].show()
