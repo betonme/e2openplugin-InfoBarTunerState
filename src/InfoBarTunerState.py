@@ -48,6 +48,7 @@ from Screens.InfoBar import InfoBar
 from Screens.InfoBarGenerics import InfoBarShowHide
 from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
+from Tools.LoadPixmap import LoadPixmap
 
 from time import strftime, time, localtime, mktime
 from datetime import datetime, timedelta
@@ -648,17 +649,13 @@ class TunerState(TunerStateBase):
 		try:
 			from Components.ServiceList import PiconLoader
 			self.piconLoader = PiconLoader()
-			print "=== IBTS import module PiconLoader for DMM"
 		except:
 			self.piconLoader = None
-			print "=== IBTS not found DMM-module PiconLoader"
 			try:
 				from Tools.FindPicon import findPicon
 				self.findPicon = True
-				print "=== IBTS import module Tools.FindPicon for VTI"	
 			except:
 				self.findPicon = False
-				print "=== IBTS not found VTI-module Tools.FindPicon"			
 
 		self.plugin = plugin
 		
@@ -680,10 +677,11 @@ class TunerState(TunerStateBase):
 		else:
 			self.picon = None
 			if self.findPicon:
+				from Tools.FindPicon import findPicon
 				pngname = findPicon(reference)
 				if pngname != "":
 					self.picon = LoadPixmap(cached = True, path = pngname)
-				
+		
 		self.filename = filename + ".ts"
 		self.destination = filename and os.path.dirname( filename )
 		
@@ -711,18 +709,19 @@ class TunerState(TunerStateBase):
 		self.channel = channel
 
 	def updatePicon(self):
-		print "=== IBTS updatePicon:", str(self.reference), self.channel
 		self["picon"].hide()
 		if self.piconLoader:
 			self.picon = self.piconLoader.getPicon(self.reference)
 		else:
 			self.picon = None
 			if self.findPicon:
-				pngname = findPicon(reference)
+				from Tools.FindPicon import findPicon
+				pngname = findPicon(self.reference)
 				if pngname != "":
 					self.picon = LoadPixmap(cached = True, path = pngname)
+					self["picon"].instance.setScale(2)
 		if self.picon is not None:
-			self["picon"].setPixmap(self.picon)
+			self["picon"].instance.setPixmap(self.picon)
 			self["picon"].show()
 
 	def updateFilename(self, filename):
@@ -1012,7 +1011,9 @@ class TunerState(TunerStateBase):
 
 			elif field == "ChannelIcon":
 				if self.picon is not None:
-					self["picon"].setPixmap(self.picon)
+					if not self.piconLoader:
+						self["picon"].instance.setScale(2)
+					self["picon"].instance.setPixmap(self.picon)
 					self["picon"].show()
 					# No resize necessary
 					widths.append( self.piconwidth )

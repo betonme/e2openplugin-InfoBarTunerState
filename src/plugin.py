@@ -37,7 +37,7 @@ from Logger import log
 NAME = _("InfoBarTunerState")
 IBTSSHOW = _("Show InfoBarTunerState")
 IBTSSETUP = _("InfoBarTunerState Setup")
-VERSION = "3.4a"
+VERSION = "3.4b"
 SUPPORT = "http://bit.ly/ibtsihad"
 DONATE = "http://bit.ly/ibtspaypal"
 ABOUT = "\n  " + NAME + " " + VERSION + "\n\n" \
@@ -138,16 +138,16 @@ config.infobartunerstate.fields.i                  = ConfigSelection(default = "
 config.infobartunerstate.fields.j                  = ConfigSelection(default = "None", choices = field_choices)
 
 config.infobartunerstate.fieldswidth               = ConfigSubsection()
-config.infobartunerstate.fieldswidth.a             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.b             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.c             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.d             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.e             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.f             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.g             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.h             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.i             = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.fieldswidth.j             = ConfigSelectionNumber(0, 1000, 1, default = 0)
+config.infobartunerstate.fieldswidth.a             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.b             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.c             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.d             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.e             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.f             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.g             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.h             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.i             = ConfigSelectionNumber(0, 1500, 1, default = 0)
+config.infobartunerstate.fieldswidth.j             = ConfigSelectionNumber(0, 1500, 1, default = 0)
 
 config.infobartunerstate.offset_horizontal         = ConfigSelectionNumber(-1000, 1000, 1, default = 0)
 config.infobartunerstate.offset_vertical           = ConfigSelectionNumber(-1000, 1000, 1, default = 0)
