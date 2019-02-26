@@ -6,7 +6,7 @@
 #
 
 DOMAIN=InfoBarTunerState
-installdir = /usr/lib/enigma2/python/Plugins/Extensions/$(DOMAIN)
+installdir = $(libdir)/enigma2/python/Plugins/Extensions/$(DOMAIN)
 #GETTEXT=./pygettext.py
 GETTEXT=xgettext
 
