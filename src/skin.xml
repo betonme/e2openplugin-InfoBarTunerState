@@ -1,8 +1,8 @@
-﻿<screen name="TunerState" title="Tuner State" flags="wfNoBorder" position="0,50" size="1000,32" zPosition="5" padding="20" spacing="15" backgroundColor="#ff000000">
+﻿<screen name="TunerState_v2" title="Tuner State" flags="wfNoBorder" position="0,50" size="1000,32" zPosition="5" padding="20" spacing="15" backgroundColor="#ff000000">
 	<widget name="Background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/background.png" position="0,0" size="1280,32" zPosition="-1" transparent="1" alphatest="off"/>
 	<!-- Type Channel Icon (Picon) -->
 	<widget name="picon" position="0,0" size="50,30" zPosition="1" transparent="1" alphatest="on"/>
-	<!-- Type Icons: Record, Stream, Finished, Info, Live -->
+	<!-- Type Icons: Record, Stream, Finished, Info, Live, Unknown, Clock, Pip, Record_finished -->
 	<widget name="Type" pixmaps="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/record.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/stream.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/finished.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/info.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/live.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/unknown.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/clock.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/pip.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/record_finished.png" position="0,0" size="32,32" zPosition="1" transparent="1" alphatest="on"/>
 	<!-- Progress -->
 	<widget name="Progress" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/progress.png" position="0,00" size="80,10" zPosition="1" borderWidth="2" borderColor="#000000" backgroundColor="#141415" transparent="1"/>

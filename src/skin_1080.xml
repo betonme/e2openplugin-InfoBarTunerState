@@ -1,10 +1,10 @@
-﻿<screen name="TunerState" title="Tuner State" flags="wfNoBorder" position="0,91" size="1920,40" zPosition="1" padding="10" spacing="15" backgroundColor="background">
+﻿<screen name="TunerState_v2" title="Tuner State" flags="wfNoBorder" position="0,91" size="1920,40" zPosition="1" padding="10" spacing="15" backgroundColor="background">
 
 	<widget name="Background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/background.png" position="0,0" size="1900,40" zPosition="-1" />
 	<widget name="picon" position="0,0" size="59,37" zPosition="1" transparent="1" alphatest="blend"/>
 	<widget name="Type" pixmaps="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/record.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/stream.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/finished.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/info.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/live.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/unknown.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/clock.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/pip.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/record_finished.png" position="0,8" size="35,35" scale="1" zPosition="1" transparent="1" alphatest="blend"/>
 	<!-- Progress -->
-	<widget backgroundColor="background" borderColor="foreground" borderWidth="2" name="Progress" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/progress.png" position="0,0" size="100,12" transparent="1" />
+	<widget backgroundColor="background" borderColor="foreground" borderWidth="2" name="Progress" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons_fullhd/progress.png" position="0,0" size="100,12" zPosition="1" transparent="1" />
 	<!-- Default field: Tuner -->
 	<!-- Field information -->
 	<!-- nowrap=1 is essential for calculateSize -->

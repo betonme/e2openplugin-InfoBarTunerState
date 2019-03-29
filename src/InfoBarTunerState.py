@@ -238,6 +238,8 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		log.debug( "IBTS show ", autohide, forceshow )
 		
 		if self._shown:
+			if forceshow: #to refresh all events, if have more events on opened IBTS
+				self.tunerShow(forceshow=forceshow)
 			return
 		
 		#TEST
@@ -442,7 +444,7 @@ class TunerStateBase(Screen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		self.skinName = "TunerState"
+		self.skinName = "TunerState_v2"
 		
 		self["Background"] = Pixmap()
 		self["picon"] = Pixmap()
