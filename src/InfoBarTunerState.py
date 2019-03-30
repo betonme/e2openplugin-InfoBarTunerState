@@ -508,10 +508,12 @@ class TunerStateBase(Screen):
 			fieldid = "Field"+str(i)
 			field = c.value
 			if field == "TypeIcon":
-				self["Type"].instance.move( ePoint(px, py) )
+				y = int( ( sh - self["Type"].instance.size().height() ) / 2 )
+				self["Type"].instance.move( ePoint(px, y) )
 			
 			elif field == "ChannelIcon":
-				self["picon"].instance.move( ePoint(px, py) )
+				y = int( ( sh - self["picon"].instance.size().height() ) / 2 )
+				self["picon"].instance.move( ePoint(px, y) )
 			
 			elif field == "TimerProgressGraphical":
 				#self[field].instance.resize( eSize(width, sh) )
