@@ -1,31 +1,31 @@
 ﻿<screen name="TunerState_v2" title="Tuner State" flags="wfNoBorder" position="0,50" size="1000,32" zPosition="5" padding="20" spacing="15" backgroundColor="#ff000000">
-	<widget name="Background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/background.png" position="0,0" size="1280,32" zPosition="-1" transparent="1" alphatest="off"/>
+	<widget name="Background" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/background.png" position="0,0" size="1280,32" zPosition="-1" alphatest="off"/>
 	<!-- Type Channel Icon (Picon) -->
-	<widget name="picon" position="0,0" size="50,30" zPosition="1" transparent="1" alphatest="on"/>
+	<widget name="picon" size="42,25" alphatest="on"/>
 	<!-- Type Icons: Record, Stream, Finished, Info, Live, Unknown, Clock, Pip, Record_finished -->
-	<widget name="Type" pixmaps="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/record.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/stream.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/finished.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/info.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/live.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/unknown.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/clock.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/pip.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/record_finished.png" position="0,0" size="32,32" zPosition="1" transparent="1" alphatest="on"/>
+	<widget name="Type" pixmaps="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/record.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/stream.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/finished.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/info.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/live.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/unknown.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/clock.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/pip.png,/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/record_finished.png" size="25,25" alphatest="on"/>
 	<!-- Progress -->
-	<widget name="Progress" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/progress.png" position="0,00" size="80,10" zPosition="1" borderWidth="2" borderColor="#000000" backgroundColor="#141415" transparent="1"/>
+	<widget name="Progress" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/InfoBarTunerState/icons/progress.png" size="80,10" borderWidth="2" borderColor="#000000" backgroundColor="#141415" transparent="1"/>
 	<!-- Field information -->
 	<!-- nowrap=1 is essential for calculateSize -->
 	<!-- Default field: Tuner -->
-	<widget name="Field0" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field0" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: Channel Number -->
-	<widget name="Field1" font="Regular;22" noWrap="1" halign="left" foregroundColor="#bbbbbf" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field1" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: Channel Name -->
-	<widget name="Field2" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field2" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: Timer Name -->
-	<widget name="Field3" font="Regular;22" noWrap="1" halign="left" foregroundColor="#bbbbbf" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field3" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: Time Left -->
-	<widget name="Field4" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field4" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: None -->
-	<widget name="Field5" font="Regular;22" noWrap="1" halign="left" foregroundColor="#bbbbbf" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field5" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: None -->
-	<widget name="Field6" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field6" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: None -->
-	<widget name="Field7" font="Regular;22" noWrap="1" halign="left" foregroundColor="#bbbbbf" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field7" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: None -->
-	<widget name="Field8" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field8" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 	<!-- Default field: None -->
-	<widget name="Field9" font="Regular;22" noWrap="1" halign="left" foregroundColor="#bbbbbf" backgroundColor="#141415" transparent="1" zPosition="1"/>
+	<widget name="Field9" font="Regular;22" noWrap="1" halign="left" foregroundColor="#ffffff" backgroundColor="#141415" transparent="1" valign="center"/>
 </screen>
