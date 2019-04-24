@@ -9,6 +9,7 @@ Makefile
 meta/Makefile
 po/Makefile
 src/Makefile
+src/icons/Makefile
 src/icons_fullhd/Makefile
 src/Handler/Makefile
 ])
