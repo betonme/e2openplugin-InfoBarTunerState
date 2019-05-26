@@ -235,7 +235,7 @@ class Records(PluginBase):
 			tunerstate.begin = timer.begin
 			tunerstate.end = timer.end
 			
-			if hasattr(timer, 'vpsplugin_enabled') and timer.vpsplugin_enabled:
+			if hasattr(timer, 'vpsplugin_enabled') and timer.vpsplugin_enabled and timer.autoincrease:
 			#and hasattr(timer, 'vpsplugin_overwrite') and timer.vpsplugin_overwrite:
 				tunerstate.endless = False
 				epgcache = eEPGCache.getInstance()
@@ -254,7 +254,9 @@ class Records(PluginBase):
 					log.debug( "IBTS Records event" )
 					begin = event.getBeginTime() or 0
 					duration = event.getDuration() or 0
-					tunerstate.end  = begin + duration
+					
+					if timer.end < (begin + duration):
+						tunerstate.end  = begin + duration
 					
 					if not tunerstate.end:
 						log.debug( "IBTS Records no end" )
