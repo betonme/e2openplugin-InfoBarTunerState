@@ -866,8 +866,7 @@ class TunerState(TunerStateBase):
 					
 					try:
 						stat = os.statvfs( filename )
-						self.freespace = int ( ( stat.f_bfree / 1024 * stat.f_bsize / 1024 ) / 1024 )
-						#self.freespace = os.stat(filename).st_size/1048576)
+						self.freespace = int ( ( stat.f_bavail / 1024 * stat.f_frsize / 1024 ) / 1024 )
 					except OSError:
 						pass
 
