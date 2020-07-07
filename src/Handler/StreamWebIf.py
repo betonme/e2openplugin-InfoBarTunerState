@@ -2,7 +2,6 @@
 # by betonme @2015
 
 from __future__ import print_function
-import string
 import sys
 
 from time import time
@@ -128,7 +127,7 @@ class StreamWebIf(PluginBase):
 				ip = str(stream.clientIP)
 				if ip and ':' in ip and '.' in ip:
 					# Mixed style ::ffff:192.168.64.27
-					ip = string.split(str(stream.clientIP), ':')[-1]
+					ip = str(stream.clientIP).split(':')[-1]
 				
 				# Delete references to avoid blocking tuners
 				del stream

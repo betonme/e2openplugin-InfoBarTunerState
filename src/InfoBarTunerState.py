@@ -71,6 +71,10 @@ from .InfoBarHandler import InfoBarHandler
 from .InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
 from .Logger import log
 
+import six
+from six.moves import range
+
+
 # Extenal plugins
 #try:
 #	from Plugins.Extensions.2IB import SecondInfoBar
@@ -249,7 +253,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		#		if self.infobar.SIBdialog.shown:
 		#			log.debug( "IBTS SecondInfobar is shown" )
 		#			return
-		#	except Exception, e:
+		#	except Exception as e:
 		#		log.exception( "InfoBarTunerState show SIB exception " + str(e) )
 		
 		allowclosing = True
@@ -341,7 +345,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			#log.debug( "IBTS overwidth", overwidth )
 			
 			# Order windows
-			wins = sorted( self.entries.itervalues(), key=lambda x: (x.type, x.endless, x.begin), reverse=config.infobartunerstate.list_goesup.value )
+			wins = sorted( six.itervalues(self.entries), key=lambda x: (x.type, x.endless, x.begin), reverse=config.infobartunerstate.list_goesup.value )
 			
 			# Resize, move and show windows
 			for win in wins:
@@ -413,7 +417,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 
 	def tunerHide(self):
 		log.debug( "IBTS tunerHide" )
-		for win in self.entries.itervalues():
+		for win in six.itervalues(self.entries):
 			win.hide()
 		if self.info:
 			self.info.hide()
@@ -452,8 +456,8 @@ class TunerStateBase(Screen):
 		self["Type"] = MultiPixmap()
 		self["Progress"] = ProgressBar()
 		
-		for i in xrange( len( config.infobartunerstate.fields.dict() ) ):
-		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
+		for i in range( len( config.infobartunerstate.fields.dict() ) ):
+		#for i, c in enumerate( six.itervalues(config.infobartunerstate.fields.dict()) ):
 			label = Label()
 			#fieldid = "Field"+str(i)
 			self[ "Field"+str(i) ] = label
@@ -589,8 +593,8 @@ class TunerStateInfo(TunerStateBase):
 		
 		self["Progress"].hide()
 		
-		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
-		for i in xrange( len( config.infobartunerstate.fields.dict() ) ):
+		#for i, c in enumerate( six.itervalues(config.infobartunerstate.fields.dict()) ):
+		for i in range( len( config.infobartunerstate.fields.dict() ) ):
 			fieldid = "Field"+str(i)
 			
 			if fieldid == "Field0":
@@ -609,8 +613,8 @@ class TunerStateInfo(TunerStateBase):
 		
 		height = self.instance.size().height()
 		
-		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
-		for i in xrange( len( config.infobartunerstate.fields.dict() ) ):
+		#for i, c in enumerate( six.itervalues(config.infobartunerstate.fields.dict()) ):
+		for i in range( len( config.infobartunerstate.fields.dict() ) ):
 			fieldid = "Field"+str(i)
 			
 			#Workaround#1 Set default size
@@ -845,7 +849,7 @@ class TunerState(TunerStateBase):
 		self.freespace = None
 		if filename:
 			
-			for c in config.infobartunerstate.fields.dict().itervalues():
+			for c in six.itervalues(config.infobartunerstate.fields.dict()):
 				if c.value == "FileSize":
 					break
 				if c.value == "FreeSpace":
@@ -888,7 +892,7 @@ class TunerState(TunerStateBase):
 		self["Progress"].hide()
 		self["picon"].hide()
 		
-		for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
+		for i, c in enumerate( six.itervalues(config.infobartunerstate.fields.dict()) ):
 			fieldid = "Field"+str(i)
 			field = c.value
 			text = ""
@@ -942,7 +946,7 @@ class TunerState(TunerStateBase):
 			elif field == "Number":
 				if isinstance( self.number, int ):
 					text = _("%d") % ( self.number )
-				elif isinstance( self.number, basestring ):
+				elif isinstance( self.number, six.string_types ):
 					text = self.number
 			
 			elif field == "Channel":
