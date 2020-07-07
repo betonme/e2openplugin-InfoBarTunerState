@@ -134,8 +134,8 @@ def getEventData(iservice):
 			begin = event.getBeginTime() or 0
 			duration = event.getDuration() or 0
 			end = begin + duration or 0
-			return (name,begin,end)
-	return ("",0,0)
+			return (name, begin, end)
+	return ("", 0, 0)
 
 def getEventName(eservicereference):
 	if isinstance(eservicereference, eServiceReference):

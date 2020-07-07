@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #######################################################################
 #
 #    InfoBar Tuner State for Enigma-2
@@ -29,9 +30,9 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.MessageBox import MessageBox
 
 # Plugin internal
-from IBTSConfiguration import InfoBarTunerStateConfiguration
-from InfoBarTunerState import InfoBarTunerState, TunerStateInfo
-from Logger import log
+from .IBTSConfiguration import InfoBarTunerStateConfiguration
+from .InfoBarTunerState import InfoBarTunerState, TunerStateInfo
+from .Logger import log
 
 # Contants
 NAME = _("InfoBarTunerState")
@@ -213,7 +214,7 @@ def setup(session, **kwargs):
 	# Display next x timers also if deactivated
 	try:
 		session.open(InfoBarTunerStateConfiguration)
-	except Exception, e:
+	except Exception as e:
 		log.exception( "InfoBarTunerStateMenu exception " + str(e) )
 
 
@@ -222,14 +223,14 @@ def setup(session, **kwargs):
 def start(reason, **kwargs):
 	log.info( "InfoBarTunerState start" )
 	if reason == 0: # start
-		if kwargs.has_key("session"):
+		if "session" in kwargs:
 			if config.infobartunerstate.enabled.value:
 				global gInfoBarTunerState
 				session = kwargs["session"]
 				try:
 					gInfoBarTunerState = InfoBarTunerState(session)
 					gInfoBarTunerState.onInit()
-				except Exception, e:
+				except Exception as e:
 					log.exception( "InfoBarTunerState start exception " + str(e) )
 	# Do not cleanup on session shutdown, it will break the movie player integration
 
@@ -241,7 +242,7 @@ def show(session, **kwargs):
 	if gInfoBarTunerState:
 		try:
 			gInfoBarTunerState.show(True, forceshow=True)
-		except Exception, e:
+		except Exception as e:
 			log.exception( "InfoBarTunerState show exception " + str(e) )
 	else:
 		# No InfoBarTunerState Instance running

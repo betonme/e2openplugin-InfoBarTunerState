@@ -36,7 +36,7 @@ config.infobartunerstate.plugin_streamserver.show_events = ConfigYesNo(default =
 def getStreamID(count, ip):
 	if HAS_STREAMSERVER:
 		try:
-			return str(count) + str(ip) + str(randint(0,9))
+			return str(count) + str(ip) + str(randint(0, 9))
 		except:
 			pass
 	return ""
@@ -190,7 +190,7 @@ class StreamServer(PluginBase):
 								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
 								if config.infobartunerstate.plugin_openwebif.show_events.value:
 									gInfoBarTunerState.onEvent()
-		except Exception, e:
+		except Exception as e:
 			log.exception( "IBTS exception " + str(e) )
 
 	def update(self, id, tunerstate):

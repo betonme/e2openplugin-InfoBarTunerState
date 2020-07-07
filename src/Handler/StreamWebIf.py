@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-from
 # by betonme @2015
 
+from __future__ import print_function
 import string
 import sys
 
@@ -183,7 +184,7 @@ class StreamWebIf(PluginBase):
 				tunerstate.channel = getChannel(eservicereference)
 			if tunerstate.reference != str(ServiceReference(eservicereference)):
 				tunerstate.reference = str(ServiceReference(eservicereference))
-				print "=== IBTS update Stream reference:", tunerstate.reference
+				print("=== IBTS update Stream reference:", tunerstate.reference)
 				tunerstate.updatePicon()
 
 			return True

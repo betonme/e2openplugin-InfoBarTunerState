@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #######################################################################
 #
 #    InfoBar Tuner State for Enigma-2
@@ -22,7 +23,7 @@ from enigma import eTimer
 from Components.config import *
 
 # Plugin internal
-from ExtensionHandler import addExtension, removeExtension
+from .ExtensionHandler import addExtension, removeExtension
 
 
 # Globals

@@ -18,6 +18,7 @@
 #######################################################################
 
 # for localized messages
+from __future__ import absolute_import
 from . import _
 
 import math
@@ -66,9 +67,9 @@ from ServiceReference import ServiceReference
 sz_w = getDesktop(0).size().width()
 
 # Plugin internal
-from InfoBarHandler import InfoBarHandler
-from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
-from Logger import log
+from .InfoBarHandler import InfoBarHandler
+from .InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
+from .Logger import log
 
 # Extenal plugins
 #try:
@@ -317,7 +318,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 				win.update()
 				
 				# Calculate field width
-				widths = map( lambda (w1, w2): max( w1, w2 ), zip_longest( widths, win.widths ) )
+				widths = map( lambda w1_w2: max( w1_w2[0], w1_w2[1] ), zip_longest( widths, win.widths ) )
 			
 			# Get initial padding / offset position and apply user offset
 			padding = self.padding + int(config.infobartunerstate.offset_padding.value)
@@ -395,7 +396,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 					self.info = self.session.instantiateDialog( TunerStateInfo, _("Nothing running") )
 				self.info.show()
 				log.debug( "IBTS self.info.type", self.info.type )
-			except Exception, e:
+			except Exception as e:
 				log.exception( "InfoBarTunerState show exception " + str(e) )
 
 	def update(self):

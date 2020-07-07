@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #######################################################################
 #
 #    InfoBar Tuner State for Enigma-2
@@ -30,8 +31,8 @@ from Screens.Screen import Screen
 from Screens.Setup import SetupSummary
 
 # Plugin internal
-from InfoBarTunerState import InfoBarTunerState
-from InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
+from .InfoBarTunerState import InfoBarTunerState
+from .InfoBarTunerStatePlugins import InfoBarTunerStatePlugins
 
 
 #######################################################
@@ -81,25 +82,25 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 
 	def buildConfig(self):
 		
-		separator = "".ljust(250,"-")
+		separator = "".ljust(250, "-")
 		separatorE2Usage = "- E2 "+_("Usage")+" "
-		separatorE2Usage = separatorE2Usage.ljust(250-len(separatorE2Usage),"-")
+		separatorE2Usage = separatorE2Usage.ljust(250-len(separatorE2Usage), "-")
 		
 #         _config list entry
 #         _                                                     , config element
 		self.config = [
-			(  _("Enable InfoBarTunerState")                          , config.infobartunerstate.enabled ),
-			(  separator                                              , config.infobartunerstate.about ),
-			(  _("Add Show to extension menu")                        , config.infobartunerstate.extensions_menu_show ),
-			(  _("Add Setup to extension menu")                       , config.infobartunerstate.extensions_menu_setup ),
+			(  _("Enable InfoBarTunerState"), config.infobartunerstate.enabled ),
+			(  separator, config.infobartunerstate.about ),
+			(  _("Add Show to extension menu"), config.infobartunerstate.extensions_menu_show ),
+			(  _("Add Setup to extension menu"), config.infobartunerstate.extensions_menu_setup ),
 #			(  _("Pop-Up time in seconds")                            , config.infobartunerstate.popup_time ),
-			(  _("Show with InfoBar (TV-mode)")                       , config.infobartunerstate.show_withinfobar ),
-			(  _("Show with Infobar (MoviePlayer)")                   , config.infobartunerstate.show_withplayer ),
-			(  _("Time format begin")                                 , config.infobartunerstate.time_format_begin ),
-			(  _("Time format end")                                   , config.infobartunerstate.time_format_end ),
-			(  _("Number of finished entries in list")                , config.infobartunerstate.number_finished_entries ),
-			(  _("Number of seconds for displaying finished entries") , config.infobartunerstate.timeout_finished_entries ),
-			(  separator                                              , config.infobartunerstate.about ),
+			(  _("Show with InfoBar (TV-mode)"), config.infobartunerstate.show_withinfobar ),
+			(  _("Show with Infobar (MoviePlayer)"), config.infobartunerstate.show_withplayer ),
+			(  _("Time format begin"), config.infobartunerstate.time_format_begin ),
+			(  _("Time format end"), config.infobartunerstate.time_format_end ),
+			(  _("Number of finished entries in list"), config.infobartunerstate.number_finished_entries ),
+			(  _("Number of seconds for displaying finished entries"), config.infobartunerstate.timeout_finished_entries ),
+			(  separator, config.infobartunerstate.about ),
 		]
 		
 		for plugin in self.getPlugins():
@@ -111,46 +112,46 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 					] )
 		
 		self.config.extend( [
-			(  separator                                              , config.infobartunerstate.about ),
+			(  separator, config.infobartunerstate.about ),
 		] )
 		
 		for i, configinfobartunerstatefield in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
 			self.config.append(
-			(  _("Field %d content") % (i)                            , configinfobartunerstatefield )
+			(  _("Field %d content") % (i), configinfobartunerstatefield )
 			)
 		for i, configinfobartunerstatefieldwidth in enumerate( config.infobartunerstate.fieldswidth.dict().itervalues() ):
 			self.config.append(
-			(  _("Field %d width") % (i)                              , configinfobartunerstatefieldwidth )
+			(  _("Field %d width") % (i), configinfobartunerstatefieldwidth )
 			)
 		
 		self.config.extend( [
-			(  separator                                              , config.infobartunerstate.about ),
-			(  _("Horizontal offset left in pixel")                   , config.infobartunerstate.offset_horizontal ),
-			(  _("Horizontal offset right in pixel")                  , config.infobartunerstate.offset_rightside ),
-			(  _("Vertical offset in pixel")                          , config.infobartunerstate.offset_vertical ),
-			(  _("Text padding offset in pixel")                      , config.infobartunerstate.offset_padding ),
-			(  _("Text spacing offset in pixel")                      , config.infobartunerstate.offset_spacing ),
-			(  _("Variable field width")                              , config.infobartunerstate.variable_field_width ),
-			(  _("Placeholder for Progressbar")                       , config.infobartunerstate.placeholder_pogressbar ),
-			(  _("List goes up")                                      , config.infobartunerstate.list_goesup ),
-			(  _("Background transparency")                           , config.infobartunerstate.background_transparency ),
-			(  _("Overwrite Infobar timeout")                         , config.infobartunerstate.infobar_timeout ),
-			(  _("Wake HDD for free space statistics")                , config.infobartunerstate.wake_hdd ),
-			(  _("Skip mounts for free space statistics")             , config.infobartunerstate.skip_mounts ),
-			(  separator                                              , config.infobartunerstate.about ),
-			(  _("Log debug prints to shell")                         , config.infobartunerstate.log_shell ),
-			(  _("Log to file")                                       , config.infobartunerstate.log_write ),
+			(  separator, config.infobartunerstate.about ),
+			(  _("Horizontal offset left in pixel"), config.infobartunerstate.offset_horizontal ),
+			(  _("Horizontal offset right in pixel"), config.infobartunerstate.offset_rightside ),
+			(  _("Vertical offset in pixel"), config.infobartunerstate.offset_vertical ),
+			(  _("Text padding offset in pixel"), config.infobartunerstate.offset_padding ),
+			(  _("Text spacing offset in pixel"), config.infobartunerstate.offset_spacing ),
+			(  _("Variable field width"), config.infobartunerstate.variable_field_width ),
+			(  _("Placeholder for Progressbar"), config.infobartunerstate.placeholder_pogressbar ),
+			(  _("List goes up"), config.infobartunerstate.list_goesup ),
+			(  _("Background transparency"), config.infobartunerstate.background_transparency ),
+			(  _("Overwrite Infobar timeout"), config.infobartunerstate.infobar_timeout ),
+			(  _("Wake HDD for free space statistics"), config.infobartunerstate.wake_hdd ),
+			(  _("Skip mounts for free space statistics"), config.infobartunerstate.skip_mounts ),
+			(  separator, config.infobartunerstate.about ),
+			(  _("Log debug prints to shell"), config.infobartunerstate.log_shell ),
+			(  _("Log to file"), config.infobartunerstate.log_write ),
 		] )
 		
 		if config.infobartunerstate.log_write.value:
 			self.config.append(
-				(  _("Log file path and name")                        , config.infobartunerstate.log_file )
+				(  _("Log file path and name"), config.infobartunerstate.log_file )
 				)
 		
 		self.config.extend( [
-			(  separatorE2Usage                                       , config.infobartunerstate.about ),
-			(  _("Infobar timeout")                                   , config.usage.infobar_timeout ),
-			(  _("Show Message when Recording starts")                , config.usage.show_message_when_recording_starts ),
+			(  separatorE2Usage, config.infobartunerstate.about ),
+			(  _("Infobar timeout"), config.usage.infobar_timeout ),
+			(  _("Show Message when Recording starts"), config.usage.show_message_when_recording_starts ),
 		] )
 
 	def changeConfig(self):
@@ -239,7 +240,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 		
 		# We need assign / "write" access import the plugin module
 		# global won't work across module scope
-		import plugin
+		from . import plugin
 		if config.infobartunerstate.enabled.value:
 			# Plugin should be enabled
 			if plugin.gInfoBarTunerState:
@@ -268,7 +269,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 	
 	# Overwrite Screen close function
 	def close(self):
-		from plugin import ABOUT
+		from .plugin import ABOUT
 		self.session.openWithCallback(self.closeConfirm, MessageBox, ABOUT, MessageBox.TYPE_INFO)
 
 	def closeConfirm(self, dummy=None):

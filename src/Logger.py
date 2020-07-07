@@ -17,6 +17,7 @@
 #
 #######################################################################
 
+from __future__ import print_function
 from . import _
 
 import logging
@@ -77,7 +78,7 @@ class Logger(object):
 			self.instance.info(strargs)
 		
 		elif config.infobartunerstate.log_shell.value:
-			print strargs
+			print(strargs)
 
 	def debug(self, *args):
 		strargs = " ".join( [ str(arg) for arg in args ] )
@@ -86,7 +87,7 @@ class Logger(object):
 			self.instance.debug(strargs)
 		
 		elif config.infobartunerstate.log_shell.value:
-			print strargs
+			print(strargs)
 		
 		if sys.exc_info()[0]:
 			self.instance.debug( str(sys.exc_info()[0]) )
@@ -100,7 +101,7 @@ class Logger(object):
 			self.instance.warning(strargs)
 		
 		elif config.infobartunerstate.log_shell.value:
-			print strargs
+			print(strargs)
 		
 		if int(config.infobartunerstate.popups_warning_timeout.value) != 0:
 			if currentThread().getName() == 'MainThread':
@@ -118,7 +119,7 @@ class Logger(object):
 			self.instance.error(strargs)
 		
 		elif config.infobartunerstate.log_shell.value:
-			print strargs
+			print(strargs)
 
 		if int(config.infobartunerstate.popups_error_timeout.value) != 0:
 			if currentThread().getName() == 'MainThread':
@@ -136,7 +137,7 @@ class Logger(object):
 			self.instance.exception(strargs)
 		
 		elif config.infobartunerstate.log_shell.value:
-			print strargs
+			print(strargs)
 		
 		if int(config.infobartunerstate.popups_error_timeout.value) != 0:
 			if currentThread().getName() == 'MainThread':
