@@ -17,6 +17,7 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 event_choices = [	
+					( "no",		_("no")),
 					( "start",		_("Start record")),
 					( "end",		_("End record")),
 					( "startend",	_("Start / End record"))
@@ -64,6 +65,7 @@ class Records(PluginBase):
 		options.append( (_("Show record(s)"), config.infobartunerstate.plugin_records.enabled) )
 		
 		if config.infobartunerstate.plugin_records.enabled.value:
+			options.append( (_("   Show events of record(s)"),                config.infobartunerstate.plugin_records.show_events) )
 			options.append( (_("   Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records) )
 			options.append( (_("   Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours) )
 		
