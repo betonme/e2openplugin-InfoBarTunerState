@@ -290,7 +290,6 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 		else:
 			self.hide()
 
-	
 	def handleFinished(self):
 		if self.entries:
 			
@@ -810,8 +809,8 @@ class TunerState(TunerStateBase):
 		self.progress = progress and progress is not None and int(progress)
 		#log.debug( "IBTS duration, timeleft, timeelapsed, progress", self.duration, self.timeleft, self.timeelapsed, self.progress )
 		
-		
 		#Adapted from: from Components.Harddisk import findMountPoint
+
 		def mountpoint(path):
 			path = os.path.realpath(path)
 			if os.path.ismount(path) or len(path) == 0:

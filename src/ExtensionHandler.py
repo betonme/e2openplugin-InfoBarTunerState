@@ -48,6 +48,7 @@ def addExtension():
 				plugin = PluginDescriptor(name=IBTSSETUP, description=IBTSSETUP, where=PluginDescriptor.WHERE_EXTENSIONSMENU, needsRestart=False, fnc=setup)
 				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].append(plugin)
 
+
 def removeExtension():
 	# Remove from extension menu
 	from Components.PluginComponent import plugins

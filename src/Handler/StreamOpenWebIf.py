@@ -38,6 +38,7 @@ def getStreamID(stream):
 			pass
 	return ""
 
+
 def getStream(id):
 	if HAS_OPENWEBIF:
 		try:

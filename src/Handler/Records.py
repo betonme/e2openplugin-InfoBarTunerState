@@ -32,6 +32,7 @@ config.infobartunerstate.plugin_records.show_events = ConfigSelection(default="s
 def getTimerID(timer):
 	return 'record %x %s %x' % (id(timer), timer.name, int(timer.eit or 0))
 
+
 def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
@@ -40,6 +41,7 @@ def getTimer(id):
 			if getTimerID(timer) == id:
 				return timer
 	return None
+
 
 class Records(PluginBase):
 	def __init__(self):

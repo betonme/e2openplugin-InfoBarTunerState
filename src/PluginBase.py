@@ -3,6 +3,7 @@
 
 # Internal
 
+
 class PluginBase(object):
 	def __init__(self):
 		pass

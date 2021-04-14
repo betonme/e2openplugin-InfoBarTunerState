@@ -210,7 +210,6 @@ class StreamServer(PluginBase):
 				if not tunerstate.channel:
 					tunerstate.channel = getChannel(eservicereference)
 				
-		
 			return True
 		
 		else:

@@ -43,6 +43,7 @@ def getTunerName(slot_number):
 		name = str(chr(int(slot_number) + ord('A')))
 	return name
 
+
 def normTuner(data):
 	if isinstance(data, dict):
 		tuner_type = str(data.get("tuner_type", ""))
@@ -55,6 +56,7 @@ def normTuner(data):
 			return ("", tuner_type, slot_number)
 	return ("", "", None)
 
+
 def getTunerByServiceReferenceOLD(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
 		serviceHandler = eServiceCenter.getInstance()
@@ -63,6 +65,7 @@ def getTunerByServiceReferenceOLD(eservicereference):
 		return normTuner(data)
 	return ("", "", None)
 
+
 def getTunerByServiceReference(servicereference):
 	if isinstance(servicereference, ServiceReference):
 		info = servicereference.info()
@@ -70,12 +73,14 @@ def getTunerByServiceReference(servicereference):
 		return normTuner(data)
 	return ("", "", None)
 
+
 def getTunerByPlayableService(iservice):
 	if isinstance(iservice, (iPlayableService, iRecordableService, iPlayableServicePtr, iRecordableServicePtr)):
 		feinfo = iservice and iservice.frontendInfo()
 		data = feinfo and feinfo.getFrontendData()
 		return normTuner(data)
 	return ("", "", None)
+
 
 def getNumber(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
@@ -118,12 +123,14 @@ def getNumber(eservicereference):
 								return number
 	return None
 
+
 def getChannel(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
 		servicereference = ServiceReference(eservicereference)
 		if servicereference:
 			return servicereference.getServiceName().replace('\xc2\x86', '').replace('\xc2\x87', '')
 	return ""
+
 
 def getEventData(iservice):
 	if isinstance(iservice, (iPlayableService, iRecordableService, iPlayableServicePtr, iRecordableServicePtr)):
@@ -137,6 +144,7 @@ def getEventData(iservice):
 			return (name, begin, end)
 	return ("", 0, 0)
 
+
 def getEventName(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
 		epg = eEPGCache.getInstance()
@@ -144,6 +152,7 @@ def getEventName(eservicereference):
 		if event: 
 			return event.getEventName()
 	return ""
+
 
 def getClient(ip):
 	try:

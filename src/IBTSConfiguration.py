@@ -249,7 +249,6 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 				plugin.gInfoBarTunerState.close()
 				plugin.gInfoBarTunerState = None
 			
-			
 			# Force new instance
 			plugin.gInfoBarTunerState = InfoBarTunerState(self.session)
 			

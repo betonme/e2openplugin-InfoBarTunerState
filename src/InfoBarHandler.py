@@ -53,6 +53,8 @@ def overwriteInfoBar():
 		InfoBarShowHide.toggleShow = InfoBarToggleTunerState
 
 # InfoBar Events
+
+
 def recoverInfoBar():
 	from Screens.InfoBarGenerics import InfoBarShowHide
 	global InfoBarShow, InfoBarHide, InfoBarToggle
@@ -85,6 +87,7 @@ def InfoBarShowTunerState(self):
 		if gInfoBarTunerState:
 			gInfoBarTunerState.show()
 
+
 def InfoBarHideTunerState(self):
 	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 	global InfoBarHide
@@ -93,6 +96,7 @@ def InfoBarHideTunerState(self):
 	# Always hide
 	if gInfoBarTunerState:
 		gInfoBarTunerState.hide()
+
 
 def InfoBarToggleTunerState(self):
 	global InfoBarToggle
@@ -119,6 +123,7 @@ def InfoBarToggleTunerState(self):
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.show()
+
 
 class InfoBarHandler(object):
 	def __init__(self):
