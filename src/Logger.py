@@ -21,7 +21,9 @@ from . import _
 
 import logging
 
-import os, sys, traceback
+import os
+import sys
+import traceback
 
 from Components.config import config
 
@@ -147,7 +149,9 @@ class Logger(object):
 					'IBTS_PopUp_ID_Exception_'+strargs
 				)
 		
-		import os, sys, traceback
+		import os
+		import sys
+		import traceback
 		if sys.exc_info()[0]:
 			#exc_type, exc_value, exc_traceback = sys.exc_info()
 			#traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
