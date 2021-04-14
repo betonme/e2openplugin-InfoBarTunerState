@@ -16,7 +16,7 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 config.infobartunerstate.plugin_pip         = ConfigSubsection()
-config.infobartunerstate.plugin_pip.enabled = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_pip.enabled = ConfigYesNo(default=False)
 
 
 class PiP(PluginBase):

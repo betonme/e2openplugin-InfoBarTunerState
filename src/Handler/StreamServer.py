@@ -29,8 +29,8 @@ except:
 	
 # Config options
 config.infobartunerstate.plugin_streamserver             = ConfigSubsection()
-config.infobartunerstate.plugin_streamserver.enabled     = ConfigYesNo(default = False)
-config.infobartunerstate.plugin_streamserver.show_events = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_streamserver.enabled     = ConfigYesNo(default=False)
+config.infobartunerstate.plugin_streamserver.show_events = ConfigYesNo(default=False)
 
 
 def getStreamID(count, ip):

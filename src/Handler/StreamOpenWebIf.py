@@ -26,8 +26,8 @@ except:
 
 # Config options
 config.infobartunerstate.plugin_openwebif             = ConfigSubsection()
-config.infobartunerstate.plugin_openwebif.enabled     = ConfigYesNo(default = False)
-config.infobartunerstate.plugin_openwebif.show_events = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_openwebif.enabled     = ConfigYesNo(default=False)
+config.infobartunerstate.plugin_openwebif.show_events = ConfigYesNo(default=False)
 
 
 def getStreamID(stream):

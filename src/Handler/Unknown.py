@@ -20,8 +20,8 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 config.infobartunerstate.plugin_unknown             = ConfigSubsection()
-config.infobartunerstate.plugin_unknown.enabled     = ConfigYesNo(default = False)
-config.infobartunerstate.plugin_unknown.show_events = ConfigYesNo(default = False)
+config.infobartunerstate.plugin_unknown.enabled     = ConfigYesNo(default=False)
+config.infobartunerstate.plugin_unknown.show_events = ConfigYesNo(default=False)
 
 
 class Unknown(PluginBase):

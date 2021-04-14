@@ -71,7 +71,7 @@ class InfoBarTunerStateConfiguration(Screen, ConfigListScreen, InfoBarTunerState
 				self.onChanged.extend(onChanged)
 		
 		self.buildConfig()
-		ConfigListScreen.__init__(self, self.list, session = session, on_change = self.changed)
+		ConfigListScreen.__init__(self, self.list, session=session, on_change=self.changed)
 		self.changeConfig()
 		
 		# Trigger change

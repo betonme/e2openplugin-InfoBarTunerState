@@ -183,7 +183,7 @@ class InfoBarTunerState(InfoBarTunerStatePlugins, InfoBarHandler):
 			win.updateTimes( begin, end, endless )
 			win.update()
 	
-	def finishEntry(self, id, setCurrentTime = True):
+	def finishEntry(self, id, setCurrentTime=True):
 		log.debug( "IBTS finishEntry", id )
 		if id in self.entries:
 			win = self.entries[id]
@@ -684,7 +684,7 @@ class TunerState(TunerStateBase):
 				from Tools.FindPicon import findPicon
 				pngname = findPicon(reference)
 				if pngname != "":
-					self.picon = LoadPixmap(cached = True, path = pngname)
+					self.picon = LoadPixmap(cached=True, path=pngname)
 		
 		self.filename = filename + ".ts"
 		self.destination = filename and os.path.dirname( filename )
@@ -722,7 +722,7 @@ class TunerState(TunerStateBase):
 				from Tools.FindPicon import findPicon
 				pngname = findPicon(self.reference)
 				if pngname != "":
-					self.picon = LoadPixmap(cached = True, path = pngname)
+					self.picon = LoadPixmap(cached=True, path=pngname)
 					self["picon"].instance.setScale(2)
 		if self.picon is not None:
 			self["picon"].instance.setPixmap(self.picon)

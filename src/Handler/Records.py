@@ -23,10 +23,10 @@ event_choices = [
 					( "startend",	_("Start / End record"))
 				]
 config.infobartunerstate.plugin_records                           = ConfigSubsection()
-config.infobartunerstate.plugin_records.enabled                   = ConfigYesNo(default = True)
-config.infobartunerstate.plugin_records.number_finished_records   = ConfigSelectionNumber(0, 10, 1, default = 3)
-config.infobartunerstate.plugin_records.finished_hours            = ConfigSelectionNumber(0, 1000, 1, default = 0)
-config.infobartunerstate.plugin_records.show_events               = ConfigSelection(default = "startend", choices = event_choices)
+config.infobartunerstate.plugin_records.enabled                   = ConfigYesNo(default=True)
+config.infobartunerstate.plugin_records.number_finished_records   = ConfigSelectionNumber(0, 10, 1, default=3)
+config.infobartunerstate.plugin_records.finished_hours            = ConfigSelectionNumber(0, 1000, 1, default=0)
+config.infobartunerstate.plugin_records.show_events               = ConfigSelection(default="startend", choices=event_choices)
 
 
 def getTimerID(timer):
