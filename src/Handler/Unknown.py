@@ -87,7 +87,7 @@ class Unknown(PluginBase):
 		self.mask = mask
 		self.tuners = []
 		
-		bit = 1;
+		bit = 1
 		for tunernumber in range(8):
 			#log.debug( "IBTS UNKNOWN ", tunernumber, bit, bool(mask & bit) )
 			if bool(mask & bit):

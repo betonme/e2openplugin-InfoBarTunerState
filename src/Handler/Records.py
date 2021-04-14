@@ -121,11 +121,15 @@ class Records(PluginBase):
 				endless = timer.autoincrease
 				
 				# Is this really necessary?
-				try: timer.Filename
-				except: timer.calculateFilename()
+				try:
+					timer.Filename
+				except:
+					timer.calculateFilename()
 				
-				try: filename = timer.Filename
-				except: filename = timer.name
+				try:
+					filename = timer.Filename
+				except:
+					filename = timer.name
 				
 				irecordservice = timer.record_service
 				servicereference = timer.service_ref
@@ -250,7 +254,7 @@ class Records(PluginBase):
 				
 				if not event:
 					log.debug( "IBTS Records event by lookupEventTime" )
-					event = epgcache.lookupEventTime( timer.service_ref.ref, timer.begin + 5 );
+					event = epgcache.lookupEventTime( timer.service_ref.ref, timer.begin + 5 )
 				
 				if event:
 					log.debug( "IBTS Records event" )

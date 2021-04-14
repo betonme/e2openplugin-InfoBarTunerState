@@ -86,7 +86,8 @@ class InfoBarTunerStatePlugins(object):
 				log.debug( "[IBTS Plugins] Load exception: " + str(e) )
 			finally:
 				# Since we may exit via an exception, close fp explicitly.
-				if fp: fp.close()
+				if fp:
+					fp.close()
 			
 			if not module:
 				log.debug( "[IBTS Plugins] No module available: " + str(name) )

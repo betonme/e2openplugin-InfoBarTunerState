@@ -189,11 +189,15 @@ class Timers(PluginBase):
 										
 									else:
 										# Is this really necessary?
-										try: timer.Filename
-										except: timer.calculateFilename()
+										try:
+											timer.Filename
+										except:
+											timer.calculateFilename()
 										
-										try: filename = timer.Filename
-										except: filename = timer.name
+										try:
+											filename = timer.Filename
+										except:
+											filename = timer.name
 										
 										begin = timer.begin
 										end = timer.end

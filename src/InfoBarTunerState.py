@@ -797,8 +797,10 @@ class TunerState(TunerStateBase):
 				# Calculate progress and round up
 				progress = timeelapsed / length * 100.0
 				# Normalize progress
-				if progress < 0: progress = 0
-				elif progress > 100: progress = 100
+				if progress < 0:
+					progress = 0
+				elif progress > 100:
+					progress = 100
 			else:
 				progress = None
 			
@@ -812,7 +814,8 @@ class TunerState(TunerStateBase):
 		#Adapted from: from Components.Harddisk import findMountPoint
 		def mountpoint(path):
 			path = os.path.realpath(path)
-			if os.path.ismount(path) or len(path)==0: return path
+			if os.path.ismount(path) or len(path)==0:
+				return path
 			return mountpoint(os.path.dirname(path))
 		
 		def getDevicebyMountpoint(hdm, mountpoint):
