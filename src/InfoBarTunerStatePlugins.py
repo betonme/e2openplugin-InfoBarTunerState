@@ -47,39 +47,39 @@ class InfoBarTunerStatePlugins(object):
 	# Module functions
 	def loadPlugins(self, path, base):
 		self.__plugins = {}
-		
+
 		if not os.path.exists(path):
 			log.debug("[IBTS Plugins]: Error: Path doesn't exist: " + path)
 			return
-		
+
 		# Import all subfolders to allow relative imports
 		for root, dirs, files in os.walk(path):
 			if root not in sys.path:
 				sys.path.append(root)
-		
+
 		# List files
 		files = [fname[:-3] for fname in os.listdir(path) if fname.endswith(".py") and not fname.startswith("__")]
 		if not files:
 			files = [fname[:-4] for fname in os.listdir(path) if fname.endswith(".pyo")]
 		log.debug("[IBTS Plugins]: Files: " + str(files))
-		
+
 		# Import Plugins
 		for name in files:
 			module = None
-			
+
 			if name == "__init__":
 				continue
-			
+
 			try:
 				fp, pathname, description = imp.find_module(name, [path])
 			except Exception as e:
 				log.debug("[IBTS Plugins] Find module exception: " + str(e))
 				fp = None
-			
+
 			if not fp:
 				log.debug("[IBTS Plugins] No module found: " + str(name))
 				continue
-			
+
 			try:
 				module = imp.load_module(name, fp, pathname, description)
 			except Exception as e:
@@ -88,35 +88,35 @@ class InfoBarTunerStatePlugins(object):
 				# Since we may exit via an exception, close fp explicitly.
 				if fp:
 					fp.close()
-			
+
 			if not module:
 				log.debug("[IBTS Plugins] No module available: " + str(name))
 				continue
-			
+
 			# Continue only if the attribute is available
 			if not hasattr(module, name):
 				log.debug("[IBTS Plugins] Warning attribute not available: " + str(name))
 				continue
-			
+
 			# Continue only if attr is a class
 			attr = getattr(module, name)
 			if not inspect.isclass(attr):
 				log.debug("[IBTS Plugins] Warning no class definition: " + str(name))
 				continue
-			
+
 			# Continue only if the class is a subclass of the corresponding base class
 			if not issubclass(attr, base):
 				log.debug("[IBTS Plugins] Warning no subclass of base: " + str(name))
 				continue
-			
+
 			# Instantiate module and add it to the module list
 			instance = self.instantiatePlugin(attr)
 			if instance:
 				self.__plugins[name] = instance
-	
+
 	def isPlugin(self, name):
 		return name in self.__plugins
-	
+
 	def getPlugin(self, name):
 		return self.__plugins[name]
 

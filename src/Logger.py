@@ -39,15 +39,15 @@ class Logger(object):
 	def __init__(self):
 		self.instance = logging.getLogger("infobartunerstate")
 		self.instance.setLevel(logging.DEBUG)
-		
+
 		self.reinit()
-	
+
 	def reinit(self):
-		self.instance.handlers = [] 
-		
+		self.instance.handlers = []
+
 		if not hasattr(config, "infobartunerstate"):
 			return
-		
+
 		if config.infobartunerstate.log_shell.value:
 			shandler = logging.StreamHandler(sys.stdout)
 			shandler.setLevel(logging.DEBUG)
@@ -57,7 +57,7 @@ class Logger(object):
 
 			self.instance.addHandler(shandler)
 			self.instance.setLevel(logging.DEBUG)
-			
+
 		if config.infobartunerstate.log_write.value:
 			fhandler = logging.FileHandler(config.infobartunerstate.log_file.value)
 			fhandler.setLevel(logging.DEBUG)
@@ -74,22 +74,22 @@ class Logger(object):
 
 	def info(self, *args):
 		strargs = " ".join([str(arg) for arg in args])
-		
+
 		if self.instance:
 			self.instance.info(strargs)
-		
+
 		elif config.infobartunerstate.log_shell.value:
 			print strargs
 
 	def debug(self, *args):
 		strargs = " ".join([str(arg) for arg in args])
-		
+
 		if self.instance:
 			self.instance.debug(strargs)
-		
+
 		elif config.infobartunerstate.log_shell.value:
 			print strargs
-		
+
 		if sys.exc_info()[0]:
 			self.instance.debug(str(sys.exc_info()[0]))
 			self.instance.debug(str(traceback.format_exc()))
@@ -97,13 +97,13 @@ class Logger(object):
 
 	def warning(self, *args):
 		strargs = " ".join([str(arg) for arg in args])
-		
+
 		if self.instance:
 			self.instance.warning(strargs)
-		
+
 		elif config.infobartunerstate.log_shell.value:
 			print strargs
-		
+
 		if int(config.infobartunerstate.popups_warning_timeout.value) != 0:
 			if currentThread().getName() == 'MainThread':
 				AddPopup(
@@ -115,10 +115,10 @@ class Logger(object):
 
 	def error(self, *args):
 		strargs = " ".join([str(arg) for arg in args])
-		
+
 		if self.instance:
 			self.instance.error(strargs)
-		
+
 		elif config.infobartunerstate.log_shell.value:
 			print strargs
 
@@ -130,16 +130,16 @@ class Logger(object):
 					int(config.infobartunerstate.popups_error_timeout.value),
 					'IBTS_PopUp_ID_Error_' + strargs
 				)
-		
+
 	def exception(self, *args):
 		strargs = " ".join([str(arg) for arg in args])
-		
+
 		if self.instance:
 			self.instance.exception(strargs)
-		
+
 		elif config.infobartunerstate.log_shell.value:
 			print strargs
-		
+
 		if int(config.infobartunerstate.popups_error_timeout.value) != 0:
 			if currentThread().getName() == 'MainThread':
 				AddPopup(
@@ -148,7 +148,7 @@ class Logger(object):
 					int(config.infobartunerstate.popups_error_timeout.value),
 					'IBTS_PopUp_ID_Exception_' + strargs
 				)
-		
+
 		import os
 		import sys
 		import traceback
@@ -161,4 +161,3 @@ class Logger(object):
 
 
 log = Logger()
-

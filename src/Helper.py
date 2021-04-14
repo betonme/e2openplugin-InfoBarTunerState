@@ -84,31 +84,31 @@ def getTunerByPlayableService(iservice):
 
 def getNumber(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
-		
+
 		from Screens.InfoBar import InfoBar
 		Servicelist = None
 		if InfoBar and InfoBar.instance:
 			Servicelist = InfoBar.instance.servicelist
-		
+
 		mask = (eServiceReference.isMarker | eServiceReference.isDirectory)
 		number = 0
-		
+
 		bouquets = Servicelist and Servicelist.getBouquetList()
 		if bouquets:
-			
+
 			#TODO get alternative for actbouquet
 			actbouquet = Servicelist.getRoot()
 			serviceHandler = eServiceCenter.getInstance()
 			for name, bouquet in bouquets:
-				
+
 				if not bouquet.valid(): #check end of list
 					break
-				
+
 				if bouquet.flags & eServiceReference.isDirectory:
-					
+
 					servicelist = serviceHandler.list(bouquet)
 					if not servicelist is None:
-						
+
 						while True:
 							service = servicelist.getNext()
 							if not service.valid(): #check end of list
@@ -149,7 +149,7 @@ def getEventName(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
 		epg = eEPGCache.getInstance()
 		event = epg and epg.lookupEventTime(eservicereference, -1, 0)
-		if event: 
+		if event:
 			return event.getEventName()
 	return ""
 
@@ -174,4 +174,3 @@ def readBouquetList(self):
 	list = serviceHandler.list(bouquetroot)
 	if list is not None:
 		self.bouquetlist = list.getContent("CN", True)
-

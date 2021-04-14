@@ -50,7 +50,7 @@ class PiP(PluginBase):
 		log.debug("IBTS PiP check")
 		from Screens.InfoBar import InfoBar
 		if InfoBar.instance and InfoBar.instance.session and hasattr(InfoBar.instance.session, "pip"):
-			if hasattr(InfoBar.instance.session.pip, "currentService") and InfoBar.instance.session.pip.currentService is not None: 
+			if hasattr(InfoBar.instance.session.pip, "currentService") and InfoBar.instance.session.pip.currentService is not None:
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					log.debug("IBTS PiP check add")
@@ -78,41 +78,41 @@ class PiP(PluginBase):
 
 	def update(self, id, tunerstate):
 		if config.infobartunerstate.plugin_pip.enabled.value:
-			
+
 			remove = True
-			
+
 			if tunerstate:
-				
+
 				from Screens.InfoBar import InfoBar
 				if InfoBar.instance and InfoBar.instance.session:
 
 					if hasattr(InfoBar.instance.session, "pip"):
-					
+
 						pip = InfoBar.instance.session.pip
-						
+
 						eservicereference = None
-						if hasattr(pip, "currentService"): 
+						if hasattr(pip, "currentService"):
 							eservicereference = pip.currentService
-						
+
 						if eservicereference:
 							log.debug("IBTS PiP update service")
-							
+
 							remove = False
 							changed = False
-							
+
 							eservicereference_string = str(eservicereference)
-							
+
 							# Avoid recalculations
 							if self.eservicereference_string != eservicereference_string:
 								tunerstate.number = None
 								tunerstate.channel = ""
 								tunerstate.reference = ""
-								
+
 								tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = "", "", None
 								tunerstate.name, tunerstate.begin, tunerstate.end = "", 0, 0
-								
+
 								self.eservicereference_string = eservicereference_string
-								
+
 							if not tunerstate.number:
 								tunerstate.number = getNumber(eservicereference)
 								changed = True
@@ -124,34 +124,34 @@ class PiP(PluginBase):
 								tunerstate.reference = str(ServiceReference(eservicereference))
 								tunerstate.updatePicon()
 								changed = True
-							
+
 							iplayableservice = None
 							if hasattr(pip, "pipservice"):
 								iplayableservice = pip.pipservice
 							#if hasattr(pip, "getCurrentServiceReference"):
 							#	iplayableservice = pip.getCurrentServiceReference()
-							
+
 							log.debug("IBTS PiP update iPlay", str(iplayableservice))
 							if iplayableservice:
 								if not tunerstate.tuner or not tunerstate.tunertype or not tunerstate.tunernumber:
 									tunerstate.tuner, tunerstate.tunertype, tunerstate.tunernumber = getTunerByPlayableService(iplayableservice)
 									changed = True
-								
+
 								if not tunerstate.name or not tunerstate.begin or not tunerstate.end:
 									tunerstate.name, tunerstate.begin, tunerstate.end = getEventData(iplayableservice)
 									changed = True
-								
+
 							if changed:
 								from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 								if gInfoBarTunerState:
 									gInfoBarTunerState.updateMetrics()
-					
+
 			if remove:
-				
+
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
 				return False
-				
+
 			else:
 				return True

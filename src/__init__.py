@@ -18,7 +18,7 @@ def _(txt):
 		t = gettext.dgettext("InfoBarTunerState", txt)
 		if t == txt:
 			t = gettext.gettext(txt)
-		return t 
+		return t
 	else:
 		return ""
 

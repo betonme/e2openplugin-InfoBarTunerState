@@ -48,14 +48,14 @@ ABOUT = "\n  " + NAME + " " + VERSION + "\n\n" \
 				+ _("  Thanks a lot ! \n  PayPal: ") + DONATE + "\n" \
 				+ _("  SUPPORT: ") + SUPPORT
 
-infobar_choices = [	
+infobar_choices = [
 									("False", _("no")),
 									("True", _("yes")),
 									("only_onkeypress", _("only on keypress")),
 								]
 
 # Config choices
-field_choices = [	
+field_choices = [
 									("TypeIcon", _("Type (Icon)")),
 									("TypeText", _("Type (Text)")),
 									("Tuner", _("Tuner")),
@@ -84,7 +84,7 @@ field_choices = [
 									("None", _("None")),
 								]
 
-date_choices = [	
+date_choices = [
 									("%H:%M", _("HH:MM")),
 									("%d.%m %H:%M", _("DD.MM HH:MM")),
 									("%d.%m. %H:%M", _("DD.MM. HH:MM")),
@@ -99,7 +99,7 @@ date_choices = [
 									("%a, %d.%m. %H:%M", _("WD, DD.MM. HH:MM")),
 									("%a %H:%M", _("WD HH:MM")),
 									("-    %H:%M", _("-    HH:MM")),
-									
+
 								]
 
 # Config options
@@ -164,13 +164,13 @@ config.infobartunerstate.wake_hdd = ConfigYesNo(default=False)
 config.infobartunerstate.skip_mounts = ConfigYesNo(default=True)
 config.infobartunerstate.background_transparency = ConfigYesNo(default=False)
 
-config.infobartunerstate.log_shell = ConfigYesNo(default=False) 
-config.infobartunerstate.log_write = ConfigYesNo(default=False) 
-config.infobartunerstate.log_file = ConfigText(default="/tmp/infobartunerstate.log", fixed_size=False) 
+config.infobartunerstate.log_shell = ConfigYesNo(default=False)
+config.infobartunerstate.log_write = ConfigYesNo(default=False)
+config.infobartunerstate.log_file = ConfigText(default="/tmp/infobartunerstate.log", fixed_size=False)
 
-config.infobartunerstate.log_shell = ConfigEnableDisable(default=False) 
-config.infobartunerstate.log_write = ConfigEnableDisable(default=False) 
-config.infobartunerstate.log_file = ConfigText(default="/tmp/pushservice.log", fixed_size=False) 
+config.infobartunerstate.log_shell = ConfigEnableDisable(default=False)
+config.infobartunerstate.log_write = ConfigEnableDisable(default=False)
+config.infobartunerstate.log_file = ConfigText(default="/tmp/pushservice.log", fixed_size=False)
 
 # Globals
 gInfoBarTunerState = None
@@ -184,7 +184,7 @@ from Plugins.Extensions.InfoBarTunerState.Handler import *
 
 def Plugins(**kwargs):
 	descriptors = []
-	
+
 	if config.infobartunerstate.enabled.value:
 		# SessionStart
 		descriptors.append(PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=start, needsRestart=False))
@@ -192,7 +192,7 @@ def Plugins(**kwargs):
 			descriptors.append(PluginDescriptor(name=IBTSSHOW, description=IBTSSHOW, where=PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=show, needsRestart=False))
 		if config.infobartunerstate.extensions_menu_setup.value:
 			descriptors.append(PluginDescriptor(name=IBTSSETUP, description=IBTSSETUP, where=PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=setup, needsRestart=False))
-	
+
 	descriptors.append(PluginDescriptor(name=NAME, description=NAME + " " + _("configuration"), where=PluginDescriptor.WHERE_PLUGINMENU, fnc=setup, needsRestart=False, icon="plugin.png"))
 
 	return descriptors
@@ -249,4 +249,3 @@ def show(session, **kwargs):
 		# No InfoBarTunerState Instance running
 		log.info("InfoBarTunerState disabled")
 		session.open(MessageBox, _("InfoBarTunerState is disabled"), MessageBox.TYPE_INFO, 3)
-

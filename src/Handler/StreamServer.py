@@ -26,7 +26,7 @@ try:
 except:
 	StreamingWebScreen = None
 
-	
+
 # Config options
 config.infobartunerstate.plugin_streamserver = ConfigSubsection()
 config.infobartunerstate.plugin_streamserver.enabled = ConfigYesNo(default=False)
@@ -51,12 +51,12 @@ class StreamServer(PluginBase):
 		for sid, ip, servicereference_string in self.ids:
 			if sid == id:
 				return sid, ip, servicereference_string
-	
+
 	def getRef(self, id):
 		for sid, ip, servicereference_string in self.ids:
 			if sid == id:
 				return servicereference_string
-	
+
 	################################################
 	# To be implemented by subclass
 	def getText(self):
@@ -76,10 +76,10 @@ class StreamServer(PluginBase):
 	def getOptions(self):
 		options = []
 		options.append((_("Show transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.enabled))
-		
+
 		if config.infobartunerstate.plugin_streamserver.enabled.value:
 			options.append((_("   Show events of transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.show_events))
-		
+
 		return options
 
 	def appendEvent(self):
@@ -119,36 +119,36 @@ class StreamServer(PluginBase):
 
 	def onEventClientCountChanged(self, count, client, force=False):
 		if len(self.ids) < count:
-			
+
 			# Extract parameters
 			ip = str(client)
-			
+
 			id = getStreamID(count, ip)
 			log.debug("IBTS Stream Event StreamServer Start " + id)
-			
+
 			self.ids.append((id, ip, None))
-			
+
 			# We will add the entry later
-			
+
 			if force:
 				client = getClient(ip)
-				
+
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), "", "", 0, "", 0, "", "", time(), 0, True, "", client, ip, "")
 					if config.infobartunerstate.plugin_openwebif.show_events.value:
 						gInfoBarTunerState.onEvent()
-			
+
 		else:
-			
+
 			# Remove Finished Stream
 			log.debug("IBTS Stream Event StreamServer End", count, client)
-			
+
 			# There is no way to find the correct stream, just remove the oldest
 			if self.ids:
 				id, ip, servicereference_string = self.ids[0]
 				del self.ids[0]
-				
+
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
@@ -160,31 +160,31 @@ class StreamServer(PluginBase):
 			if self.ids:
 				id, ip, servicereference_string = self.ids[-1]
 				log.debug("IBTS Stream Event StreamServer Changed " + id)
-				
+
 				if servicereference_string is None:
-				
+
 					servicereference_string = str(params.get(streamServerControl.URI_PARAM_REF, [""])[0])
-					
+
 					self.ids[-1] = (id, ip, servicereference_string)
-					
+
 					if servicereference_string:
-						
+
 						eservicereference = eServiceReference(servicereference_string)
 						if eservicereference and eservicereference.valid():
-							
+
 							service_ref = ServiceReference(servicereference_string)
-							
-							tuner, tunertype, tunernumber = getTunerByServiceReference(service_ref) 
-							
+
+							tuner, tunertype, tunernumber = getTunerByServiceReference(service_ref)
+
 							name = getEventName(eservicereference)
-							
+
 							number = getNumber(eservicereference)
 							channel = getChannel(eservicereference)
 							name = getEventName(eservicereference)
 							reference = str(eservicereference)
-							
+
 							client = getClient(ip)
-							
+
 							from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 							if gInfoBarTunerState:
 								gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
@@ -194,24 +194,24 @@ class StreamServer(PluginBase):
 			log.exception("IBTS exception " + str(e))
 
 	def update(self, id, tunerstate):
-		
+
 		servicereference_string = self.getRef(id)
-		
+
 		if servicereference_string:
-			
+
 			eservicereference = eServiceReference(servicereference_string)
 			if eservicereference and eservicereference.valid():
-				
+
 				tunerstate.reference = servicereference_string
 				tunerstate.name = getEventName(eservicereference)
-				
+
 				if not tunerstate.number:
 					tunerstate.number = getNumber(eservicereference)
 				if not tunerstate.channel:
 					tunerstate.channel = getChannel(eservicereference)
-				
+
 			return True
-		
+
 		else:
-			
+
 			return None

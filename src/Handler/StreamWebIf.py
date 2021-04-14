@@ -19,7 +19,7 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 HAS_WEBIF = False
 try:
-	from Plugins.Extensions.WebInterface.WebScreens import StreamingWebScreen 
+	from Plugins.Extensions.WebInterface.WebScreens import StreamingWebScreen
 	HAS_WEBIF = True
 except:
 	StreamingWebScreen = None
@@ -43,7 +43,7 @@ def getStreamID(stream):
 def getStream(id):
 	if HAS_WEBIF:
 		try:
-			from Plugins.Extensions.WebInterface.WebScreens import streamingScreens 
+			from Plugins.Extensions.WebInterface.WebScreens import streamingScreens
 		except:
 			streamingScreens = []
 		for stream in streamingScreens:
@@ -76,10 +76,10 @@ class StreamWebIf(PluginBase):
 	def getOptions(self):
 		options = []
 		options.append((_("Show transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.enabled))
-		
+
 		if config.infobartunerstate.plugin_webif.enabled.value:
 			options.append((_("   Show events of transcoded stream(s) (WebIf)"), config.infobartunerstate.plugin_webif.show_events))
-		
+
 		return options
 
 	def appendEvent(self):
@@ -119,48 +119,48 @@ class StreamWebIf(PluginBase):
 			if (event == StreamingWebScreen.EVENT_START):
 				id = getStreamID(stream)
 				log.debug("IBTS Stream Event WebIf Start " + id)
-				
+
 				irecordservice = stream.getRecordService()
-				
+
 				eservicereference = stream.getRecordServiceRef()
-				
+
 				# Extract parameters
 				ip = str(stream.clientIP)
 				if ip and ':' in ip and '.' in ip:
 					# Mixed style ::ffff:192.168.64.27
 					ip = string.split(str(stream.clientIP), ':')[-1]
-				
+
 				# Delete references to avoid blocking tuners
 				del stream
-				
-				tuner, tunertype, tunernumber = getTunerByPlayableService(irecordservice) 
-				
+
+				tuner, tunertype, tunernumber = getTunerByPlayableService(irecordservice)
+
 				name = getEventName(eservicereference)
-				
+
 				number = getNumber(eservicereference)
 				channel = getChannel(eservicereference)
-				
+
 				reference = ""
 				if eservicereference is not None:
 					reference = str(ServiceReference(eservicereference))
-				
+
 				client = getClient(ip)
-				
+
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, tunertype, tunernumber, name, number, channel, reference, time(), 0, True, "", client, ip)
 					if config.infobartunerstate.plugin_webif.show_events.value:
 						gInfoBarTunerState.onEvent()
-				
+
 			elif event == StreamingWebScreen.EVENT_END:
-				
+
 				# Remove Finished Stream
 				id = getStreamID(stream)
 				log.debug("IBTS Stream Event WebIf End " + id)
-				
+
 				# Delete references to avoid blocking tuners
 				del stream
-				
+
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id)
@@ -168,16 +168,16 @@ class StreamWebIf(PluginBase):
 						gInfoBarTunerState.onEvent()
 
 	def update(self, id, tunerstate):
-		
+
 		stream = getStream(id)
 		if stream:
-		
+
 			eservicereference = stream.getRecordServiceRef()
-			
+
 			del stream
-			
+
 			tunerstate.name = getEventName(eservicereference)
-			
+
 			if not tunerstate.number:
 				tunerstate.number = getNumber(eservicereference)
 			if not tunerstate.channel:
@@ -188,8 +188,8 @@ class StreamWebIf(PluginBase):
 				tunerstate.updatePicon()
 
 			return True
-			
+
 		else:
-			
-			# Stream is not active anymore				
+
+			# Stream is not active anymore
 			return None
