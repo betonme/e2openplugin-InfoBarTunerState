@@ -15,11 +15,11 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 
 # Config options
-config.infobartunerstate.plugin_timers                           = ConfigSubsection()
-config.infobartunerstate.plugin_timers.enabled                   = ConfigYesNo(default=True)
-config.infobartunerstate.plugin_timers.number_pending_timers     = ConfigSelectionNumber(0, 10, 1, default=1)
-config.infobartunerstate.plugin_timers.pending_hours             = ConfigSelectionNumber(0, 1000, 1, default=0)
-config.infobartunerstate.plugin_timers.show_energy_timers        = ConfigYesNo(default=True)
+config.infobartunerstate.plugin_timers = ConfigSubsection()
+config.infobartunerstate.plugin_timers.enabled = ConfigYesNo(default=True)
+config.infobartunerstate.plugin_timers.number_pending_timers = ConfigSelectionNumber(0, 10, 1, default=1)
+config.infobartunerstate.plugin_timers.pending_hours = ConfigSelectionNumber(0, 1000, 1, default=0)
+config.infobartunerstate.plugin_timers.show_energy_timers = ConfigYesNo(default=True)
 
 
 def getTimer(id):
@@ -63,7 +63,7 @@ def getNextPendingRecordTimers(pending_limit):
 # Adapted from TimerEntry
 def addOneDay(timedatestruct):
 	oldHour = timedatestruct.tm_hour
-	newdate =  (datetime(timedatestruct.tm_year, timedatestruct.tm_mon, timedatestruct.tm_mday, timedatestruct.tm_hour, timedatestruct.tm_min, timedatestruct.tm_sec) + timedelta(days=1)).timetuple()
+	newdate = (datetime(timedatestruct.tm_year, timedatestruct.tm_mon, timedatestruct.tm_mday, timedatestruct.tm_hour, timedatestruct.tm_min, timedatestruct.tm_sec) + timedelta(days=1)).timetuple()
 	if localtime(mktime(newdate)).tm_hour != oldHour:
 		return (datetime(timedatestruct.tm_year, timedatestruct.tm_mon, timedatestruct.tm_mday, timedatestruct.tm_hour, timedatestruct.tm_min, timedatestruct.tm_sec) + timedelta(days=2)).timetuple()
 	return newdate
@@ -93,7 +93,7 @@ def processRepeated(timer, findRunningEvent=False):
 
 		# if day is NOT in the list of repeated days
 		# OR if the day IS in the list of the repeated days, check, if event is currently running... then if findRunningEvent is false, go to the next event
-		while ((day[localbegin.tm_wday] != 0) or (mktime(localrepeatedbegindate) > mktime(localbegin))  or
+		while ((day[localbegin.tm_wday] != 0) or (mktime(localrepeatedbegindate) > mktime(localbegin)) or
 			((day[localbegin.tm_wday] == 0) and ((findRunningEvent and localend < localnow) or ((not findRunningEvent) and localbegin < localnow)))):
 			localbegin = addOneDay(localbegin)
 			localend = addOneDay(localend)
@@ -132,9 +132,9 @@ class Timers(PluginBase):
 		options.append((_("Show pending timer(s)"), config.infobartunerstate.plugin_timers.enabled))
 		
 		if config.infobartunerstate.plugin_timers.enabled.value:
-			options.append((_("   Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers))
+			options.append((_("   Number of pending timer(s)"), config.infobartunerstate.plugin_timers.number_pending_timers))
 			options.append((_("   Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours))
-			options.append((_("   Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers))
+			options.append((_("   Show Energy shedule timers"), config.infobartunerstate.plugin_timers.show_energy_timers))
 		
 		return options
 
@@ -158,7 +158,7 @@ class Timers(PluginBase):
 					#timer_list.reverse()
 					
 					for i, timer in enumerate(timer_list):
-						if i>=number_pending_timers+timer_end:
+						if i >= number_pending_timers + timer_end:
 							break
 						if timer:
 							
@@ -184,8 +184,8 @@ class Timers(PluginBase):
 									# if ((name=="Ausschalten")or(name=="Einschalten")or(name=="Standby"))and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
 									# isset zapbeforerecord="0" justremind="0" wakeup_t="0" shutdown_t="0" notify_t="0" standby_t="1"
 									
-									if (str(servicereference)[0]=="-")and(config.infobartunerstate.plugin_timers.show_energy_timers.value==False):
-										timer_end+=1
+									if (str(servicereference)[0] == "-")and(config.infobartunerstate.plugin_timers.show_energy_timers.value == False):
+										timer_end += 1
 										
 									else:
 										# Is this really necessary?

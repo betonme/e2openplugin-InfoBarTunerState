@@ -19,8 +19,8 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 
 # Config options
-config.infobartunerstate.plugin_unknown             = ConfigSubsection()
-config.infobartunerstate.plugin_unknown.enabled     = ConfigYesNo(default=False)
+config.infobartunerstate.plugin_unknown = ConfigSubsection()
+config.infobartunerstate.plugin_unknown.enabled = ConfigYesNo(default=False)
 config.infobartunerstate.plugin_unknown.show_events = ConfigYesNo(default=False)
 
 
@@ -129,7 +129,7 @@ class Unknown(PluginBase):
 				if gInfoBarTunerState:
 					for tunernumber in toadd:
 						
-						id = "Unknown"+str(tunernumber)
+						id = "Unknown" + str(tunernumber)
 						if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
 							
 							tuner = getTunerName(tunernumber)
@@ -146,7 +146,7 @@ class Unknown(PluginBase):
 					for tunernumber in self.tunerstates:
 					
 						if tunernumber not in self.tuners:
-							id = "Unknown"+str(tunernumber)
+							id = "Unknown" + str(tunernumber)
 							
 							#log.debug( "IBTS UNKNOWN remove ", tunernumber )
 							self.tunerstates.remove(tunernumber)

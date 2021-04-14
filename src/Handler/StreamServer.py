@@ -28,8 +28,8 @@ except:
 
 	
 # Config options
-config.infobartunerstate.plugin_streamserver             = ConfigSubsection()
-config.infobartunerstate.plugin_streamserver.enabled     = ConfigYesNo(default=False)
+config.infobartunerstate.plugin_streamserver = ConfigSubsection()
+config.infobartunerstate.plugin_streamserver.enabled = ConfigYesNo(default=False)
 config.infobartunerstate.plugin_streamserver.show_events = ConfigYesNo(default=False)
 
 
@@ -145,7 +145,7 @@ class StreamServer(PluginBase):
 			log.debug("IBTS Stream Event StreamServer End", count, client)
 			
 			# There is no way to find the correct stream, just remove the oldest
-			if  self.ids:
+			if self.ids:
 				id, ip, servicereference_string = self.ids[0]
 				del self.ids[0]
 				

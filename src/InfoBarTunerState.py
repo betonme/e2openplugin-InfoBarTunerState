@@ -86,7 +86,7 @@ UNKNOWN, INFO, LIVE, RECORD, RECORD_FINISHED, TIMER, PIP, STREAM, FINISHED = ran
 ICON_RECORD, ICON_STREAM, ICON_FINISHED, ICON_INFO, ICON_LIVE, ICON_UNKNOWN, ICON_TIMER, ICON_PIP, ICON_RECORD_FINISHED = range(9)
 
 # Constants
-INFINITY =  u"\u221E".encode("utf-8")
+INFINITY = u"\u221E".encode("utf-8")
 
 
 #######################################################
@@ -455,7 +455,7 @@ class TunerStateBase(Screen):
 		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
 			label = Label()
 			#fieldid = "Field"+str(i)
-			self["Field"+str(i)] = label
+			self["Field" + str(i)] = label
 		
 		self.padding = 0
 		self.spacing = 0
@@ -505,7 +505,7 @@ class TunerStateBase(Screen):
 		fieldwidths = config.infobartunerstate.fieldswidth.dict().values()
 		
 		for i, (c, width) in enumerate(zip(config.infobartunerstate.fields.dict().values(), widths)):
-			fieldid = "Field"+str(i)
+			fieldid = "Field" + str(i)
 			field = c.value
 			if field == "TypeIcon":
 				y = int((sh - self["Type"].instance.size().height()) / 2)
@@ -545,9 +545,9 @@ class TunerStateBase(Screen):
 				if fieldwidth > 0 and not (field == "TimerProgressGraphical" or field == "TypeIcon" or field == "None"):
 					# Handle new maximum width
 					if width > 0:
-						overwidth +=  fieldwidth - width
+						overwidth += fieldwidth - width
 					else:		
-						overwidth +=  fieldwidth - width + spacing
+						overwidth += fieldwidth - width + spacing
 					width = fieldwidth
 					self[fieldid].instance.resize(eSize(width, sh))
 					self[fieldid].instance.move(ePoint(px, py))
@@ -558,7 +558,7 @@ class TunerStateBase(Screen):
 		# Set background
 		bw = self["Background"].instance.size().width()
 		# Avoid background start position is within our window
-		bw = px-bw if px-bw<0 else 0
+		bw = px - bw if px - bw < 0 else 0
 		self["Background"].instance.move(ePoint(bw, py))
 		self.instance.resize(eSize(px, sh))
 
@@ -590,7 +590,7 @@ class TunerStateInfo(TunerStateBase):
 		
 		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
 		for i in xrange(len(config.infobartunerstate.fields.dict())):
-			fieldid = "Field"+str(i)
+			fieldid = "Field" + str(i)
 			
 			if fieldid == "Field0":
 				#self[field].setText( str(self.name).encode("utf-8") )
@@ -610,7 +610,7 @@ class TunerStateInfo(TunerStateBase):
 		
 		#for i, c in enumerate( config.infobartunerstate.fields.dict().itervalues() ):
 		for i in xrange(len(config.infobartunerstate.fields.dict())):
-			fieldid = "Field"+str(i)
+			fieldid = "Field" + str(i)
 			
 			#Workaround#1 Set default size
 			self[fieldid].instance.resize(eSize(1000, height))
@@ -804,17 +804,17 @@ class TunerState(TunerStateBase):
 			else:
 				progress = None
 			
-		self.duration    = duration and duration is not None and       int(math.ceil((duration) / 60.0))
-		self.timeleft    = timeleft and timeleft is not None and       int(math.ceil((timeleft) / 60.0))
+		self.duration = duration and duration is not None and int(math.ceil((duration) / 60.0))
+		self.timeleft = timeleft and timeleft is not None and int(math.ceil((timeleft) / 60.0))
 		self.timeelapsed = timeelapsed and timeelapsed is not None and int(math.ceil((timeelapsed) / 60.0))
-		self.progress    = progress and progress is not None and       int(progress)
+		self.progress = progress and progress is not None and int(progress)
 		#log.debug( "IBTS duration, timeleft, timeelapsed, progress", self.duration, self.timeleft, self.timeelapsed, self.progress )
 		
 		
 		#Adapted from: from Components.Harddisk import findMountPoint
 		def mountpoint(path):
 			path = os.path.realpath(path)
-			if os.path.ismount(path) or len(path)==0:
+			if os.path.ismount(path) or len(path) == 0:
 				return path
 			return mountpoint(os.path.dirname(path))
 		
@@ -865,7 +865,7 @@ class TunerState(TunerStateBase):
 			
 				if os.path.exists(filename):
 					filesize = os.path.getsize(filename) 
-					self.filesize = int(filesize / (1024*1024))
+					self.filesize = int(filesize / (1024 * 1024))
 					
 					try:
 						stat = os.statvfs(filename)
@@ -891,7 +891,7 @@ class TunerState(TunerStateBase):
 		self["picon"].hide()
 		
 		for i, c in enumerate(config.infobartunerstate.fields.dict().itervalues()):
-			fieldid = "Field"+str(i)
+			fieldid = "Field" + str(i)
 			field = c.value
 			text = ""
 			#log.debug( "IBTS DEBUG", self.plugin, field )

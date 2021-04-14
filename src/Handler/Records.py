@@ -17,16 +17,16 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 event_choices = [	
-					("no",		_("no")),
-					("start",		_("Start record")),
-					("end",		_("End record")),
-					("startend",	_("Start / End record"))
+					("no", _("no")),
+					("start", _("Start record")),
+					("end", _("End record")),
+					("startend", _("Start / End record"))
 				]
-config.infobartunerstate.plugin_records                           = ConfigSubsection()
-config.infobartunerstate.plugin_records.enabled                   = ConfigYesNo(default=True)
-config.infobartunerstate.plugin_records.number_finished_records   = ConfigSelectionNumber(0, 10, 1, default=3)
-config.infobartunerstate.plugin_records.finished_hours            = ConfigSelectionNumber(0, 1000, 1, default=0)
-config.infobartunerstate.plugin_records.show_events               = ConfigSelection(default="startend", choices=event_choices)
+config.infobartunerstate.plugin_records = ConfigSubsection()
+config.infobartunerstate.plugin_records.enabled = ConfigYesNo(default=True)
+config.infobartunerstate.plugin_records.number_finished_records = ConfigSelectionNumber(0, 10, 1, default=3)
+config.infobartunerstate.plugin_records.finished_hours = ConfigSelectionNumber(0, 1000, 1, default=0)
+config.infobartunerstate.plugin_records.show_events = ConfigSelection(default="startend", choices=event_choices)
 
 
 def getTimerID(timer):
@@ -65,8 +65,8 @@ class Records(PluginBase):
 		options.append((_("Show record(s)"), config.infobartunerstate.plugin_records.enabled))
 		
 		if config.infobartunerstate.plugin_records.enabled.value:
-			options.append((_("   Show events of record(s)"),                config.infobartunerstate.plugin_records.show_events))
-			options.append((_("   Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records))
+			options.append((_("   Show events of record(s)"), config.infobartunerstate.plugin_records.show_events))
+			options.append((_("   Number of finished record(s)"), config.infobartunerstate.plugin_records.number_finished_records))
 			options.append((_("   Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours))
 		
 		return options
@@ -182,7 +182,7 @@ class Records(PluginBase):
 					if config.infobartunerstate.plugin_records.show_events.value == "startend" or config.infobartunerstate.plugin_records.show_events.value == "end":
 						gInfoBarTunerState.onEvent()
 		
-		elif timer.state == (timer.StateEnded+1):
+		elif timer.state == (timer.StateEnded + 1):
 			id = getTimerID(timer)
 			log.debug("IBTS Records StateEnded+1 ID " + id)
 			
@@ -262,7 +262,7 @@ class Records(PluginBase):
 					duration = event.getDuration() or 0
 					
 					if timer.end < (begin + duration):
-						tunerstate.end  = begin + duration
+						tunerstate.end = begin + duration
 					
 					if not tunerstate.end:
 						log.debug("IBTS Records no end")

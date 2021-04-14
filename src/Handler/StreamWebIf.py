@@ -26,8 +26,8 @@ except:
 
 
 # Config options
-config.infobartunerstate.plugin_webif             = ConfigSubsection()
-config.infobartunerstate.plugin_webif.enabled     = ConfigYesNo(default=False)
+config.infobartunerstate.plugin_webif = ConfigSubsection()
+config.infobartunerstate.plugin_webif.enabled = ConfigYesNo(default=False)
 config.infobartunerstate.plugin_webif.show_events = ConfigYesNo(default=False)
 
 

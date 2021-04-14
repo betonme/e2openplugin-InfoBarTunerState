@@ -25,8 +25,8 @@ except:
 
 
 # Config options
-config.infobartunerstate.plugin_openwebif             = ConfigSubsection()
-config.infobartunerstate.plugin_openwebif.enabled     = ConfigYesNo(default=False)
+config.infobartunerstate.plugin_openwebif = ConfigSubsection()
+config.infobartunerstate.plugin_openwebif.enabled = ConfigYesNo(default=False)
 config.infobartunerstate.plugin_openwebif.show_events = ConfigYesNo(default=False)
 
 
@@ -133,7 +133,7 @@ class StreamOpenWebIf(PluginBase):
 				
 				name = getEventName(eservicereference)
 				
-				number =  getNumber(eservicereference)
+				number = getNumber(eservicereference)
 				channel = getChannel(eservicereference)
 				reference = str(eservicereference)
 				

@@ -15,7 +15,7 @@ from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableServic
 from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
-config.infobartunerstate.plugin_live         = ConfigSubsection()
+config.infobartunerstate.plugin_live = ConfigSubsection()
 config.infobartunerstate.plugin_live.enabled = ConfigYesNo(default=False)
 
 

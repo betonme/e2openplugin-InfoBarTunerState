@@ -15,7 +15,7 @@ from Plugins.Extensions.InfoBarTunerState.Helper import getTunerByPlayableServic
 from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
-config.infobartunerstate.plugin_pip         = ConfigSubsection()
+config.infobartunerstate.plugin_pip = ConfigSubsection()
 config.infobartunerstate.plugin_pip.enabled = ConfigYesNo(default=False)
 
 
@@ -71,7 +71,7 @@ class PiP(PluginBase):
 				self.tunerstate = self.checkPiP()
 			else:
 				from Screens.InfoBar import InfoBar
-				if InfoBar.instance and InfoBar.instance.session and hasattr(InfoBar.instance.session, "pip")==False:
+				if InfoBar.instance and InfoBar.instance.session and hasattr(InfoBar.instance.session, "pip") == False:
 					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 					if gInfoBarTunerState:
 						gInfoBarTunerState.finishEntry("PiP")

@@ -110,7 +110,7 @@ class Logger(object):
 					strargs,
 					MessageBox.TYPE_WARNING,
 					int(config.infobartunerstate.popups_warning_timeout.value),
-					'IBTS_PopUp_ID_Warning_'+strargs
+					'IBTS_PopUp_ID_Warning_' + strargs
 				)
 
 	def error(self, *args):
@@ -128,7 +128,7 @@ class Logger(object):
 					strargs,
 					MessageBox.TYPE_ERROR,
 					int(config.infobartunerstate.popups_error_timeout.value),
-					'IBTS_PopUp_ID_Error_'+strargs
+					'IBTS_PopUp_ID_Error_' + strargs
 				)
 		
 	def exception(self, *args):
@@ -146,7 +146,7 @@ class Logger(object):
 					strargs,
 					MessageBox.TYPE_ERROR,
 					int(config.infobartunerstate.popups_error_timeout.value),
-					'IBTS_PopUp_ID_Exception_'+strargs
+					'IBTS_PopUp_ID_Exception_' + strargs
 				)
 		
 		import os
