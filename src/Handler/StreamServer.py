@@ -36,7 +36,7 @@ config.infobartunerstate.plugin_streamserver.show_events = ConfigYesNo(default=F
 def getStreamID(count, ip):
 	if HAS_STREAMSERVER:
 		try:
-			return str(count) + str(ip) + str(randint(0,9))
+			return str(count) + str(ip) + str(randint(0, 9))
 		except:
 			pass
 	return ""

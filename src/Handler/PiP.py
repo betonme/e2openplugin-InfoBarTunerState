@@ -38,7 +38,7 @@ class PiP(PluginBase):
 		return 7
 
 	def getOptions(self):
-		return [(_("Show PiP service(s)"), config.infobartunerstate.plugin_pip.enabled),]
+		return [(_("Show PiP service(s)"), config.infobartunerstate.plugin_pip.enabled), ]
 
 	def appendEvent(self):
 		pass

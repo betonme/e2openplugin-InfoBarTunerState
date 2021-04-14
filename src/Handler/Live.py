@@ -38,7 +38,7 @@ class Live(PluginBase):
 		return 4
 
 	def getOptions(self):
-		return [(_("Show live tuner"), config.infobartunerstate.plugin_live.enabled),]
+		return [(_("Show live tuner"), config.infobartunerstate.plugin_live.enabled), ]
 
 	def appendEvent(self):
 		if config.infobartunerstate.plugin_live.enabled.value:
