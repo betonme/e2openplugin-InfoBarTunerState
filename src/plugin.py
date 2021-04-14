@@ -185,13 +185,13 @@ def Plugins(**kwargs):
 	
 	if config.infobartunerstate.enabled.value:
 		# SessionStart
-		descriptors.append( PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=start, needsRestart=False) )
+		descriptors.append(PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=start, needsRestart=False))
 		if config.infobartunerstate.extensions_menu_show.value:
-			descriptors.append( PluginDescriptor(name=IBTSSHOW, description=IBTSSHOW, where=PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=show, needsRestart=False) )
+			descriptors.append(PluginDescriptor(name=IBTSSHOW, description=IBTSSHOW, where=PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=show, needsRestart=False))
 		if config.infobartunerstate.extensions_menu_setup.value:
-			descriptors.append( PluginDescriptor(name=IBTSSETUP, description=IBTSSETUP, where=PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=setup, needsRestart=False) )
+			descriptors.append(PluginDescriptor(name=IBTSSETUP, description=IBTSSETUP, where=PluginDescriptor.WHERE_EXTENSIONSMENU, fnc=setup, needsRestart=False))
 	
-	descriptors.append( PluginDescriptor(name=NAME, description=NAME + " " +_("configuration"), where=PluginDescriptor.WHERE_PLUGINMENU, fnc=setup, needsRestart=False, icon="plugin.png") )
+	descriptors.append(PluginDescriptor(name=NAME, description=NAME + " " +_("configuration"), where=PluginDescriptor.WHERE_PLUGINMENU, fnc=setup, needsRestart=False, icon="plugin.png"))
 
 	return descriptors
 
@@ -199,7 +199,7 @@ def Plugins(**kwargs):
 #######################################################
 # Plugin # Plugin configuration
 def setup(session, **kwargs):
-	log.info( "InfoBarTunerState setup" )
+	log.info("InfoBarTunerState setup")
 	#TODO config
 	# Overwrite Skin Position
 	# Show Live TV Tuners PiP LiveStream FileStream
@@ -214,13 +214,13 @@ def setup(session, **kwargs):
 	try:
 		session.open(InfoBarTunerStateConfiguration)
 	except Exception, e:
-		log.exception( "InfoBarTunerStateMenu exception " + str(e) )
+		log.exception("InfoBarTunerStateMenu exception " + str(e))
 
 
 #######################################################
 # Sessionstart
 def start(reason, **kwargs):
-	log.info( "InfoBarTunerState start" )
+	log.info("InfoBarTunerState start")
 	if reason == 0: # start
 		if kwargs.has_key("session"):
 			if config.infobartunerstate.enabled.value:
@@ -230,21 +230,21 @@ def start(reason, **kwargs):
 					gInfoBarTunerState = InfoBarTunerState(session)
 					gInfoBarTunerState.onInit()
 				except Exception, e:
-					log.exception( "InfoBarTunerState start exception " + str(e) )
+					log.exception("InfoBarTunerState start exception " + str(e))
 	# Do not cleanup on session shutdown, it will break the movie player integration
 
 
 #######################################################
 # Extension Menu
 def show(session, **kwargs):
-	log.info( "InfoBarTunerState show" )
+	log.info("InfoBarTunerState show")
 	if gInfoBarTunerState:
 		try:
 			gInfoBarTunerState.show(True, forceshow=True)
 		except Exception, e:
-			log.exception( "InfoBarTunerState show exception " + str(e) )
+			log.exception("InfoBarTunerState show exception " + str(e))
 	else:
 		# No InfoBarTunerState Instance running
-		log.info( "InfoBarTunerState disabled" )
+		log.info("InfoBarTunerState disabled")
 		session.open(MessageBox, _("InfoBarTunerState is disabled"), MessageBox.TYPE_INFO, 3)
 

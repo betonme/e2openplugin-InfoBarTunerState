@@ -45,14 +45,14 @@ class Unknown(PluginBase):
 		return 5
 
 	def getOnChanged(self):
-		return [ config.infobartunerstate.plugin_unknown.enabled ]
+		return [config.infobartunerstate.plugin_unknown.enabled]
 
 	def getOptions(self):
 		options = []
-		options.append( (_("Show undefined service(s)"), config.infobartunerstate.plugin_unknown.enabled) )
+		options.append((_("Show undefined service(s)"), config.infobartunerstate.plugin_unknown.enabled))
 		
 		if config.infobartunerstate.plugin_unknown.enabled.value:
-			options.append( (_("   Show events of undefined service(s)"), config.infobartunerstate.plugin_unknown.show_events) )
+			options.append((_("   Show events of undefined service(s)"), config.infobartunerstate.plugin_unknown.show_events))
 		
 		return options
 
@@ -137,7 +137,7 @@ class Unknown(PluginBase):
 							#log.debug( "IBTS UNKNOWN append ", tunernumber )
 							self.tunerstates.append(tunernumber)
 							
-							gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, "-", tunernumber, _("Used by unknown service"), "-", "-", "", "", time() )
+							gInfoBarTunerState.addEntry(id, self.getPluginName(), self.getType(), self.getText(), tuner, "-", tunernumber, _("Used by unknown service"), "-", "-", "", "", time())
 			
 			# Check if we have to remove an entry
 			if self.tunerstates:

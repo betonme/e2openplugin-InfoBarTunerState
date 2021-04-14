@@ -33,7 +33,7 @@ from PluginBase import PluginBase
 from Logger import log
 
 # Constants
-IBTS_PLUGINS_PATH = os.path.join( resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/Handler/" )
+IBTS_PLUGINS_PATH = os.path.join(resolveFilename(SCOPE_PLUGINS), "Extensions/InfoBarTunerState/Handler/")
 
 
 class InfoBarTunerStatePlugins(object):
@@ -41,7 +41,7 @@ class InfoBarTunerStatePlugins(object):
 	def __init__(self):
 		self.__plugins = {}
 		self.loadPlugins(IBTS_PLUGINS_PATH, PluginBase)
-		log.debug( "[IBTS Plugins]: " + str(self.__plugins) )
+		log.debug("[IBTS Plugins]: " + str(self.__plugins))
 
 	#######################################################
 	# Module functions
@@ -49,7 +49,7 @@ class InfoBarTunerStatePlugins(object):
 		self.__plugins = {}
 		
 		if not os.path.exists(path):
-			log.debug( "[IBTS Plugins]: Error: Path doesn't exist: " + path )
+			log.debug("[IBTS Plugins]: Error: Path doesn't exist: " + path)
 			return
 		
 		# Import all subfolders to allow relative imports
@@ -61,7 +61,7 @@ class InfoBarTunerStatePlugins(object):
 		files = [fname[:-3] for fname in os.listdir(path) if fname.endswith(".py") and not fname.startswith("__")]
 		if not files:
 			files = [fname[:-4] for fname in os.listdir(path) if fname.endswith(".pyo")]
-		log.debug( "[IBTS Plugins]: Files: " + str(files) )
+		log.debug("[IBTS Plugins]: Files: " + str(files))
 		
 		# Import Plugins
 		for name in files:
@@ -73,40 +73,40 @@ class InfoBarTunerStatePlugins(object):
 			try:
 				fp, pathname, description = imp.find_module(name, [path])
 			except Exception as e:
-				log.debug( "[IBTS Plugins] Find module exception: " + str(e) )
+				log.debug("[IBTS Plugins] Find module exception: " + str(e))
 				fp = None
 			
 			if not fp:
-				log.debug( "[IBTS Plugins] No module found: " + str(name) )
+				log.debug("[IBTS Plugins] No module found: " + str(name))
 				continue
 			
 			try:
-				module = imp.load_module( name, fp, pathname, description)
+				module = imp.load_module(name, fp, pathname, description)
 			except Exception as e:
-				log.debug( "[IBTS Plugins] Load exception: " + str(e) )
+				log.debug("[IBTS Plugins] Load exception: " + str(e))
 			finally:
 				# Since we may exit via an exception, close fp explicitly.
 				if fp:
 					fp.close()
 			
 			if not module:
-				log.debug( "[IBTS Plugins] No module available: " + str(name) )
+				log.debug("[IBTS Plugins] No module available: " + str(name))
 				continue
 			
 			# Continue only if the attribute is available
 			if not hasattr(module, name):
-				log.debug( "[IBTS Plugins] Warning attribute not available: " + str(name) )
+				log.debug("[IBTS Plugins] Warning attribute not available: " + str(name))
 				continue
 			
 			# Continue only if attr is a class
 			attr = getattr(module, name)
 			if not inspect.isclass(attr):
-				log.debug( "[IBTS Plugins] Warning no class definition: " + str(name) )
+				log.debug("[IBTS Plugins] Warning no class definition: " + str(name))
 				continue
 			
 			# Continue only if the class is a subclass of the corresponding base class
-			if not issubclass( attr, base):
-				log.debug( "[IBTS Plugins] Warning no subclass of base: " + str(name) )
+			if not issubclass(attr, base):
+				log.debug("[IBTS Plugins] Warning no subclass of base: " + str(name))
 				continue
 			
 			# Instantiate module and add it to the module list
@@ -121,7 +121,7 @@ class InfoBarTunerStatePlugins(object):
 		return self.__plugins[name]
 
 	def getPlugins(self):
-		return sorted( self.__plugins.values(), key=lambda x: (x.getType()), reverse=True )
+		return sorted(self.__plugins.values(), key=lambda x: (x.getType()), reverse=True)
 
 	def instantiatePlugin(self, module):
 		if module and callable(module):
@@ -129,7 +129,7 @@ class InfoBarTunerStatePlugins(object):
 			try:
 				return module()
 			except Exception as e:
-				log.exception( "[IBTS] Instantiate exception: " + str(module) + "\n" + str(e) )
+				log.exception("[IBTS] Instantiate exception: " + str(module) + "\n" + str(e))
 		else:
-			log.debug( "[IBTS] Module is not callable: " + str(module.getClass()) )
+			log.debug("[IBTS] Module is not callable: " + str(module.getClass()))
 		return None

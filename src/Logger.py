@@ -73,7 +73,7 @@ class Logger(object):
 			self.instance.shutdown()
 
 	def info(self, *args):
-		strargs = " ".join( [ str(arg) for arg in args ] )
+		strargs = " ".join([str(arg) for arg in args])
 		
 		if self.instance:
 			self.instance.info(strargs)
@@ -82,7 +82,7 @@ class Logger(object):
 			print strargs
 
 	def debug(self, *args):
-		strargs = " ".join( [ str(arg) for arg in args ] )
+		strargs = " ".join([str(arg) for arg in args])
 		
 		if self.instance:
 			self.instance.debug(strargs)
@@ -91,12 +91,12 @@ class Logger(object):
 			print strargs
 		
 		if sys.exc_info()[0]:
-			self.instance.debug( str(sys.exc_info()[0]) )
-			self.instance.debug( str(traceback.format_exc()) )
+			self.instance.debug(str(sys.exc_info()[0]))
+			self.instance.debug(str(traceback.format_exc()))
 			sys.exc_clear()
 
 	def warning(self, *args):
-		strargs = " ".join( [ str(arg) for arg in args ] )
+		strargs = " ".join([str(arg) for arg in args])
 		
 		if self.instance:
 			self.instance.warning(strargs)
@@ -114,7 +114,7 @@ class Logger(object):
 				)
 
 	def error(self, *args):
-		strargs = " ".join( [ str(arg) for arg in args ] )
+		strargs = " ".join([str(arg) for arg in args])
 		
 		if self.instance:
 			self.instance.error(strargs)
@@ -132,7 +132,7 @@ class Logger(object):
 				)
 		
 	def exception(self, *args):
-		strargs = " ".join( [ str(arg) for arg in args ] )
+		strargs = " ".join([str(arg) for arg in args])
 		
 		if self.instance:
 			self.instance.exception(strargs)
@@ -155,8 +155,8 @@ class Logger(object):
 		if sys.exc_info()[0]:
 			#exc_type, exc_value, exc_traceback = sys.exc_info()
 			#traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
-			self.debug( str(sys.exc_info()[0]) )
-			self.debug( str(traceback.format_exc()) )
+			self.debug(str(sys.exc_info()[0]))
+			self.debug(str(traceback.format_exc()))
 			sys.exc_clear()
 
 

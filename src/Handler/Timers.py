@@ -27,14 +27,14 @@ def getTimer(id):
 	if instance is not None:
 		for timer in instance.RecordTimer.timer_list + instance.RecordTimer.processed_timers:
 			#log.debug( "IBTS timerlist:", getTimerID( timer ) )
-			if getTimerID( timer ) == id:
+			if getTimerID(timer) == id:
 				return timer
 		#else:
 		#	log.debug( "IBTS getTimer for else" )
 	return None
 
 def getTimerID(timer):
-	return 'timer %x %s %x' % ( id(timer), timer.name, int(timer.eit or 0) )
+	return 'timer %x %s %x' % (id(timer), timer.name, int(timer.eit or 0))
 
 def getNextPendingRecordTimers(pending_limit):
 	from NavigationInstance import instance
@@ -57,8 +57,8 @@ def getNextPendingRecordTimers(pending_limit):
 					end = timer.end
 				else:
 					begin, end = processRepeated(timer)
-				timer_list.append( timer )
-	return sorted( timer_list, key=lambda x: (x.begin) )
+				timer_list.append(timer)
+	return sorted(timer_list, key=lambda x: (x.begin))
 
 # Adapted from TimerEntry
 def addOneDay(timedatestruct):
@@ -125,28 +125,28 @@ class Timers(PluginBase):
 		return 6
 
 	def getOnChanged(self):
-		return [ config.infobartunerstate.plugin_timers.enabled ]
+		return [config.infobartunerstate.plugin_timers.enabled]
 
 	def getOptions(self):
 		options = []
-		options.append( (_("Show pending timer(s)"), config.infobartunerstate.plugin_timers.enabled ) )
+		options.append((_("Show pending timer(s)"), config.infobartunerstate.plugin_timers.enabled))
 		
 		if config.infobartunerstate.plugin_timers.enabled.value:
-			options.append( (_("   Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers) )
-			options.append( (_("   Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours) )
-			options.append( (_("   Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers) )
+			options.append((_("   Number of pending timer(s)"),                 config.infobartunerstate.plugin_timers.number_pending_timers))
+			options.append((_("   Show pending records only within x hour(s)"), config.infobartunerstate.plugin_timers.pending_hours))
+			options.append((_("   Show Energy shedule timers"),                 config.infobartunerstate.plugin_timers.show_energy_timers))
 		
 		return options
 
 	def onShow(self, tunerstates):
 		if config.infobartunerstate.plugin_timers.enabled.value:
-			number_pending_timers = int( config.infobartunerstate.plugin_timers.number_pending_timers.value )
+			number_pending_timers = int(config.infobartunerstate.plugin_timers.number_pending_timers.value)
 			#log.debug( "IBTS number_pending_timers", number_pending_timers )
 			
 			toremove = self.nextids[:]
 			
 			if number_pending_timers:
-				pending_seconds = int( config.infobartunerstate.plugin_timers.pending_hours.value ) * 3600
+				pending_seconds = int(config.infobartunerstate.plugin_timers.pending_hours.value) * 3600
 				pending_limit = (time() + pending_seconds) if pending_seconds else 0
 				#log.debug( "IBTS pending_limit", pending_limit )
 				timer_end = 0
@@ -162,7 +162,7 @@ class Timers(PluginBase):
 							break
 						if timer:
 							
-							id = getTimerID( timer )
+							id = getTimerID(timer)
 							#log.debug( "IBTS toadd", id )
 							
 							if id in toremove:
@@ -217,20 +217,20 @@ class Timers(PluginBase):
 				if toremove:
 					from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 					if gInfoBarTunerState:
-						log.debug( "IBTS toremove" )
+						log.debug("IBTS toremove")
 						#pprint.pprint(toremove)
 						for id in toremove:
-							log.debug( "IBTS timers toremove", id )
+							log.debug("IBTS timers toremove", id)
 							if id in self.nextids:
 								self.nextids.remove(id)
 							gInfoBarTunerState.removeEntry(id)
 
 	def update(self, id, tunerstate):
 		
-		log.debug( "IBTS Timers update ID", id )
+		log.debug("IBTS Timers update ID", id)
 		if id in self.nextids:
 			
-			timer = getTimer( id )
+			timer = getTimer(id)
 			if timer:
 				
 				tunerstate.name = timer.name
@@ -252,8 +252,8 @@ class Timers(PluginBase):
 				
 				return True
 			else:
-				log.debug( "IBTS timers update FINISHED no timer", id )
+				log.debug("IBTS timers update FINISHED no timer", id)
 				return None
 		else:
-			log.debug( "IBTS timers update FINISHED not in ids", id )
+			log.debug("IBTS timers update FINISHED not in ids", id)
 			return None

@@ -17,10 +17,10 @@ from Plugins.Extensions.InfoBarTunerState.Logger import log
 
 # Config options
 event_choices = [	
-					( "no",		_("no")),
-					( "start",		_("Start record")),
-					( "end",		_("End record")),
-					( "startend",	_("Start / End record"))
+					("no",		_("no")),
+					("start",		_("Start record")),
+					("end",		_("End record")),
+					("startend",	_("Start / End record"))
 				]
 config.infobartunerstate.plugin_records                           = ConfigSubsection()
 config.infobartunerstate.plugin_records.enabled                   = ConfigYesNo(default=True)
@@ -30,14 +30,14 @@ config.infobartunerstate.plugin_records.show_events               = ConfigSelect
 
 
 def getTimerID(timer):
-	return 'record %x %s %x' % ( id(timer), timer.name, int(timer.eit or 0) )
+	return 'record %x %s %x' % (id(timer), timer.name, int(timer.eit or 0))
 
 def getTimer(id):
 	from NavigationInstance import instance
 	if instance is not None:
 		for timer in (instance.RecordTimer.timer_list + instance.RecordTimer.processed_timers):
 			#log.debug( "timerlist:", getTimerID( timer ) )
-			if getTimerID( timer ) == id:
+			if getTimerID(timer) == id:
 				return timer
 	return None
 
@@ -58,16 +58,16 @@ class Records(PluginBase):
 		return 0
 
 	def getOnChanged(self):
-		return [ config.infobartunerstate.plugin_records.enabled ]
+		return [config.infobartunerstate.plugin_records.enabled]
 
 	def getOptions(self):
 		options = []
-		options.append( (_("Show record(s)"), config.infobartunerstate.plugin_records.enabled) )
+		options.append((_("Show record(s)"), config.infobartunerstate.plugin_records.enabled))
 		
 		if config.infobartunerstate.plugin_records.enabled.value:
-			options.append( (_("   Show events of record(s)"),                config.infobartunerstate.plugin_records.show_events) )
-			options.append( (_("   Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records) )
-			options.append( (_("   Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours) )
+			options.append((_("   Show events of record(s)"),                config.infobartunerstate.plugin_records.show_events))
+			options.append((_("   Number of finished record(s)"),             config.infobartunerstate.plugin_records.number_finished_records))
+			options.append((_("   Show finished records only for x hour(s)"), config.infobartunerstate.plugin_records.finished_hours))
 		
 		return options
 
@@ -101,12 +101,12 @@ class Records(PluginBase):
 			return
 		
 		elif timer.state == timer.StatePrepared:
-			log.debug( "IBTS Records StatePrepared" )
+			log.debug("IBTS Records StatePrepared")
 			return
 		
 		elif timer.state == timer.StateRunning:
-			id = getTimerID( timer )
-			log.debug( "IBTS Records StateRunning ID " + id )
+			id = getTimerID(timer)
+			log.debug("IBTS Records StateRunning ID " + id)
 			
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState and not gInfoBarTunerState.hasEntry(id):
@@ -148,8 +148,8 @@ class Records(PluginBase):
 					gInfoBarTunerState.onEvent()
 		
 		elif timer.state == timer.StateEnded:
-			id = getTimerID( timer )
-			log.debug( "IBTS Records StateEnded ID " + id )
+			id = getTimerID(timer)
+			log.debug("IBTS Records StateEnded ID " + id)
 			
 			# Delete references to avoid blocking tuners
 			del timer
@@ -162,8 +162,8 @@ class Records(PluginBase):
 					gInfoBarTunerState.onEvent()
 		
 		elif timer.state == timer.StateWaiting:
-			id = getTimerID( timer )
-			log.debug( "IBTS Records StateWaiting ID " + id )
+			id = getTimerID(timer)
+			log.debug("IBTS Records StateWaiting ID " + id)
 			
 			finish = False
 			
@@ -183,8 +183,8 @@ class Records(PluginBase):
 						gInfoBarTunerState.onEvent()
 		
 		elif timer.state == (timer.StateEnded+1):
-			id = getTimerID( timer )
-			log.debug( "IBTS Records StateEnded+1 ID " + id )
+			id = getTimerID(timer)
+			log.debug("IBTS Records StateEnded+1 ID " + id)
 			
 			finish = False
 			
@@ -205,8 +205,8 @@ class Records(PluginBase):
 		
 		else:
 			# Unknown timer state
-			id = getTimerID( timer )
-			log.debug( "IBTS Records unknown state  " + str(timer.state) + " ID " + id )
+			id = getTimerID(timer)
+			log.debug("IBTS Records unknown state  " + str(timer.state) + " ID " + id)
 			
 			# Delete references to avoid blocking tuners
 			del timer
@@ -215,7 +215,7 @@ class Records(PluginBase):
 		if config.infobartunerstate.plugin_records.enabled.value:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			from Plugins.Extensions.InfoBarTunerState.InfoBarTunerState import RECORD_FINISHED
-			finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
+			finished_seconds = int(config.infobartunerstate.plugin_records.finished_hours.value) * 3600
 			number_finished_records = int(config.infobartunerstate.plugin_records.number_finished_records.value)
 			if number_finished_records == 0:
 				return
@@ -227,14 +227,14 @@ class Records(PluginBase):
 					if tunerstate.end < now:
 						count += 1
 						if count > number_finished_records or (tunerstate.end + finished_seconds) < now:
-							log.debug( "IBTS Records number_finished_records - Remove", id )
+							log.debug("IBTS Records number_finished_records - Remove", id)
 							gInfoBarTunerState.finishEntry(id,False)
 
 	def update(self, id, tunerstate):
 		
 		#TODO Avolid blocking - avoid using getTimer to update the timer times use timer.time_changed if possible
 		
-		timer = getTimer( id )
+		timer = getTimer(id)
 		if timer:
 			tunerstate.name = timer.name
 			
@@ -249,15 +249,15 @@ class Records(PluginBase):
 				event = None
 				
 				if timer.eit:
-					log.debug( "IBTS Records event by lookupEventId" )
+					log.debug("IBTS Records event by lookupEventId")
 					event = epgcache.lookupEventId(timer.service_ref.ref, timer.eit)
 				
 				if not event:
-					log.debug( "IBTS Records event by lookupEventTime" )
-					event = epgcache.lookupEventTime( timer.service_ref.ref, timer.begin + 5 )
+					log.debug("IBTS Records event by lookupEventTime")
+					event = epgcache.lookupEventTime(timer.service_ref.ref, timer.begin + 5)
 				
 				if event:
-					log.debug( "IBTS Records event" )
+					log.debug("IBTS Records event")
 					begin = event.getBeginTime() or 0
 					duration = event.getDuration() or 0
 					
@@ -265,7 +265,7 @@ class Records(PluginBase):
 						tunerstate.end  = begin + duration
 					
 					if not tunerstate.end:
-						log.debug( "IBTS Records no end" )
+						log.debug("IBTS Records no end")
 						tunerstate.endless = True
 						
 				else:
@@ -302,7 +302,7 @@ class Records(PluginBase):
 			return False
 
 	def finish(self, id):
-		finished_seconds = int( config.infobartunerstate.plugin_records.finished_hours.value ) * 3600
+		finished_seconds = int(config.infobartunerstate.plugin_records.finished_hours.value) * 3600
 		number_finished_records = int(config.infobartunerstate.plugin_records.number_finished_records.value)
 		if finished_seconds == 0 or number_finished_records == 0:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
@@ -310,19 +310,19 @@ class Records(PluginBase):
 				gInfoBarTunerState.finishEntry(id)
 			return
 		
-		timer = getTimer( id )
+		timer = getTimer(id)
 		if timer:
 			end = timer.end
 			del timer
 			
-			if ( end + finished_seconds ) < time():
-				log.debug( "IBTS Record finish end + limit < now - Remove", id )
+			if (end + finished_seconds) < time():
+				log.debug("IBTS Record finish end + limit < now - Remove", id)
 				from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 				if gInfoBarTunerState:
 					gInfoBarTunerState.finishEntry(id, False)
 				return
 		else:
-			log.debug( "IBTS Record finish no timer", id )
+			log.debug("IBTS Record finish no timer", id)
 		
 		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 		if gInfoBarTunerState:

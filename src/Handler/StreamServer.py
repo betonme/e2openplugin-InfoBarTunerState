@@ -71,14 +71,14 @@ class StreamServer(PluginBase):
 		return 1
 
 	def getOnChanged(self):
-		return [ config.infobartunerstate.plugin_streamserver.enabled ]
+		return [config.infobartunerstate.plugin_streamserver.enabled]
 
 	def getOptions(self):
 		options = []
-		options.append( (_("Show transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.enabled) )
+		options.append((_("Show transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.enabled))
 		
 		if config.infobartunerstate.plugin_streamserver.enabled.value:
-			options.append( (_("   Show events of transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.show_events) )
+			options.append((_("   Show events of transcoded stream(s) (StreamServer)"), config.infobartunerstate.plugin_streamserver.show_events))
 		
 		return options
 
@@ -124,9 +124,9 @@ class StreamServer(PluginBase):
 			ip = str(client)
 			
 			id = getStreamID(count, ip)
-			log.debug( "IBTS Stream Event StreamServer Start " + id )
+			log.debug("IBTS Stream Event StreamServer Start " + id)
 			
-			self.ids.append( (id, ip, None) )
+			self.ids.append((id, ip, None))
 			
 			# We will add the entry later
 			
@@ -142,7 +142,7 @@ class StreamServer(PluginBase):
 		else:
 			
 			# Remove Finished Stream
-			log.debug( "IBTS Stream Event StreamServer End", count, client )
+			log.debug("IBTS Stream Event StreamServer End", count, client)
 			
 			# There is no way to find the correct stream, just remove the oldest
 			if  self.ids:
@@ -159,7 +159,7 @@ class StreamServer(PluginBase):
 		try:
 			if self.ids:
 				id, ip, servicereference_string = self.ids[-1]
-				log.debug( "IBTS Stream Event StreamServer Changed " + id )
+				log.debug("IBTS Stream Event StreamServer Changed " + id)
 				
 				if servicereference_string is None:
 				
@@ -174,7 +174,7 @@ class StreamServer(PluginBase):
 							
 							service_ref = ServiceReference(servicereference_string)
 							
-							tuner, tunertype, tunernumber = getTunerByServiceReference( service_ref ) 
+							tuner, tunertype, tunernumber = getTunerByServiceReference(service_ref) 
 							
 							name = getEventName(eservicereference)
 							
@@ -191,7 +191,7 @@ class StreamServer(PluginBase):
 								if config.infobartunerstate.plugin_openwebif.show_events.value:
 									gInfoBarTunerState.onEvent()
 		except Exception, e:
-			log.exception( "IBTS exception " + str(e) )
+			log.exception("IBTS exception " + str(e))
 
 	def update(self, id, tunerstate):
 		

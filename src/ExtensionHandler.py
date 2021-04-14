@@ -30,7 +30,7 @@ def addExtension():
 	from Plugins.Extensions.InfoBarTunerState.plugin import IBTSSHOW, IBTSSETUP, show, setup
 	if plugins:
 		if config.infobartunerstate.extensions_menu_show.value:
-			for p in plugins.getPlugins( where=PluginDescriptor.WHERE_EXTENSIONSMENU ):
+			for p in plugins.getPlugins(where=PluginDescriptor.WHERE_EXTENSIONSMENU):
 				if p.name == IBTSSHOW:
 					# Plugin is already in menu
 					break
@@ -39,7 +39,7 @@ def addExtension():
 				plugin = PluginDescriptor(name=IBTSSHOW, description=IBTSSHOW, where=PluginDescriptor.WHERE_EXTENSIONSMENU, needsRestart=False, fnc=show)
 				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].append(plugin)
 		if config.infobartunerstate.extensions_menu_setup.value:
-			for p in plugins.getPlugins( where=PluginDescriptor.WHERE_EXTENSIONSMENU ):
+			for p in plugins.getPlugins(where=PluginDescriptor.WHERE_EXTENSIONSMENU):
 				if p.name == IBTSSETUP:
 					# Plugin is already in menu
 					break
@@ -53,12 +53,12 @@ def removeExtension():
 	from Components.PluginComponent import plugins
 	from Plugins.Extensions.InfoBarTunerState.plugin import IBTSSHOW, IBTSSETUP
 	if config.infobartunerstate.extensions_menu_show.value:
-		for p in plugins.getPlugins( where=PluginDescriptor.WHERE_EXTENSIONSMENU ):
+		for p in plugins.getPlugins(where=PluginDescriptor.WHERE_EXTENSIONSMENU):
 			if p.name == IBTSSHOW:
 				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].remove(p)
 				break
 	if config.infobartunerstate.extensions_menu_setup.value:
-		for p in plugins.getPlugins( where=PluginDescriptor.WHERE_EXTENSIONSMENU ):
+		for p in plugins.getPlugins(where=PluginDescriptor.WHERE_EXTENSIONSMENU):
 			if p.name == IBTSSETUP:
 				plugins.plugins[PluginDescriptor.WHERE_EXTENSIONSMENU].remove(p)
 				break

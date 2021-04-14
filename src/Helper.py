@@ -36,24 +36,24 @@ from ServiceReference import ServiceReference
 def getTunerName(slot_number):
 	name = ""
 	try:
-		name = str(nimmanager.getNimSlotInputName( int(slot_number) ))
+		name = str(nimmanager.getNimSlotInputName(int(slot_number)))
 	except:
 		pass
 	if name == "":
-		name = str(chr( int(slot_number) + ord('A') ))
+		name = str(chr(int(slot_number) + ord('A')))
 	return name
 
 def normTuner(data):
-	if isinstance(data, dict ):
+	if isinstance(data, dict):
 		tuner_type = str(data.get("tuner_type", ""))
 		slot_number = data.get("slot_number", -1)
 		if slot_number is None or slot_number < 0:
 			slot_number = data.get("tuner_number", -1)
 		if slot_number is not None and slot_number > -1:
-			return ( getTunerName(slot_number), tuner_type, slot_number )
+			return (getTunerName(slot_number), tuner_type, slot_number)
 		else:
-			return ( "", tuner_type, slot_number )
-	return ( "", "", None )
+			return ("", tuner_type, slot_number)
+	return ("", "", None)
 
 def getTunerByServiceReferenceOLD(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
@@ -61,21 +61,21 @@ def getTunerByServiceReferenceOLD(eservicereference):
 		serviceInfo = serviceHandler.info(eservicereference)
 		data = serviceInfo and serviceInfo.getInfoObject(eservicereference, iServiceInformation.sTransponderData)
 		return normTuner(data)
-	return ( "", "", None )
+	return ("", "", None)
 
 def getTunerByServiceReference(servicereference):
 	if isinstance(servicereference, ServiceReference):
 		info = servicereference.info()
 		data = info and info.getInfoObject(servicereference.ref, iServiceInformation.sTransponderData)
 		return normTuner(data)
-	return ( "", "", None )
+	return ("", "", None)
 
 def getTunerByPlayableService(iservice):
-	if isinstance(iservice, ( iPlayableService, iRecordableService, iPlayableServicePtr, iRecordableServicePtr ) ):
+	if isinstance(iservice, (iPlayableService, iRecordableService, iPlayableServicePtr, iRecordableServicePtr)):
 		feinfo = iservice and iservice.frontendInfo()
 		data = feinfo and feinfo.getFrontendData()
 		return normTuner(data)
-	return ( "", "", None )
+	return ("", "", None)
 
 def getNumber(eservicereference):
 	if isinstance(eservicereference, eServiceReference):
@@ -126,7 +126,7 @@ def getChannel(eservicereference):
 	return ""
 
 def getEventData(iservice):
-	if isinstance(iservice, ( iPlayableService, iRecordableService, iPlayableServicePtr, iRecordableServicePtr ) ):
+	if isinstance(iservice, (iPlayableService, iRecordableService, iPlayableServicePtr, iRecordableServicePtr)):
 		info = iservice and iservice.info()
 		event = info and info.getEvent(0)
 		if event:
@@ -147,7 +147,7 @@ def getEventName(eservicereference):
 
 def getClient(ip):
 	try:
-		host = ip and socket.gethostbyaddr( ip )
+		host = ip and socket.gethostbyaddr(ip)
 		if host:
 			return host[0].split('.')[0]
 	except:

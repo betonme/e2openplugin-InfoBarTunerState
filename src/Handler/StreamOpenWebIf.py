@@ -69,14 +69,14 @@ class StreamOpenWebIf(PluginBase):
 		return 1
 
 	def getOnChanged(self):
-		return [ config.infobartunerstate.plugin_openwebif.enabled ]
+		return [config.infobartunerstate.plugin_openwebif.enabled]
 
 	def getOptions(self):
 		options = []
-		options.append( (_("Show transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.enabled) )
+		options.append((_("Show transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.enabled))
 		
 		if config.infobartunerstate.plugin_openwebif.enabled.value:
-			options.append( (_("   Show events of transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.show_events) )
+			options.append((_("   Show events of transcoded stream(s) (OpenWebIf)"), config.infobartunerstate.plugin_openwebif.show_events))
 		
 		return options
 
@@ -113,11 +113,11 @@ class StreamOpenWebIf(PluginBase):
 						self.onEvent(StreamAdapter.EV_BEGIN, stream)
 
 	def onEvent(self, event, stream):
-		log.debug( "IBTS Stream Event OpenWebIf" )
+		log.debug("IBTS Stream Event OpenWebIf")
 		if StreamAdapter and stream:
 			if (event == StreamAdapter.EV_BEGIN):
 				id = getStreamID(stream)
-				log.debug( "IBTS Stream Event OpenWebIf Start " + id )
+				log.debug("IBTS Stream Event OpenWebIf Start " + id)
 				
 				irecordservice = stream.getService()
 				
@@ -149,7 +149,7 @@ class StreamOpenWebIf(PluginBase):
 				
 				# Remove Finished Stream
 				id = getStreamID(stream)
-				log.debug( "IBTS Stream Event OpenWebIf End " + id )
+				log.debug("IBTS Stream Event OpenWebIf End " + id)
 				
 				# Delete references to avoid blocking tuners
 				del stream
@@ -162,7 +162,7 @@ class StreamOpenWebIf(PluginBase):
 
 	def update(self, id, tunerstate):
 		
-		stream = getStream( id )
+		stream = getStream(id)
 		if stream:
 		
 			ref = stream.ref
