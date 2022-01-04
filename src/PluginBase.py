@@ -3,10 +3,11 @@
 
 # Internal
 
+
 class PluginBase(object):
 	def __init__(self):
 		pass
-	
+
 	################################################
 	# Base classmethod functions
 	@classmethod

@@ -53,6 +53,8 @@ def overwriteInfoBar():
 		InfoBarShowHide.toggleShow = InfoBarToggleTunerState
 
 # InfoBar Events
+
+
 def recoverInfoBar():
 	from Screens.InfoBarGenerics import InfoBarShowHide
 	global InfoBarShow, InfoBarHide, InfoBarToggle
@@ -71,19 +73,20 @@ def InfoBarShowTunerState(self):
 	global InfoBarShow
 	if InfoBarShow:
 		InfoBarShow(self)
-	
+
 	show = False
 	player = type(self).__name__ != "InfoBar"
-		
+
 	if player and config.infobartunerstate.show_withplayer.value == "True":
 			show = True
 	elif not player and config.infobartunerstate.show_withinfobar.value == "True":
 			show = True
-	
+
 	if show:
 		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 		if gInfoBarTunerState:
 			gInfoBarTunerState.show()
+
 
 def InfoBarHideTunerState(self):
 	from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
@@ -94,37 +97,39 @@ def InfoBarHideTunerState(self):
 	if gInfoBarTunerState:
 		gInfoBarTunerState.hide()
 
+
 def InfoBarToggleTunerState(self):
 	global InfoBarToggle
 	if InfoBarToggle:
 		InfoBarToggle(self)
-	
+
 	if self._InfoBarShowHide__state == self.STATE_HIDDEN:
 		# Always hide
 		from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 		if gInfoBarTunerState:
 			gInfoBarTunerState.hide()
-		
+
 	elif self._InfoBarShowHide__state == self.STATE_SHOWN:
-		
+
 		show = False
 		player = type(self).__name__ != "InfoBar"
-		
+
 		if player and config.infobartunerstate.show_withplayer.value == "only_onkeypress":
 			show = True
 		elif not player and config.infobartunerstate.show_withinfobar.value == "only_onkeypress":
 			show = True
-		
+
 		if show:
 			from Plugins.Extensions.InfoBarTunerState.plugin import gInfoBarTunerState
 			if gInfoBarTunerState:
 				gInfoBarTunerState.show()
 
+
 class InfoBarHandler(object):
 	def __init__(self):
-		
+
 		overwriteInfoBar()
-		
+
 		# Handle extension menu integration
 		if config.infobartunerstate.extensions_menu_show.value or config.infobartunerstate.extensions_menu_setup.value:
 			# Add to extension menu
